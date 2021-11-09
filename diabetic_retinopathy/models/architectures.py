@@ -23,7 +23,7 @@ def vgg_like(input_shape, n_classes, base_filters, n_blocks, dense_units, dropou
 
     inputs = tf.keras.Input(input_shape)
     out = vgg_block(inputs, base_filters)
-    for i in range(2, n_blocks):
+    for i in range(1, n_blocks):  # changed that range starts from 1 -> in total n_blocks vgg-blocks.
         out = vgg_block(out, base_filters * 2 ** (i))
     out = tf.keras.layers.GlobalAveragePooling2D()(out)
     out = tf.keras.layers.Dense(dense_units, activation=tf.nn.relu)(out)

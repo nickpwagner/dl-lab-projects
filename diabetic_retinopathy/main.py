@@ -8,6 +8,7 @@ from input_pipeline import datasets
 from utils import utils_params, utils_misc
 from models.architectures import vgg_like
 
+# define train flag to change it in the command line with "-train=..."
 FLAGS = flags.FLAGS
 flags.DEFINE_boolean('train', True, 'Specify whether to train or evaluate a model.')
 
@@ -28,12 +29,13 @@ def main(argv):
 
     # model
     model = vgg_like(input_shape=ds_info.features["image"].shape, n_classes=ds_info.features["label"].num_classes)
-
+    print(model.summary())
     if FLAGS.train:
         trainer = Trainer(model, ds_train, ds_val, ds_info, run_paths)
         for _ in trainer.train():
             continue
     else:
+        print("evaluate")
         evaluate(model,
                  checkpoint,
                  ds_test,
