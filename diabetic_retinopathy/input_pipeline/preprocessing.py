@@ -12,7 +12,6 @@ def preprocess(image, label, img_height, img_width):
     image = tf.image.crop_to_bounding_box(image, 0, 550, 2848, 2848)
     image = tf.image.resize(image, size=(img_height, img_width))
 
-
     return image, label
 
 def augment(image, label):

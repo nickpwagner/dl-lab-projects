@@ -12,7 +12,7 @@ def load(name, data_dir):
         logging.info(f"Preparing dataset {name}...")
         # ... to do: implement dataset loading and preprocessing, shuffle, ...
 
-        df_train = pd.read_csv(data_dir + "labels/train.csv")
+        df_train = pd.read_csv(data_dir + "/IDRID_dataset/labels/train.csv")
         y_train = df_train["Retinopathy grade"][:300]
         y_val = df_train["Retinopathy grade"][300:]
         X_path_train = [str(img) + ".jpg" for img in df_train["Image name"]][:300] # first 300 images as train data

@@ -12,13 +12,18 @@ Trainer.total_steps = 1e5
 Trainer.log_interval = 1e4
 Trainer.ckpt_interval = 1e4
 
-
-
-# Input pipeline mnist
-load.name = 'mnist'
-load.data_dir = 'C:\DL_Lab'
-preprocess.img_height = 28
-preprocess.img_width = 28
+# General input pipeline
 prepare.batch_size = 32
 prepare.caching = False
+load.data_dir = 'C:/DL_Lab'
+
+# Input pipeline mnist
+# load.name = 'mnist'
+# preprocess.img_height = 28
+# preprocess.img_width = 28
+
+# Input pipeline mnist
+load.name = 'idrid'
+preprocess.img_height = 256
+preprocess.img_width = 256
 
