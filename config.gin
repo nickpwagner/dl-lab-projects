@@ -1,7 +1,9 @@
 IMG_WIDTH = 256
+IMG_HEIGHT = 256
+BATCH_SIZE = 16
 
 load.data_dir = "C:/DL_Lab/IDRID_dataset/"
 load.val_split = 0.8
-load.batch_size = 32
-load.img_width = 256
-load.img_height = 256
+load.batch_size = %BATCH_SIZE
+load.img_width = %IMG_WIDTH
+load.img_height = %IMG_HEIGHT

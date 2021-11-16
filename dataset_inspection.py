@@ -28,6 +28,5 @@ for i in range(25):
     plt.xlabel(y_train[i])
 plt.show()
 
-
 df_train = pd.read_csv(load.data_dir + "labels/train.csv")
 print(np.unique(np.array(df_train["Retinopathy grade"]), return_counts=True))
