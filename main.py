@@ -10,7 +10,7 @@ import os
 from absl import flags, app  # required to pass arguments via cmdline
 
 from input import load
-from model import vgg_like
+from model import vgg, resnet
 from train import train
 from evaluation import evaluate
 
@@ -18,9 +18,9 @@ FLAGS = flags.FLAGS
 flags.DEFINE_boolean('train', True, 'Specify whether to train or evaluate a model.')
 flags.DEFINE_string('path', "C:/DL_Lab/", 'Specify the path to the dataset.')
 flags.DEFINE_integer('epochs', 2, 'Specify the number of epochs to train the network.')
+architecture = "resnet"
 
-
-def main(argv):
+def main(argv): 
     # seeds
     # random.seed(42)
     np.random.seed(42)
@@ -49,12 +49,18 @@ def main(argv):
 
         break
 
-    model = vgg_like(input_shape=(256, 256, 3), n_classes=5, filters=(32), kernel=(3, 3), neurons=256, dropout_rate=0.5)
+    if architecture == "vgg":
+        model = vgg()
+    elif architecture == "resnet":
+        model = resnet()
+    else:
+        print("model not supported")
+
     model.summary()
     # keras.utils.plot_model(model, show_shapes=True)
 
     if FLAGS.train:
-        train(model, ds_train, ds_val, config.batch_size, config.epochs)
+        train(model, ds_train, ds_val) #, config.batch_size, config.epochs)
 
         # wandb
         # model.fit(X_train, y_train, validation_data=(X_test, y_test), callbacks=[WandbCallback()])

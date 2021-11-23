@@ -4,7 +4,7 @@ import gin
 
 
 @gin.configurable
-def load(data_dir, val_split, img_width, img_height, batch_size):
+def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
 
     df_train = pd.read_csv(data_dir + "labels/train.csv")
 
@@ -27,12 +27,13 @@ def load(data_dir, val_split, img_width, img_height, batch_size):
         def img_name_to_image(img_names, y):
             X = tf.io.read_file(img_path + img_names)
             X = tf.image.decode_jpeg(X, channels=3)
+            y = tf.one_hot(y, depth=n_classes)
             return X, y
 
         def crop_and_resize(image, y):
             # image = tf.image.crop_to_bounding_box(image, offset_height=0, offset_width=560, target_height=2848, target_width=2848)
             # image = tf.image.resize(image, [img_height, img_width], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
-            image = tf.cast(image, tf.float32) / 255. # rescale
+            # image = tf.cast(image, tf.float32) / 255. # rescale only required of model doesn´t implement specific preprocessing
             return image, y
 
         # img_ds takes the image names and reads the images and resizes them
