@@ -32,7 +32,7 @@ def load(data_dir, val_split, img_width, img_height, batch_size):
         def crop_and_resize(image, y):
             # image = tf.image.crop_to_bounding_box(image, offset_height=0, offset_width=560, target_height=2848, target_width=2848)
             # image = tf.image.resize(image, [img_height, img_width], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
-            image = image / 255. # rescale
+            image = tf.cast(image, tf.float32) / 255. # rescale
             return image, y
 
         # img_ds takes the image names and reads the images and resizes them

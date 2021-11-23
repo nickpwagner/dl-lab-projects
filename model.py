@@ -17,12 +17,12 @@ def vgg_like(input_shape, n_classes, filters, kernel, neurons, dropout_rate):
     """
 
     inputs = tf.keras.Input(input_shape)
-    out = tf.keras.layers.Conv2D(filters, kernel, padding='same', activation=tf.nn.relu)(inputs)
-    out = tf.keras.layers.Conv2D(filters, kernel, padding='same', activation=tf.nn.relu)(out)
-    out = tf.keras.layers.MaxPool2D((2, 2))(out)
-    out = tf.keras.layers.GlobalAveragePooling2D()(out)
-    out = tf.keras.layers.Dense(neurons, activation=tf.nn.relu)(out)
-    out = tf.keras.layers.Dropout(dropout_rate)(out)
-    outputs = tf.keras.layers.Dense(n_classes)(out)
+    x = tf.keras.layers.Conv2D(filters, kernel, padding='same', activation=tf.nn.relu)(inputs)
+    x = tf.keras.layers.Conv2D(filters, kernel, padding='same', activation=tf.nn.relu)(x)
+    x = tf.keras.layers.MaxPool2D((2, 2))(x)
+    x = tf.keras.layers.GlobalAveragePooling2D()(x)
+    x = tf.keras.layers.Dense(neurons, activation=tf.nn.relu)(x)
+    x = tf.keras.layers.Dropout(dropout_rate)(x)
+    outputs = tf.keras.layers.Dense(n_classes)(x)
 
     return tf.keras.Model(inputs=inputs, outputs=outputs, name='vgg_like')
