@@ -2,8 +2,11 @@ IMG_WIDTH = 256
 IMG_HEIGHT = 256
 BATCH_SIZE = 16
 
-load.data_dir = "/content/IDRID_dataset/" #"C:/DL_Lab/IDRID_dataset/"
+load.data_dir = "/content/" #"C:/DL_Lab/"
 load.val_split = 0.8
 load.batch_size = %BATCH_SIZE
 load.img_width = %IMG_WIDTH
 load.img_height = %IMG_HEIGHT
+
+train.batch_size = 16
+train.epochs = 10
