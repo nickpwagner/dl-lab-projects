@@ -34,7 +34,7 @@ def resnet(input_shape, n_classes, dense0, dense1):
         weights='imagenet',
         include_top=False,
         input_shape=input_shape)
-    print(base_model.summary())
+    #print(base_model.summary())
     base_model.trainable = False
     inputs = keras.layers.Input(shape=input_shape, dtype=tf.uint8)
     x = tf.cast(inputs, tf.float32)

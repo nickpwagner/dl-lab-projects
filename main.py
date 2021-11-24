@@ -1,71 +1,69 @@
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras as keras
-import gin
 import matplotlib.pyplot as plt
 
 import wandb
 import os
-
-from absl import flags, app  # required to pass arguments via cmdline
+import argparse
 
 from input import load
 from model import vgg, resnet
 from train import train
 from evaluation import evaluate
 
-FLAGS = flags.FLAGS
-flags.DEFINE_boolean('train', True, 'Specify whether to train or evaluate a model.')
-flags.DEFINE_string('path', "C:/DL_Lab/", 'Specify the path to the dataset.')
-flags.DEFINE_integer('epochs', 2, 'Specify the number of epochs to train the network.')
-architecture = "resnet"
 
-def main(argv): 
+
+def main(args): 
     # seeds
     # random.seed(42)
     np.random.seed(42)
     tf.random.set_seed(42)
 
-    # required for gin functionality
-    gin.parse_config_files_and_bindings(['config.gin'], [])
-    
-
-    os.environ['WANDB_DIR'] = FLAGS.path + "wandb/"
-    
-    default_config = {
-      "learning_rate": 0.001,
-      "epochs": FLAGS.epochs,
-      "batch_size": 128
-    }
-    wandb.init(project="diabetic_retinopathy", entity="davidu", config=default_config)
+    args_config = vars(args)
+    wandb.init(project="diabetic_retinopathy", entity="davidu")  # wandb uses the yaml file and overrides the values with the args_config
+    wandb.config.update(args, allow_val_change=True)
     config = wandb.config
 
-    ds_train, ds_val, ds_test = load(data_dir=FLAGS.path+"IDRID_dataset/")
+    os.environ['WANDB_DIR'] = config.data_dir + "wandb/"
+    
+    
 
-    for image,y in ds_train:
+    ds_train, ds_val, ds_test = load(config.data_dir+"IDRID_dataset/", 
+                                    config.val_split,
+                                    config.img_width, 
+                                    config.img_height,
+                                    config.batch_size, 
+                                    config.n_classes)
+
+    """for image,y in ds_train:
         print(image.shape, y)
         plt.imshow(image[0])
         plt.show()
 
-        break
+        break"""
 
-    if architecture == "vgg":
+    if config.architecture == "vgg":
         model = vgg()
-    elif architecture == "resnet":
-        model = resnet()
+    elif config.architecture == "resnet":
+        model = resnet(tuple(config.input_shape), config.n_classes, config.resnet_dense0, config.resnet_dense1)
     else:
         print("model not supported")
 
     model.summary()
     # keras.utils.plot_model(model, show_shapes=True)
 
-    if FLAGS.train:
-        train(model, ds_train, ds_val) #, config.batch_size, config.epochs)
+    if config.train:
+        train(model, ds_train, ds_val, config.optimizer, config.learning_rate, config.loss_function,\
+             config.batch_size, config.epochs)
 
-        # wandb
-        # model.fit(X_train, y_train, validation_data=(X_test, y_test), callbacks=[WandbCallback()])
     else:
         evaluate(model, ds_val)
 
 if __name__ == "__main__":
-    app.run(main)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--train', type=bool, help='True=Train, False=Evaluate', default=True)
+    parser.add_argument('-p', '--data_dir', type=str, help='path to the dataset and wandb logging', default=argparse.SUPPRESS)
+    parser.add_argument('-e', '--epochs', type=int, help='number of epochs to train the network', default=argparse.SUPPRESS)
+    args = parser.parse_args()
+    main(args)

@@ -1,0 +1,33 @@
+# data
+img_width:
+  value: 256
+img_height:
+  value: 256
+n_classes:
+  value: 5
+data_dir:
+  value: "C:/DL_Lab/" #"/content/"
+val_split:
+  value: 0.8
+
+# train
+epochs:
+  value: 2
+batch_size:
+  value: 16
+optimizer:
+  value: "adam"
+learning_rate:
+  value: 0.01
+loss_function:
+  value: "categorical_crossentropy"
+
+# architecture
+input_shape:
+  value: [256, 256, 3]
+architecture:
+  value: "resnet"
+resnet_dense0:
+  value: 256
+resnet_dense1:
+  value: 64

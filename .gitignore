@@ -8,6 +8,7 @@ __pycache__/
 
 # Custom
 experiments/
+wandb/
 
 # C extensions
 *.so
