@@ -30,7 +30,7 @@ parameters:
   input_shape:
     value: [256, 256, 3]
   architecture:
-    value: "vgg16" # "resnet50"
+    values: ["vgg16", "resnet50"]
   head_dense0:
     values: [0, 256]
   head_dense1:
