@@ -8,11 +8,16 @@ import os
 import argparse
 
 from input import load
-from model import vgg, resnet
+from model import transfer_model
 from train import train
 from evaluation import evaluate
 
-
+"""
+ToDo´s:
+- Data Augmentation
+- Different Models
+- Sweeps
+"""
 
 def main(args): 
     # seeds
@@ -43,13 +48,8 @@ def main(args):
 
         break"""
 
-    if config.architecture == "vgg":
-        model = vgg()
-    elif config.architecture == "resnet":
-        model = resnet(tuple(config.input_shape), config.n_classes, config.resnet_dense0, config.resnet_dense1)
-    else:
-        print("model not supported")
-
+    model = transfer_model(config.architecture, tuple(config.input_shape), config.n_classes, config.head_dense0, config.head_dense1)
+    
     model.summary()
     # keras.utils.plot_model(model, show_shapes=True)
 

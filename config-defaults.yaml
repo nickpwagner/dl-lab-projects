@@ -12,7 +12,7 @@ val_split:
 
 # train
 epochs:
-  value: 2
+  value: 20
 batch_size:
   value: 16
 optimizer:
@@ -26,8 +26,8 @@ loss_function:
 input_shape:
   value: [256, 256, 3]
 architecture:
-  value: "resnet"
-resnet_dense0:
+  value: "vgg16" # "resnet50"
+head_dense0:
   value: 256
-resnet_dense1:
+head_dense1:
   value: 64

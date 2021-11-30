@@ -7,7 +7,7 @@ import gin
 
 @gin.configurable
 def train(model, ds_train, ds_val, optimizer, learning_rate, loss, batch_size, epochs):
-    if optimizer=="sdg":
+    if optimizer=="sgd":
         opt = keras.optimizers.SGD(learning_rate=learning_rate)
     elif optimizer=="adam":
         opt = keras.optimizers.Adam(learning_rate=learning_rate)

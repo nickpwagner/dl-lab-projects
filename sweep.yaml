@@ -1,0 +1,28 @@
+program: main.py
+method: random
+
+parameters:
+  # train
+  epochs:
+    values: [2, 5]
+  batch_size:
+    values: [16, 32]
+  optimizer:
+    values: ["adam"]
+  learning_rate:
+    values: [0.01]
+
+  # architecture
+  architecture:
+    values: ["vgg16", "resnet50"]
+  head_dense0:
+    values: [0, 256]
+  head_dense1:
+    values: [0, 64]
+
+name: run1
+project: diabetic_retinopathy
+command:
+  - "--data_dir"
+  - "/content/"
+  - ${args}
