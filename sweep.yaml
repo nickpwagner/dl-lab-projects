@@ -2,27 +2,39 @@ program: main.py
 method: random
 
 parameters:
+  # data
+  img_width:
+    value: 256
+  img_height:
+    value: 256
+  n_classes:
+    value: 5
+  data_dir:
+    value: "/content/"
+  val_split:
+    value: 0.8
+
   # train
   epochs:
-    values: [2, 5]
+    values: [10, 20]
   batch_size:
     values: [16, 32]
   optimizer:
-    values: ["adam"]
+    value: "adam"
   learning_rate:
-    values: [0.01]
+    value: 0.01
+  loss_function:
+    value: "categorical_crossentropy"
 
   # architecture
+  input_shape:
+    value: [256, 256, 3]
   architecture:
-    values: ["vgg16", "resnet50"]
+    value: "vgg16" # "resnet50"
   head_dense0:
     values: [0, 256]
   head_dense1:
-    values: [0, 64]
+    value: [0, 64]
 
 name: run1
 project: diabetic_retinopathy
-command:
-  - "--data_dir"
-  - "/content/"
-  - ${args}
