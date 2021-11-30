@@ -47,7 +47,9 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
     return ds_train, ds_val, ds_test
 
 if __name__ == "__main__":
-    ts_train = load()
+    import matplotlib.pyplot as plt
+
+    ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, 256, 256, 16, 5)
     for image,y in ds_train:
         print(image.shape, y)
         plt.imshow(image[0])
