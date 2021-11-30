@@ -37,15 +37,16 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
             return image, y
 
         def augment(image, y):
-            seed = (42, 42)
+            seeds = (42, 42)
+            seed = 42
             #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
-            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seed)
-            image = tf.image.stateless_random_brightness(image, 0.2, seed=seed)
-            image = tf.image.stateless_random_hue(image, 0.2, seed)
+            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seeds)
+            image = tf.image.stateless_random_brightness(image, 0.2, seed=seeds)
+            image = tf.image.stateless_random_hue(image, 0.2, seeds)
             image = tf.image.random_flip_left_right(image, seed=seed)
             image = tf.image.random_flip_up_down(image, seed=seed)
-            image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
-            image = tf.image.stateless_random_saturation(image, 0.8, 1, seed=seed)
+            #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
+            image = tf.image.stateless_random_saturation(image, 0.8, 1, seed=seeds)
             return image, y
 
         # img_ds takes the image names and reads the images and resizes them

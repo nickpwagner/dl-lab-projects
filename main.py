@@ -15,8 +15,10 @@ from evaluation import evaluate
 """
 ToDo´s:
 - Data Augmentation
-- Different Models
+- Different Models (incl. own model)
 - Sweeps
+- learning rate decay
+- evaluate
 """
 
 def main(args): 
