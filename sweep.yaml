@@ -16,9 +16,13 @@ parameters:
 
   # train
   epochs:
-    values: [10, 20]
+    values: 
+      - 10
+      - 20
   batch_size:
-    values: [16, 32]
+    values: 
+      - 16
+      - 32
   optimizer:
     value: "adam"
   learning_rate:
@@ -30,11 +34,17 @@ parameters:
   input_shape:
     value: [256, 256, 3]
   architecture:
-    values: ["vgg16", "resnet50"]
+    values: 
+      - "vgg16"
+      - "resnet50"
   head_dense0:
-    values: [0, 256]
+    values: 
+      - 0
+      - 256
   head_dense1:
-    value: [0, 64]
+    value: 
+      - 0
+      - 64
 
 name: run1
 project: diabetic_retinopathy
