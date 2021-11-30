@@ -26,7 +26,7 @@ def main(args):
     tf.random.set_seed(42)
 
     args_config = vars(args)
-    wandb.init(project="diabetic_retinopathy", entity="davidu")  # wandb uses the yaml file and overrides the values with the args_config
+    wandb.init(project="diabetic_retinopathy")  # wandb uses the yaml file and overrides the values with the args_config
     wandb.config.update(args, allow_val_change=True)
     config = wandb.config
 
@@ -41,12 +41,7 @@ def main(args):
                                     config.batch_size, 
                                     config.n_classes)
 
-    """for image,y in ds_train:
-        print(image.shape, y)
-        plt.imshow(image[0])
-        plt.show()
 
-        break"""
 
     model = transfer_model(config.architecture, tuple(config.input_shape), config.n_classes, config.head_dense0, config.head_dense1)
     

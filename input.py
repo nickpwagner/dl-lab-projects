@@ -46,3 +46,11 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
     ds_test = create_ds(data_dir + "images/test/", img_names_test, y_test)
     return ds_train, ds_val, ds_test
 
+if __name__ == "__main__":
+    ts_train = load()
+    for image,y in ds_train:
+        print(image.shape, y)
+        plt.imshow(image[0])
+        plt.show()
+
+        break
