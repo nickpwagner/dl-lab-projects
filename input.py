@@ -19,7 +19,7 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
     y_test = df_test["Retinopathy grade"]
     img_names_test = [str(img) + ".jpg" for img in df_test["Image name"]]
 
-    def create_ds(img_path, img_names, y):
+    def create_ds(img_path, img_names, y, augment_images=False):
         
         # creates tensors with image names and labels
         text_ds = tf.data.Dataset.from_tensor_slices((img_names, y))
@@ -36,12 +36,27 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
             # image = tf.cast(image, tf.float32) / 255. # rescale only required of model doesn´t implement specific preprocessing
             return image, y
 
+        def augment(image, y):
+            seed = (42, 42)
+            #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
+            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seed)
+            image = tf.image.stateless_random_brightness(image, 0.2, seed=seed)
+            image = tf.image.stateless_random_hue(image, 0.2, seed)
+            image = tf.image.random_flip_left_right(image, seed=seed)
+            image = tf.image.random_flip_up_down(image, seed=seed)
+            image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
+            image = tf.image.stateless_random_saturation(image, 0.8, 1, seed=seed)
+            return image, y
+
         # img_ds takes the image names and reads the images and resizes them
-        img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).shuffle(len(y)).batch(batch_size).prefetch(2)
+        if augment_images:
+            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+        else:
+            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).map(augment).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
         return img_ds
     
     # e.g.  C:/DL_Lab/IDRID_dataset/   images/train/   IDRiD_001.jpg  
-    ds_train = create_ds(data_dir + "images/train/", img_names_train, y_train)
+    ds_train = create_ds(data_dir + "images/train/", img_names_train, y_train, augment_images=True)
     ds_val = create_ds(data_dir + "images/train/", img_names_val, y_val)
     ds_test = create_ds(data_dir + "images/test/", img_names_test, y_test)
     return ds_train, ds_val, ds_test
