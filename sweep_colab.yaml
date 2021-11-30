@@ -16,17 +16,20 @@ parameters:
 
   # train
   epochs:
-    values: 
-      - 10
-      - 20
+    value: 100
   batch_size:
     values: 
+      - 8
       - 16
       - 32
   optimizer:
-    value: "adam"
+    values: 
+      - "adam"
+      - "sgd"
   learning_rate:
-    value: 0.01
+    values: 
+      - 0.01
+      - 0.005
   loss_function:
     value: "categorical_crossentropy"
 
@@ -41,10 +44,13 @@ parameters:
     values: 
       - 0
       - 256
+      - 1024
   head_dense1:
     values: 
       - 0
+      - 8
       - 64
+      - 256
 
 name: run1
 project: diabetic_retinopathy

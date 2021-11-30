@@ -41,8 +41,8 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
             seed = 42
             #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
             image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seeds)
-            image = tf.image.stateless_random_brightness(image, 0.2, seed=seeds)
-            image = tf.image.stateless_random_hue(image, 0.2, seeds)
+            image = tf.image.stateless_random_brightness(image, 0.1, seed=seeds)
+            image = tf.image.stateless_random_hue(image, 0.05, seeds)
             image = tf.image.random_flip_left_right(image, seed=seed)
             image = tf.image.random_flip_up_down(image, seed=seed)
             #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
@@ -51,9 +51,9 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
 
         # img_ds takes the image names and reads the images and resizes them
         if augment_images:
-            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
-        else:
             img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).map(augment).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+        else:
+            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
         return img_ds
     
     # e.g.  C:/DL_Lab/IDRID_dataset/   images/train/   IDRiD_001.jpg  
