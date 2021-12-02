@@ -11,15 +11,17 @@ parameters:
     value: 0.8
   crop_cut_away:
     values: 
+      - 0
       - 0.1
       - 0.2
-      - 0.3
 
   # train
   epochs:
     value: 100
   batch_size:
-    values: 
+    values:
+      - 8 
+      - 16
       - 32
       - 64
   optimizer:
@@ -28,7 +30,6 @@ parameters:
       - "sgd"
   learning_rate:
     values: 
-      - 0.1
       - 0.01
       - 0.001
   learning_rate_decay:
@@ -41,7 +42,7 @@ parameters:
 
   # architecture
   input_shape:
-    value: [256, 256, 3]
+    value: [224, 224, 3]
   architecture:
     values: 
       - "vgg16"
@@ -57,8 +58,8 @@ parameters:
       - 64
       - 256
 
-name: run2
-description: "run that uses cropped images and learning rate schedule as new features. Not using dropout, yet!"
+name: run3
+description: "run that uses cropped images and learning rate schedule as new features. Using the image size 224x224 (imagenet). Not using dropout, yet!"
 
 project: diabetic_retinopathy
 command:
