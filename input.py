@@ -1,10 +1,9 @@
 import pandas as pd
 import tensorflow as tf
-import gin
+import numpy as np
 
 
-@gin.configurable
-def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
+def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_away):
 
     df_train = pd.read_csv(data_dir + "labels/train.csv")
 
@@ -31,9 +30,9 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
             return X, y
 
         def crop_and_resize(image, y):
-            # image = tf.image.crop_to_bounding_box(image, offset_height=0, offset_width=560, target_height=2848, target_width=2848)
-            # image = tf.image.resize(image, [img_height, img_width], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
-            # image = tf.cast(image, tf.float32) / 255. # rescale only required of model doesn´t implement specific preprocessing
+            # if no augmentation is applied, the images need to be scaled to target resolution
+            image = tf.image.central_crop(image, 1 - crop_cut_away)
+            image = tf.image.resize(image, cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
 
         def augment(image, y):
@@ -47,13 +46,24 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
             image = tf.image.random_flip_up_down(image, seed=seed)
             #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
             image = tf.image.stateless_random_saturation(image, 0.8, 1, seed=seeds)
+
+            boxes = np.hstack((np.random.uniform(0, crop_cut_away, (batch_size,2)), np.random.uniform(1-crop_cut_away, 1, (batch_size,2))))
+            """ boxes returns an array  - for crop_cut_awy = 0.1
+            array([[0.01462394, 0.08382467, 0.98080298, 0.96733774],
+            [0.09881019, 0.02431573, 0.97714296, 0.9695309 ],
+            [0.06304369, 0.05165648, 0.92765865, 0.92022045],
+            """
+            image = tf.image.crop_and_resize(image, boxes, box_indices=np.arange(batch_size), \
+                                            crop_size=tuple(cnn_input_shape[:2]), method='bilinear')
+
             return image, y
 
-        # img_ds takes the image names and reads the images and resizes them
+        # img_ds takes the image names and reads the images
+        img_ds = text_ds.map(img_name_to_image).shuffle(len(y), reshuffle_each_iteration=True).batch(batch_size, drop_remainder=True)
         if augment_images:
-            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).map(augment).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+            img_ds = img_ds.map(augment).prefetch(tf.data.AUTOTUNE)
         else:
-            img_ds = text_ds.map(img_name_to_image).map(crop_and_resize).shuffle(len(y)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+            img_ds = img_ds.map(crop_and_resize).prefetch(tf.data.AUTOTUNE)
         return img_ds
     
     # e.g.  C:/DL_Lab/IDRID_dataset/   images/train/   IDRiD_001.jpg  
@@ -65,10 +75,21 @@ def load(data_dir, val_split, img_width, img_height, batch_size, n_classes):
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
-    ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, 256, 256, 16, 5)
+    ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, [224, 224, 3], 16, 5, 0.2)
     for image,y in ds_train:
-        print(image.shape, y)
-        plt.imshow(image[0])
+        print(image.shape)
+        plt.imshow(image[0]/255)
         plt.show()
 
         break
+
+    for image,y in ds_test:
+        print(image.shape)
+        plt.imshow(image[0]/255)
+        plt.show()
+
+        break
+
+    # todo´s
+    # print several augmented and not augmented images
+    # print a dataset analyis (how many samples of each class are part of the datasets)

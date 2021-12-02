@@ -13,7 +13,7 @@ def crop_resize_store(input_path, output_path):
         image = tf.io.read_file(input_path + file)
         image = tf.image.decode_jpeg(image, channels=3)
         image = tf.image.crop_to_bounding_box(image, offset_height=0, offset_width=560, target_height=2848, target_width=2848)
-        image = tf.image.resize(image, [256, 256], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
+        image = tf.image.resize(image, [512, 512], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
         image = img_to_array(image)
         save_img(output_path + file, image, quality=95)
 

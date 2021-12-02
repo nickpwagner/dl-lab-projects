@@ -3,33 +3,39 @@ method: random
 
 parameters:
   # data
-  img_width:
-    value: 256
-  img_height:
-    value: 256
   n_classes:
     value: 5
   data_dir:
-    value: "/content/"
+    value: "/content/" #"C:/DL_Lab/" 
   val_split:
     value: 0.8
+  crop_cut_away:
+    values: 
+      - 0.1
+      - 0.2
+      - 0.3
 
   # train
   epochs:
     value: 100
   batch_size:
     values: 
-      - 8
-      - 16
       - 32
+      - 64
   optimizer:
     values: 
       - "adam"
       - "sgd"
   learning_rate:
     values: 
+      - 0.1
       - 0.01
-      - 0.005
+      - 0.001
+  learning_rate_decay:
+    values: 
+      - 1
+      - 10
+      - 100
   loss_function:
     value: "categorical_crossentropy"
 
@@ -48,12 +54,13 @@ parameters:
   head_dense1:
     values: 
       - 0
-      - 8
       - 64
       - 256
 
-name: run1
+name: run2
+description: "run that uses cropped images and learning rate schedule as new features. Not using dropout, yet!"
+
 project: diabetic_retinopathy
 command:
-  - python
+  - python #c:\Scarlett\base39\Scripts\python.exe  #if you want to sweep locally and need to select a specific python version...
   - ${program}

@@ -1,30 +1,30 @@
 # data
-img_width:
-  value: 256
-img_height:
-  value: 256
 n_classes:
   value: 5
 data_dir:
   value: "C:/DL_Lab/" #"/content/"
 val_split:
   value: 0.8
+crop_cut_away:
+  value: 0.2
 
 # train
 epochs:
-  value: 20
+  value: 3
 batch_size:
   value: 16
 optimizer:
   value: "adam"
 learning_rate:
   value: 0.01
+learning_rate_decay:
+  value: 10
 loss_function:
   value: "categorical_crossentropy"
 
 # architecture
-input_shape:
-  value: [256, 256, 3]
+cnn_input_shape:
+  value: [224, 224, 3]
 architecture:
   value: "vgg16" # "resnet50"
 head_dense0:

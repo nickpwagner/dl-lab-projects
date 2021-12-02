@@ -12,14 +12,6 @@ from model import transfer_model
 from train import train
 from evaluation import evaluate
 
-"""
-ToDo´s:
-- Data Augmentation
-- Different Models (incl. own model)
-- Sweeps
-- learning rate decay
-- evaluate
-"""
 
 def main(args): 
     # seeds
@@ -34,24 +26,19 @@ def main(args):
 
     os.environ['WANDB_DIR'] = config.data_dir + "wandb/"
     
-    
 
     ds_train, ds_val, ds_test = load(config.data_dir+"IDRID_dataset/", 
                                     config.val_split,
-                                    config.img_width, 
-                                    config.img_height,
+                                    config.cnn_input_shape,
                                     config.batch_size, 
-                                    config.n_classes)
+                                    config.n_classes,
+                                    config.crop_cut_away)
 
-
-
-    model = transfer_model(config.architecture, tuple(config.input_shape), config.n_classes, config.head_dense0, config.head_dense1)
-    
-    model.summary()
-    # keras.utils.plot_model(model, show_shapes=True)
+    model = transfer_model(config.architecture, tuple(config.cnn_input_shape), config.n_classes, config.head_dense0, config.head_dense1)
 
     if config.train:
-        train(model, ds_train, ds_val, config.optimizer, config.learning_rate, config.loss_function,\
+        train(model, ds_train, ds_val, config.optimizer, \
+             config.learning_rate, config.learning_rate_decay, config.loss_function,\
              config.batch_size, config.epochs)
 
     else:
