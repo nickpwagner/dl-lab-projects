@@ -24,7 +24,7 @@ def train(model, ds_train, ds_val, optimizer, learning_rate, learning_rate_decay
             return lr
         return lr * (1/learning_rate_decay) ** (1 / (epochs-1))
 
-    learning_rate_callback = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=1) # verbose 0: quiet, verbose 1: output
+    learning_rate_callback = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=0) # verbose 0: quiet, verbose 1: output
 
     model.fit(ds_train,  
                 batch_size=batch_size,
