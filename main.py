@@ -20,7 +20,7 @@ def main(args):
     tf.random.set_seed(42)
 
     args_config = vars(args)
-    wandb.init(project="diabetic_retinopathy")  # wandb uses the yaml file and overrides the values with the args_config
+    wandb.init(project="diabetic_retinopathy", entity=args_config["user"])  # wandb uses the yaml file and overrides the values with the args_config
     wandb.config.update(args, allow_val_change=True)
     config = wandb.config
 
@@ -47,6 +47,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--train', type=bool, help='True=Train, False=Evaluate', default=True)
+    parser.add_argument('-u', '--user', type=str, help='specify the entity name for the wandb logging', default="stuttgartteam8")
     parser.add_argument('-p', '--data_dir', type=str, help='path to the dataset and wandb logging', default=argparse.SUPPRESS)
     parser.add_argument('-e', '--epochs', type=int, help='number of epochs to train the network', default=argparse.SUPPRESS)
     args = parser.parse_args()
