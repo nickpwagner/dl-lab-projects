@@ -75,14 +75,31 @@ def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_a
     return ds_train, ds_val, ds_test
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt    
 
     ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, [224, 224, 3], 16, 5, 0.2)
+
+    plt.figure(figsize=(10,10))
+    count = 0
+    for image,y in ds_train:
+        plt.subplot(5,5,count+1)
+        plt.xticks([])
+        plt.yticks([])
+        plt.grid(False)
+        plt.imshow(image[0]/255)
+        plt.title(np.argmax(y[0]))
+
+        count += 1
+        if count == 24:
+            break
+    plt.show()
+
     for image,y in ds_train:
         print(image.shape)
         plt.imshow(image[0]/255)
         plt.show()
 
+        break
 
     for image,y in ds_test:
         print(image.shape)
