@@ -47,19 +47,42 @@ parameters:
     values: 
       - "vgg16"
       - "resnet50"
-  head_dense0:
+  dense0:
     values: 
       - 0
       - 256
       - 1024
-  head_dense1:
+  dense1:
     values: 
       - 0
       - 64
       - 256
+  dense2:
+    values: 
+      - 0
+      - 32
+      - 64
+  dense_prep:
+    values: 
+      - "flatten"
+      - "gap"
+  dropout:
+    values:
+      - True
+      - False
+  reg_lambda:
+    values: 
+      - 0.1
+      - 0.01
+      - 0.001
+  dropout_prob:
+    values: 
+      - 0.1
+      - 0.2
+
 
 name: run3
-description: "run that uses cropped images and learning rate schedule as new features. Using the image size 224x224 (imagenet). Not using dropout, yet!"
+description: "run that uses cropped images and learning rate schedule as new features. Using the image size 224x224 (imagenet)."
 
 project: diabetic_retinopathy
 command:

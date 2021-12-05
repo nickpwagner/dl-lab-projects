@@ -1,6 +1,7 @@
 import pandas as pd
 import tensorflow as tf
 import numpy as np
+import random
 
 
 def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_away):
@@ -40,12 +41,13 @@ def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_a
             seed = 42
             #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
             image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seeds)
-            image = tf.image.stateless_random_brightness(image, 0.1, seed=seeds)
+            image = tf.image.stateless_random_brightness(image, 0.2, seed=seeds)
             image = tf.image.stateless_random_hue(image, 0.05, seeds)
+            image = tf.image.stateless_random_saturation(image, 0.5, 1.5, seed=seeds)
             image = tf.image.random_flip_left_right(image, seed=seed)
             image = tf.image.random_flip_up_down(image, seed=seed)
+            #if random.random() < 0.9: image = tf.image.rgb_to_grayscale(image)
             #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
-            image = tf.image.stateless_random_saturation(image, 0.8, 1, seed=seeds)
 
             boxes = np.hstack((np.random.uniform(0, crop_cut_away, (batch_size,2)), np.random.uniform(1-crop_cut_away, 1, (batch_size,2))))
             """ boxes returns an array  - for crop_cut_awy = 0.1
@@ -81,7 +83,6 @@ if __name__ == "__main__":
         plt.imshow(image[0]/255)
         plt.show()
 
-        break
 
     for image,y in ds_test:
         print(image.shape)

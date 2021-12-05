@@ -8,14 +8,12 @@ import os
 import argparse
 
 from input import load
-from model import transfer_model
+from architecture import transfer_model
 from train import train
 from evaluation import evaluate
 
-
 def main(args): 
     # seeds
-    # random.seed(42)
     np.random.seed(42)
     tf.random.set_seed(42)
 
@@ -34,7 +32,9 @@ def main(args):
                                     config.n_classes,
                                     config.crop_cut_away)
 
-    model = transfer_model(config.architecture, tuple(config.cnn_input_shape), config.n_classes, config.head_dense0, config.head_dense1)
+    # Suggestion config as parameter?
+    model = transfer_model(config.architecture, tuple(config.cnn_input_shape), config.n_classes, config.dense0,\
+                         config.dense1, config.dense2, config.c_d_interface, config.dropout, config.dropout_prob, config.reg_lambda)
 
     if config.train:
         train(model, ds_train, ds_val, config.optimizer, \

@@ -10,7 +10,7 @@ crop_cut_away:
 
 # train
 epochs:
-  value: 3
+  value: 20
 batch_size:
   value: 16
 optimizer:
@@ -27,7 +27,17 @@ cnn_input_shape:
   value: [224, 224, 3]
 architecture:
   value: "vgg16" # "resnet50"
-head_dense0:
+dense0:
   value: 256
-head_dense1:
+dense1:
   value: 64
+dense2:
+  value: 32
+c_d_interface:
+  value: "gap" # "flatten"
+dropout:
+  value: True # False
+dropout_prob:
+  value: 0.1
+reg_lambda:
+  value: 0.01
