@@ -30,25 +30,13 @@ def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_a
             y = tf.one_hot(y, depth=n_classes)
             return X, y
 
-        def crop_and_resize(image, y):
+        def crop_and_resize_test_val(image, y):
             # if no augmentation is applied, the images need to be scaled to target resolution
             image = tf.image.central_crop(image, 1 - crop_cut_away)
             image = tf.image.resize(image, cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
 
-        def augment(image, y):
-            seeds = (42, 42)
-            seed = 42
-            #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
-            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seeds)
-            image = tf.image.stateless_random_brightness(image, 0.2, seed=seeds)
-            image = tf.image.stateless_random_hue(image, 0.05, seeds)
-            image = tf.image.stateless_random_saturation(image, 0.5, 1.5, seed=seeds)
-            image = tf.image.random_flip_left_right(image, seed=seed)
-            image = tf.image.random_flip_up_down(image, seed=seed)
-            #if random.random() < 0.9: image = tf.image.rgb_to_grayscale(image)
-            #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
-
+        def crop_and_resize_train(image, y):
             boxes = np.hstack((np.random.uniform(0, crop_cut_away, (batch_size,2)), np.random.uniform(1-crop_cut_away, 1, (batch_size,2))))
             """ boxes returns an array  - for crop_cut_awy = 0.1
             array([[0.01462394, 0.08382467, 0.98080298, 0.96733774],
@@ -57,15 +45,28 @@ def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_a
             """
             image = tf.image.crop_and_resize(image, boxes, box_indices=np.arange(batch_size), \
                                             crop_size=tuple(cnn_input_shape[:2]), method='bilinear')
+            return image, y
 
+        def augment(image, y):
+            seeds =(random.randint(0, 2**16), random.randint(0, 2**16)) #(42, 42)
+            seed = random.randint(0, 2**16) #42
+            #image = tf.image.stateless_random_crop(image, size=[224, 224, 3], seed=seed)
+            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seeds)
+            image = tf.image.stateless_random_brightness(image, 0.2, seed=seeds)
+            image = tf.image.stateless_random_hue(image, 0.2, seeds)
+            image = tf.image.stateless_random_saturation(image, 0.5, 1.5, seed=seeds)
+            image = tf.image.random_flip_left_right(image, seed=seed)
+            image = tf.image.random_flip_up_down(image, seed=seed)
+            #if random.random() < 0.9: image = tf.image.rgb_to_grayscale(image)
+            #image = tf.image.stateless_random_jpeg_quality(image, 0.8, 1, seed=seed)
             return image, y
 
         # img_ds takes the image names and reads the images
-        img_ds = text_ds.map(img_name_to_image).shuffle(len(y), reshuffle_each_iteration=True).batch(batch_size, drop_remainder=True)
+        img_ds = text_ds.map(img_name_to_image).shuffle(len(y), reshuffle_each_iteration=True)
         if augment_images:
-            img_ds = img_ds.map(augment).prefetch(tf.data.AUTOTUNE)
+            img_ds = img_ds.map(augment).batch(batch_size, drop_remainder=True).map(crop_and_resize_train).prefetch(tf.data.AUTOTUNE)
         else:
-            img_ds = img_ds.map(crop_and_resize).prefetch(tf.data.AUTOTUNE)
+            img_ds = img_ds.map(crop_and_resize_test_val).batch(batch_size, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
         return img_ds
     
     # e.g.  C:/DL_Lab/IDRID_dataset/   images/train/   IDRiD_001.jpg  
@@ -77,7 +78,7 @@ def load(data_dir, val_split, cnn_input_shape, batch_size, n_classes, crop_cut_a
 if __name__ == "__main__":
     import matplotlib.pyplot as plt    
 
-    ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, [224, 224, 3], 16, 5, 0.2)
+    ds_train, ds_val, ds_test = load("C:/DL_Lab/IDRID_dataset/", 0.8, [224, 224, 3], 16, 5, 0.1)
 
     plt.figure(figsize=(10,10))
     count = 0
@@ -94,19 +95,19 @@ if __name__ == "__main__":
             break
     plt.show()
 
-    for image,y in ds_train:
-        print(image.shape)
-        plt.imshow(image[0]/255)
-        plt.show()
+    # for image,y in ds_train:
+    #     print(image.shape)
+    #     plt.imshow(image[0]/255)
+    #     plt.show()
 
-        break
+    #     break
 
-    for image,y in ds_test:
-        print(image.shape)
-        plt.imshow(image[0]/255)
-        plt.show()
+    # for image,y in ds_test:
+    #     print(image.shape)
+    #     plt.imshow(image[0]/255)
+    #     plt.show()
 
-        break
+    #     break
 
     # todo´s
     # print several augmented and not augmented images

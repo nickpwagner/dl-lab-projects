@@ -32,7 +32,6 @@ def main(args):
                                     config.n_classes,
                                     config.crop_cut_away)
 
-    # Suggestion config as parameter?
     model = transfer_model(config.architecture, tuple(config.cnn_input_shape), config.n_classes, config.dense0,\
                          config.dense1, config.dense2, config.c_d_interface, config.dropout, config.dropout_prob, config.reg_lambda)
 
