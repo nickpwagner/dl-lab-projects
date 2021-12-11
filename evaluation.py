@@ -2,12 +2,12 @@ import tensorflow as tf
 import numpy as np
 
 
-def evaluate(model, ds_generator):
+def evaluate(config, model, ds):
 
     y_pred = []
     y_true = []
 
-    for X,y in ds_generator:
+    for X,y in ds:
         y_true.extend(y)
         y_pred.extend(np.argmax(model.predict(X), axis=1))
 

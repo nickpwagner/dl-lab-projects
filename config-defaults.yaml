@@ -1,8 +1,13 @@
 # mode
 # note that regression is quite sensitive to the optimizer (e.g. SGD with Batchsize 16 you will get exploding gradients). Adam works fine.
 mode:
-  value: "regression" #"binary_class" #"multi_class" # "regression", "binary_class"
+  value: "multi_class" #"binary_class" #"multi_class" # "regression", "binary_class"
 
+
+# evaluate
+evaluate_run:
+  value: "stuttgartteam8/diabetic_retinopathy/1zktgvft"
+  
 # data
 n_classes:
   value: 5
@@ -17,11 +22,11 @@ img_width:
 
 # train
 epochs:
-  value: 20
+  value: 5
 batch_size:
   value: 16
 optimizer:
-  value: "adam"
+  value: "sgd"
 learning_rate:
   value: 0.01
 learning_rate_decay:
