@@ -9,11 +9,13 @@ parameters:
     value: "/content/" #"C:/DL_Lab/" 
   val_split:
     value: 0.8
-  crop_cut_away:
+  augment_crop:
     values: 
-      - 0
-      - 0.1
-      - 0.2
+      - 400
+      - 460
+      - 512
+  img_width:
+    value: 512
 
   # train
   epochs:

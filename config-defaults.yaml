@@ -1,12 +1,19 @@
+# mode
+# note that regression is quite sensitive to the optimizer (e.g. SGD with Batchsize 16 you will get exploding gradients). Adam works fine.
+mode:
+  value: "regression" #"binary_class" #"multi_class" # "regression", "binary_class"
+
 # data
 n_classes:
   value: 5
 data_dir:
-  value: "C:/DL_Lab/" #"/content/"
+  value: "C:/DL_Lab/IDRID_dataset/" #"/content/"
 val_split:
   value: 0.8
-crop_cut_away:
-  value: 0.2
+augment_crop:
+  value: 450
+img_width:
+  value: 512
 
 # train
 epochs:
@@ -19,8 +26,6 @@ learning_rate:
   value: 0.01
 learning_rate_decay:
   value: 10
-loss_function:
-  value: "categorical_crossentropy"
 
 # architecture
 cnn_input_shape:
@@ -36,8 +41,6 @@ dense2:
 c_d_interface:
   value: "gap" # "flatten"
 dropout:
-  value: True # False
-dropout_prob:
   value: 0.1
 reg_lambda:
   value: 0.01
