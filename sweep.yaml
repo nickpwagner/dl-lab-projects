@@ -99,5 +99,7 @@ description: "sweep including full augmentation, dropout, model fine tuning and 
 
 project: diabetic_retinopathy
 command:
+  - ${env}
+  - python #c:\Scarlett\base39\Scripts\python.exe  #if you want to sweep locally and need to select a specific python version...
   - ${args}
   - --log_wandb="online"
