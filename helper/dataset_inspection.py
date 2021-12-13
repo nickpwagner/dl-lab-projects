@@ -6,8 +6,6 @@ import gin
 
 from input import load
 
-gin.parse_config_files_and_bindings(['config.gin'], [])
-
 # unpack batches to lists for easier plotting
 ds_train, ds_val, ds_test = load()
 X_train = []

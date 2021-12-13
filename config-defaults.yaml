@@ -14,11 +14,13 @@ n_classes:
 data_dir:
   value: "C:/DL_Lab/IDRID_dataset/" #"/content/"
 val_split:
-  value: 0.8
+  value: 0.9
 augment_crop:
   value: 450
 img_width:
   value: 512
+balancing:  # oversampling
+  value: True
 
 # train
 epochs:
@@ -49,3 +51,6 @@ dropout:
   value: 0.1
 reg_lambda:
   value: 0.01
+w_init_HeNormal:
+  value: True
+

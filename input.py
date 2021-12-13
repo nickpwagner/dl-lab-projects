@@ -2,29 +2,35 @@ import pandas as pd
 import tensorflow as tf
 import numpy as np
 import random
+import matplotlib.pyplot as plt 
 
 
 def load(config):
 
     df_train = pd.read_csv(config.data_dir + "labels/train.csv")
-
     # takes val_split portion of the full df_train for training and the rest for validation. 
     y_train = df_train["Retinopathy grade"][:int(df_train.shape[0]*config.val_split)]
     img_names_train = [str(img) + ".jpg" for img in df_train["Image name"]][:int(df_train.shape[0]*config.val_split)]
-
     y_val = df_train["Retinopathy grade"][int(df_train.shape[0]*config.val_split):]
     img_names_val = [str(img) + ".jpg" for img in df_train["Image name"]][int(df_train.shape[0]*config.val_split):]
-
     df_test = pd.read_csv(config.data_dir + "labels/test.csv")
     y_test = df_test["Retinopathy grade"]
     img_names_test = [str(img) + ".jpg" for img in df_test["Image name"]]
 
-    def create_ds(img_path, img_names, y, augment_images=False):
-        
-        # creates tensors with image names and labels
-        text_ds = tf.data.Dataset.from_tensor_slices((img_names, y))
+    def create_ds(img_path, img_names, y, augment_images=False, balancing=False):
+        # treat unbalanced dataset with oversampling
+        if config.balancing:
+            labels, counts = np.unique(y, return_counts=True)
+            weights = np.ones(len(y))
+            # inverse of likelihood
+            for label in labels:
+                weights[y == label] = np.sum(counts) / counts[label]
+            text_ds = tf.data.Dataset.from_tensor_slices((img_names, y, weights))
+        else:  
+            # creates tensors with image names and labels
+            text_ds = tf.data.Dataset.from_tensor_slices((img_names, y))
 
-        def img_name_to_image(img_names, y):
+        def img_name_to_image(img_names, y, weights=[]):
             X = tf.io.read_file(img_path + img_names)
             X = tf.image.decode_jpeg(X, channels=3)
             if config.mode == "multi_class":
@@ -38,7 +44,6 @@ def load(config):
                 else:
                     y = 1
                 print("Running in binary classification mode")
-                
             elif config.mode == "regression":
                 pass
                 print("Running in regression mode")
@@ -49,8 +54,6 @@ def load(config):
             image = tf.image.central_crop(image, config.augment_crop/config.img_width)
             image = tf.image.resize(image, config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
-
-        
 
         def augment(image, y, seed):
             flip_seed = random.randint(0, 255)
@@ -64,9 +67,10 @@ def load(config):
             image = tf.image.resize(image, config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
 
-        # Create a generator.
+        # Create a generator 
         rng = tf.random.Generator.from_seed(123, alg='philox') 
         def augment_seed(image, y):
+            # random number generator specifically for stateless_random augmentation functions
             seeds = rng.make_seeds(2)[0]
             #seeds = [random.randint(0, 2**16), 42]
             image, y = augment(image, y, seeds)
@@ -92,7 +96,11 @@ def load(config):
     ds_train = create_ds(config.data_dir + "images/train/", img_names_train, y_train, augment_images=True)
     ds_val = create_ds(config.data_dir + "images/train/", img_names_val, y_val)
     ds_test = create_ds(config.data_dir + "images/test/", img_names_test, y_test)
+    
     return ds_train, ds_val, ds_test
+
+
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt    
@@ -101,7 +109,6 @@ if __name__ == "__main__":
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
     ds_train, ds_val, ds_test = load(config)
-
 
     def show_ds (ds, win_name):
         plt.figure(win_name, figsize=(10,10))
@@ -126,7 +133,5 @@ if __name__ == "__main__":
     
     show_ds(ds_train, "train_ds")
     show_ds(ds_test, "test_ds")
-
-    # todo´s
 
     # print a dataset analyis (how many samples of each class are part of the datasets)

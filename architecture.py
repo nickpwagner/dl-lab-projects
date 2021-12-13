@@ -40,25 +40,26 @@ def transfer_model(config):
 
     # keras selects glorot_uniform as default initializer, for ReLu we choose He_normal
     # paper: https://arxiv.org/abs/1704.08863
-    weight_init_inner = keras.initializers.HeNormal()
+    if config.w_init_HeNormal:
+        weight_init = keras.initializers.HeNormal()
 
-        # select how many dense layers and how many neurons each
+    # select how many dense layers and how many neurons each
     # only weights get regularized, not biases (except last layer)
     if config.dense0 > 0:
         x = keras.layers.Dense(config.dense0, activation="relu", 
-                kernel_initializer = weight_init_inner, 
+                kernel_initializer = weight_init, 
                 kernel_regularizer = keras.regularizers.l2(config.reg_lambda))(x)
         if config.dropout > 0:
             x = keras.layers.Dropout(config.dropout)(x)
     if config.dense1 > 0:
         x = keras.layers.Dense(config.dense1, activation="relu", 
-                kernel_initializer = weight_init_inner, 
+                kernel_initializer = weight_init, 
                 kernel_regularizer = keras.regularizers.l2(config.reg_lambda))(x)
         if config.dropout > 0:
             x = keras.layers.Dropout(config.dropout)(x)
     if config.dense2 > 0:
         dense2 = keras.layers.Dense(config.dense2, activation="relu", 
-                kernel_initializer = weight_init_inner, 
+                kernel_initializer = weight_init, 
                 kernel_regularizer = keras.regularizers.l2(config.reg_lambda))
         x = dense2(x)
         if config.dropout > 0:
@@ -71,7 +72,7 @@ def transfer_model(config):
         # initialize the bias of the last dense layer for faster convergence
         bias_init_last = keras.initializers.Constant(1/config.n_classes)
         outputs = keras.layers.Dense(config.n_classes, activation=keras.activations.softmax,
-                        kernel_initializer = weight_init_inner, 
+                        kernel_initializer = weight_init, 
                         bias_initializer = bias_init_last,
                         kernel_regularizer = keras.regularizers.l2(config.reg_lambda))(x)
     elif config.mode == "regression":
