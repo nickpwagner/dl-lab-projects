@@ -6,7 +6,7 @@ parameters:
   n_classes:
     value: 5
   data_dir:
-    value: "/content/" #"C:/DL_Lab/" 
+    value: "/content/IDRID_dataset/" #"C:/DL_Lab/" 
   val_split:
     value: 0.8
   augment_crop:
@@ -16,13 +16,16 @@ parameters:
       - 512
   img_width:
     value: 512
+  balancing:
+    values:
+      - True
+      - False
 
   # train
   epochs:
-    value: 100
+    value: 50
   batch_size:
     values:
-      - 8 
       - 16
       - 32
       - 64
@@ -38,9 +41,16 @@ parameters:
     values: 
       - 1
       - 10
-      - 100
-  loss_function:
-    value: "categorical_crossentropy"
+  fine_tuning:
+    values: 
+      - True
+      - False
+  fine_tuning_learning_rate:
+    values: 
+      - 0.001
+      - 0.0001
+  fine_tuning_epochs:
+    value: 5
 
   # architecture
   input_shape:
@@ -69,27 +79,23 @@ parameters:
       - "flatten"
       - "gap"
   dropout:
-    values:
-      - True
-      - False
+    values: 
+      - 0.1
+      - 0.2
   reg_lambda:
     values: 
       - 0      
       - 0.001
       - 0.01
       - 0.1
-  dropout_prob:
-    values: 
-      - 0.1
-      - 0.2
   w_init_HeNormal:
     values: 
       - True
       - False
 
 
-name: run3
-description: "run that uses cropped images and learning rate schedule as new features. Using the image size 224x224 (imagenet)."
+name: run4
+description: "sweep including full augmentation, dropout, model fine tuning and dataset balancing"
 
 project: diabetic_retinopathy
 command:

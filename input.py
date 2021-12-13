@@ -17,7 +17,7 @@ def load(config):
     y_test = df_test["Retinopathy grade"]
     img_names_test = [str(img) + ".jpg" for img in df_test["Image name"]]
 
-    def create_ds(img_path, img_names, y, augment_images=False, balancing=False):
+    def create_ds(img_path, img_names, y, augment_images=False):
         # treat unbalanced dataset with oversampling
         if config.balancing:
             labels, counts = np.unique(y, return_counts=True)
@@ -57,10 +57,10 @@ def load(config):
 
         def augment(image, y, seed):
             flip_seed = random.randint(0, 255)
-            image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seed)
-            image = tf.image.stateless_random_brightness(image, 0.2, seed=seed)
-            image = tf.image.stateless_random_hue(image, 0.05, seed)
-            image = tf.image.stateless_random_saturation(image, 0.8, 1.1, seed=seed)
+            image = tf.image.stateless_random_contrast(image, 0.9, 1.1, seed=seed)
+            image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
+            image = tf.image.stateless_random_hue(image, 0.03, seed)
+            image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
             image = tf.image.stateless_random_flip_left_right(image, seed=seed)
             image = tf.image.stateless_random_flip_up_down(image, seed=seed)
             image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
@@ -83,7 +83,6 @@ def load(config):
                             .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                             .batch(config.batch_size, drop_remainder=True)\
                             .prefetch(tf.data.AUTOTUNE)
-            print("augment")
         else:
             img_ds = text_ds.map(img_name_to_image)\
                             .shuffle(len(y), reshuffle_each_iteration=True)\
@@ -113,7 +112,7 @@ if __name__ == "__main__":
     def show_ds (ds, win_name):
         plt.figure(win_name, figsize=(10,10))
         count = 0
-        for images,y in ds:
+        for images, y in ds:
             for i, image in enumerate(images):
                 plt.subplot(5,5,count+1)
                 plt.xticks([])

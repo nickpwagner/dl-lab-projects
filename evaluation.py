@@ -4,15 +4,20 @@ import numpy as np
 
 def evaluate(config, model, ds):
 
+    if config.mode == "regression" or config.mode == "binary_class":
+        print("evaluation not supported, yet.")
+        return 0
+
+
     y_pred = []
     y_true = []
 
     for X,y in ds:
-        y_true.extend(y)
+        y_true.extend(np.argmax(y, axis=1))
         y_pred.extend(np.argmax(model.predict(X), axis=1))
 
     confm = tf.math.confusion_matrix(y_true, y_pred)#, num_classes=5)
-    print(f"Confusion Matrix: {confm}")
+    print(f"Confusion Matrix: \n {confm}")
     print(f"Accuracy: {np.mean(np.array(y_pred) == np.array(y_true)):.3f}")
 
     # calculate precision for each class
@@ -37,5 +42,23 @@ def evaluate(config, model, ds):
        
     
     
+if __name__ == "__main__":
+    import wandb
+    from input import load
 
-    
+    wandb.init(project="test", entity="team8", mode="disabled") 
+    config = wandb.config
+
+
+    ds_train, ds_val, ds_test = load(config)
+
+    print("Evaluating given model")
+    # not working, yet.
+    # 
+    # model = wandb.restore('model.h5', run_path="stuttgartteam8/diabetic_retinopathy/1zktgvft")
+    api = wandb.Api()
+    run = api.run(config.evaluate_run)
+    run.file("model.h5").download(replace=True)
+    model = tf.keras.models.load_model('model.h5')
+    print(model.summary())
+    evaluate(config, model, ds_test)

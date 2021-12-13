@@ -3,7 +3,6 @@
 mode:
   value: "multi_class" #"binary_class" #"multi_class" # "regression", "binary_class"
 
-
 # evaluate
 evaluate_run:
   value: "stuttgartteam8/diabetic_retinopathy/1zktgvft"
@@ -24,7 +23,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 5
+  value: 2
 batch_size:
   value: 16
 optimizer:
@@ -33,6 +32,12 @@ learning_rate:
   value: 0.01
 learning_rate_decay:
   value: 10
+fine_tuning:
+  value: True
+fine_tuning_learning_rate:
+  value: 0.0001
+fine_tuning_epochs:
+  value: 5
 
 # architecture
 cnn_input_shape:

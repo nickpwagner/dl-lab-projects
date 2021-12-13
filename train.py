@@ -43,3 +43,25 @@ def train(config, model, ds_train, ds_val):
                 verbose=2,
                 validation_data=ds_val,
                 callbacks=[WandbCallback(), learning_rate_callback])
+
+
+    if config.fine_tuning:
+        model.trainable = True
+        model.summary()
+
+        if config.optimizer=="sgd":
+            opt = keras.optimizers.SGD(learning_rate=config.fine_tuning_learning_rate)
+        elif config.optimizer=="adam":
+            opt = keras.optimizers.Adam(learning_rate=config.fine_tuning_learning_rate)
+
+
+        model.compile(optimizer=opt, 
+                    loss = loss,
+                    metrics = [metric])
+                    
+        model.fit(ds_train,  
+                batch_size=config.batch_size,
+                epochs=config.fine_tuning_epochs,
+                verbose=2,
+                validation_data=ds_val,
+                callbacks=[WandbCallback()])
