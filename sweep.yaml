@@ -30,9 +30,7 @@ parameters:
       - 32
       - 64
   optimizer:
-    values: 
-      - "adam"
-      - "sgd"
+    value: "sgd" # "adam"
   learning_rate:
     values: 
       - 0.01
@@ -47,10 +45,10 @@ parameters:
       - False
   fine_tuning_learning_rate:
     values: 
-      - 0.001
       - 0.0001
+      - 0.00001
   fine_tuning_epochs:
-    value: 5
+    value: 50
 
   # architecture
   input_shape:
@@ -61,14 +59,13 @@ parameters:
       - "resnet50"
   dense0:
     values: 
-      - 0
       - 256
       - 1024
   dense1:
     values: 
       - 0
-      - 64
       - 256
+      - 1024
   dense2:
     values: 
       - 0
@@ -83,6 +80,7 @@ parameters:
       - 0
       - 0.1
       - 0.2
+      - 0.4
   reg_lambda:
     values: 
       - 0      
@@ -95,7 +93,7 @@ parameters:
       - False
 
 
-name: run6
+name: run7
 description: "sweep including full augmentation, dropout, model fine tuning and dataset balancing - and fixed a weight init bug."
 
 project: diabetic_retinopathy

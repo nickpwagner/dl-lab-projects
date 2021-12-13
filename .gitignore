@@ -12,6 +12,7 @@ __pycache__/
 # Custom
 experiments/
 wandb/
+models/
 .vscode/
 
 # C extensions

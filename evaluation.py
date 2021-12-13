@@ -46,19 +46,27 @@ if __name__ == "__main__":
     import wandb
     from input import load
 
-    wandb.init(project="test", entity="team8", mode="disabled") 
+    wandb.init(project="diabetic_retinopathy", entity="davidu", mode="disabled") 
     config = wandb.config
 
 
     ds_train, ds_val, ds_test = load(config)
-
+    print("Keras Version: ", tf.keras.__version__)
     print("Evaluating given model")
-    # not working, yet.
-    # 
+
     # model = wandb.restore('model.h5', run_path="stuttgartteam8/diabetic_retinopathy/1zktgvft")
+    print("Download model:")
     api = wandb.Api()
     run = api.run(config.evaluate_run)
     run.file("model.h5").download(replace=True)
+
+    import h5py
+
+    f = h5py.File('Model.h5', 'r')
+    print("Model Keras Version: ", f.attrs.get('keras_version'))
+
+    print("Load model:")
+
     model = tf.keras.models.load_model('model.h5')
     print(model.summary())
     evaluate(config, model, ds_test)

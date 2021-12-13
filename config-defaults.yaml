@@ -5,7 +5,7 @@ mode:
 
 # evaluate
 evaluate_run:
-  value: "stuttgartteam8/diabetic_retinopathy/1zktgvft"
+  value: "davidu/diabetic_retinopathy/r6i9z1hh" #"stuttgartteam8/diabetic_retinopathy/1zktgvft"
   
 # data
 n_classes:
