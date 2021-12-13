@@ -42,6 +42,8 @@ def transfer_model(config):
     # paper: https://arxiv.org/abs/1704.08863
     if config.w_init_HeNormal:
         weight_init = keras.initializers.HeNormal()
+    else:
+        weight_init = 'glorot_uniform' #keras.initializers.RandomNormal(stddev=0.01)
 
     # select how many dense layers and how many neurons each
     # only weights get regularized, not biases (except last layer)

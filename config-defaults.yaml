@@ -57,5 +57,5 @@ dropout:
 reg_lambda:
   value: 0.01
 w_init_HeNormal:
-  value: True
+  value: False
 
