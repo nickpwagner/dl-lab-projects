@@ -87,8 +87,8 @@ parameters:
       - False
 
 
-name: run9
-description: "added balancing."
+name: run10
+description: "added balancing, added f1-score."
 
 project: diabetic_retinopathy
 command:
