@@ -5,7 +5,9 @@ mode:
 
 # evaluate
 evaluate_run:
-  value: "davidu/diabetic_retinopathy/r6i9z1hh" #"stuttgartteam8/diabetic_retinopathy/1zktgvft"
+  value: "davidu/diabetic_retinopathy/1cge9ja4" # wise-sweep-30
+  #"davidu/diabetic_retinopathy/hdalq4ty" #proud-sweep-9 
+  #"stuttgartteam8/diabetic_retinopathy/1zktgvft"
   
 # data
 n_classes:
