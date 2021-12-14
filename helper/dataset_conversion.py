@@ -23,8 +23,8 @@ def crop_resize_store(input_path, output_path):
         image = tf.image.resize(image, [600, 600], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=True)
         
         # probably better with open CV (4 /-4 weighting)
-        image_blur = tfa.image.gaussian_filter2d(image, (3, 3), 10)
-        image = image - 0.6*image_blur
+        image_blur = tfa.image.gaussian_filter2d(image, (10, 10), 5)
+        image = image - 0.8*image_blur
         # mean = tfa.image.mean_filter2d(image, filter_shape=600)
         # image -= mean
         image = img_to_array(image)

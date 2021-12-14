@@ -25,7 +25,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 2
+  value: 20
 batch_size:
   value: 16
 optimizer:
@@ -34,6 +34,8 @@ learning_rate:
   value: 0.01
 learning_rate_decay:
   value: 10
+momentum:
+  value: 0.0
 fine_tuning:
   value: True
 fine_tuning_learning_rate:
@@ -47,11 +49,11 @@ cnn_input_shape:
 architecture:
   value: "vgg16" # "resnet50"
 dense0:
-  value: 256
+  value: 2048
 dense1:
-  value: 64
+  value: 1024
 dense2:
-  value: 32
+  value: 0
 c_d_interface:
   value: "gap" # "flatten"
 dropout:

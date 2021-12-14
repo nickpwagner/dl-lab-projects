@@ -22,11 +22,9 @@ parameters:
 
   # train
   epochs:
-    value: 50
+    value: 100
   batch_size:
-    values:
-      - 16
-      - 64
+    value: 16
   optimizer:
     value: "sgd" # "adam"
   learning_rate:
@@ -37,6 +35,10 @@ parameters:
     values: 
       - 1
       - 10
+  momentum:
+    values: 
+      - 0.0
+      - 0.9
   fine_tuning:
     value: True
   fine_tuning_learning_rate:
@@ -85,8 +87,8 @@ parameters:
       - False
 
 
-name: run8
-description: "Advanced Sweep"
+name: run9
+description: "added balancing."
 
 project: diabetic_retinopathy
 command:

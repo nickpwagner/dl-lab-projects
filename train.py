@@ -6,7 +6,7 @@ from wandb.keras import WandbCallback
 
 def train(config, model, ds_train, ds_val): 
     if config.optimizer=="sgd":
-        opt = keras.optimizers.SGD(learning_rate=config.learning_rate)
+        opt = keras.optimizers.SGD(learning_rate=config.learning_rate, momentum=config.momentum)
     elif config.optimizer=="adam":
         opt = keras.optimizers.Adam(learning_rate=config.learning_rate)
     else:
@@ -15,17 +15,17 @@ def train(config, model, ds_train, ds_val):
     # select the loss function that corresponds to the mode
     if config.mode == "binary_class":
         loss = "binary_crossentropy"
-        metric = "accuracy"
+        metrics = ["accuracy"]
     elif config.mode == "multi_class":
         loss = "categorical_crossentropy"
-        metric = "accuracy"
+        metrics = ["accuracy", keras.metrics.CategoricalAccuracy()]
     elif config.mode == "regression":
         loss = "mean_squared_error"
-        metric = "mean_squared_error"
+        metrics = ["mean_squared_error"]
 
     model.compile(optimizer=opt, 
                     loss = loss,
-                    metrics = [metric])
+                    metrics = metrics)
 
     # define the learning rate scheduling:
     def lr_scheduler(epoch, lr):
@@ -57,7 +57,7 @@ def train(config, model, ds_train, ds_val):
 
         model.compile(optimizer=opt, 
                     loss = loss,
-                    metrics = [metric])
+                    metrics = metrics)
                     
         model.fit(ds_train,  
                 batch_size=config.batch_size,

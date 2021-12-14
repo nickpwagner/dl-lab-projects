@@ -17,15 +17,22 @@ def load(config):
     y_test = df_test["Retinopathy grade"]
     img_names_test = [str(img) + ".jpg" for img in df_test["Image name"]]
 
-    def create_ds(img_path, img_names, y, augment_images=False):
+    def create_ds(img_path, img_names, y, training=False):
         # treat unbalanced dataset with oversampling
-        if config.balancing:
-            labels, counts = np.unique(y, return_counts=True)
-            weights = np.ones(len(y))
+        if config.balancing and training:
+
+            weights = np.ones(config.n_classes) / config.n_classes
+            datasets = [tf.data.Dataset.from_tensor_slices((img_names_train, y_train)).filter(lambda x, y: y==i) for i in range(config.n_classes)]
+            text_ds = tf.data.Dataset.sample_from_datasets(datasets, weights, stop_on_empty_dataset=True)
+            #labels, counts = np.unique(y, return_counts=True)
+            #weights = np.ones(len(y))
             # inverse of likelihood
-            for label in labels:
-                weights[y == label] = np.sum(counts) / counts[label]
-            text_ds = tf.data.Dataset.from_tensor_slices((img_names, y, weights))
+            #for label in labels:
+            #    weights[y == label] = np.sum(counts) / counts[label]
+            
+            #datasets = [tf.data.Dataset.from_tensor_slices((img_names, y)).filter(y==i) for i in range(config.n_classes)]
+            #text_ds = tf.data.Dataset.sample_from_datasets(datasets, weights)
+            #text_ds = tf.data.Dataset.from_tensor_slices((img_names, y, weights))
         else:  
             # creates tensors with image names and labels
             text_ds = tf.data.Dataset.from_tensor_slices((img_names, y))
@@ -77,7 +84,7 @@ def load(config):
             return image, y
 
         # img_ds takes the image names and reads the images
-        if augment_images:            
+        if training:            
             img_ds = text_ds.map(img_name_to_image)\
                             .shuffle(len(y), reshuffle_each_iteration=True)\
                             .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
@@ -92,7 +99,7 @@ def load(config):
         return img_ds
     
     # e.g.  C:/DL_Lab/IDRID_dataset/   images/train/   IDRiD_001.jpg  
-    ds_train = create_ds(config.data_dir + "images/train/", img_names_train, y_train, augment_images=True)
+    ds_train = create_ds(config.data_dir + "images/train/", img_names_train, y_train, training=True)
     ds_val = create_ds(config.data_dir + "images/train/", img_names_val, y_val)
     ds_test = create_ds(config.data_dir + "images/test/", img_names_test, y_test)
     
@@ -102,6 +109,11 @@ def load(config):
 
 
 if __name__ == "__main__":
+    
+    
+    
+
+
     import matplotlib.pyplot as plt    
     import wandb
 
@@ -112,22 +124,26 @@ if __name__ == "__main__":
     def show_ds (ds, win_name):
         plt.figure(win_name, figsize=(10,10))
         count = 0
+        ys = []
         for images, y in ds:
             for i, image in enumerate(images):
-                plt.subplot(5,5,count+1)
-                plt.xticks([])
-                plt.yticks([])
-                plt.grid(False)
-                plt.imshow(image/255)
-                if config.mode == "multi_class":
-                    plt.title(np.argmax(y[i]))
-                else:
-                    plt.title(int(y[i]))
+                if count < 25:
+                    plt.subplot(5,5,count+1)
+                    plt.xticks([])
+                    plt.yticks([])
+                    plt.grid(False)
+                    plt.imshow(image/255)
+                    if config.mode == "multi_class":
+                        plt.title(np.argmax(y[i]))
+                    else:
+                        plt.title(int(y[i]))
                 count += 1
-                if count >= 25:
-                    break
-            if count >= 25:
-                break
+                #if count >= 25:
+                #    break
+            ys.extend(np.argmax(y, axis=1))
+            #if count >= 25:
+            #    break
+        print("Label distribution for " + win_name, np.unique(ys, return_counts=True))
         plt.show()
     
     show_ds(ds_train, "train_ds")
