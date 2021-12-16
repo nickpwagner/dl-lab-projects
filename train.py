@@ -57,19 +57,25 @@ def train(config, model, ds_train, ds_val):
         # e.g. if epoch = 100 and lr_decay = 10: 0.1^0.01 = 0.977 -> the factor the lr is reduced each round
         if epoch == 0:
             return lr
+        if epoch == config.epochs:  # if number of epochs is reached, start fine tuning and make model trainable
+            model.trainable = True
+            model.summary()
+        if epoch >= config.epochs:
+            return config.fine_tuning_learning_rate
         return lr * (1/config.learning_rate_decay) ** (1 / (config.epochs-1))
 
     learning_rate_callback = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=0) # verbose 0: quiet, verbose 1: output
+    total_epochs = config.epochs + config.fine_tuning_epochs
     model.fit(ds_train,  
                 batch_size=config.batch_size,
-                epochs=config.epochs,
+                epochs=total_epochs,
                 verbose=2,
                 validation_data=ds_val,
                 callbacks=[WandbCallback(), WandbLogger(config, model, ds_train, ds_val), learning_rate_callback])
 
-
+    """
     if config.fine_tuning:
-        model.trainable = True
+        model
         model.summary()
 
         if config.optimizer=="sgd":
@@ -88,7 +94,7 @@ def train(config, model, ds_train, ds_val):
                 verbose=2,
                 validation_data=ds_val,
                 callbacks=[WandbCallback(), WandbLogger(config, model, ds_train, ds_val)])
-
+    """
 
 if __name__ == "__main__":
     pass

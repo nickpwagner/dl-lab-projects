@@ -25,7 +25,9 @@ parameters:
   epochs:
     value: 100
   batch_size:
-    value: 16
+    values: 
+      - 16
+      - 32
   optimizer:
     value: "sgd" # "adam"
   learning_rate:
