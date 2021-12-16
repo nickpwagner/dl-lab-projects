@@ -91,7 +91,7 @@ parameters:
       - False
 
 
-name: run11
+name: run12_balancing_active
 description: "Using now metrics for balancing. recall, precision, f1-score."
 
 project: diabetic_retinopathy
