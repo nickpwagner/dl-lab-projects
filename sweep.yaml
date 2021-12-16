@@ -17,9 +17,7 @@ parameters:
   img_width:
     value: 512
   balancing:
-    values:
-      - True
-      - False
+    value: True
 
   # train
   epochs:
