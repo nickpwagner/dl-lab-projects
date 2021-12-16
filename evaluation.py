@@ -17,8 +17,8 @@ def evaluate(config, model, ds):
         y_pred.extend(np.argmax(model.predict(X), axis=1))
 
     confm = tf.math.confusion_matrix(y_true, y_pred)#, num_classes=5)
-    print(f"Confusion Matrix: \n {confm}")
-    print(f"Accuracy: {np.mean(np.array(y_pred) == np.array(y_true)):.3f}")
+    #print(f"Confusion Matrix: \n {confm}")
+    #print(f"Accuracy: {np.mean(np.array(y_pred) == np.array(y_true)):.3f}")
 
     # calculate precision for each class
     precision = []
@@ -37,8 +37,13 @@ def evaluate(config, model, ds):
             recall_val = confm[i][i] / column_sum
             recall.append(recall_val)
 
-    print(f"Precision: {np.array(precision)}")
-    print(f"Recall: {np.array(recall)}")
+    #print(f"Precision: {np.array(precision)}")
+    #print(f"Recall: {np.array(recall)}")
+    p = np.mean(precision)
+    r = np.mean(recall)
+    f1 = 2*r*p/(r+p)
+
+    return p, r, f1, confm
        
     
     

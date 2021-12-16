@@ -50,7 +50,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--train', type=bool, help='True=Train, False=Evaluate', default=True)
-    parser.add_argument('-l', '--log_wandb', type=str, help='mode of wandb', default="disabled")  # "online" / "disabled"
+    parser.add_argument('-l', '--log_wandb', type=str, help='mode of wandb', default="online")  # "online" / "disabled"
     parser.add_argument('-u', '--user', type=str, help='specify the entity name for the wandb logging', default="stuttgartteam8")
     parser.add_argument('-p', '--data_dir', type=str, help='path to the dataset and wandb logging', default=argparse.SUPPRESS)
     parser.add_argument('-e', '--epochs', type=int, help='number of epochs to train the network', default=argparse.SUPPRESS)

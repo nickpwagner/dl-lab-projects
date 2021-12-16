@@ -11,6 +11,7 @@ parameters:
     value: 0.8
   augment_crop:
     values: 
+      - 400
       - 460
       - 512
   img_width:
@@ -56,11 +57,13 @@ parameters:
       - "vgg16" #- "resnet50"
   dense0:
     values: 
+      - 128
       - 1024
       - 2048
       - 4096
   dense1:
     values: 
+      - 128
       - 512
       - 1024
       - 2048
@@ -77,6 +80,7 @@ parameters:
     values: 
       - 0
       - 0.1
+      - 0.2
   reg_lambda:
     values: 
       - 0      
@@ -87,8 +91,8 @@ parameters:
       - False
 
 
-name: run10
-description: "added balancing, added f1-score."
+name: run11
+description: "Using now metrics for balancing. recall, precision, f1-score."
 
 project: diabetic_retinopathy
 command:
