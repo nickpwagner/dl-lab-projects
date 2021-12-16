@@ -3,7 +3,6 @@ import tensorflow as tf
 import logging
 import wandb
 from wandb.keras import WandbCallback
-import tensorflow_addons as tfa
 from evaluation import evaluate
 
 
