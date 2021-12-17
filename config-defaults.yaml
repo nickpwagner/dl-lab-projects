@@ -5,7 +5,10 @@ mode:
 
 # evaluate
 evaluate_run:
-  value: "davidu/diabetic_retinopathy/1cge9ja4" # wise-sweep-30
+  value: "davidu/diabetic_retinopathy/9cf0hr55"
+  #"davidu/diabetic_retinopathy/49d802at" # run12 - lemon-sweep-8 - balanced training dataset
+  #"davidu/diabetic_retinopathy/9cf0hr55" # run12 - daily-sweep-8 - balanced training dataset
+  #"davidu/diabetic_retinopathy/1cge9ja4" # wise-sweep-30
   #"davidu/diabetic_retinopathy/hdalq4ty" #proud-sweep-9 
   #"stuttgartteam8/diabetic_retinopathy/1zktgvft"
   
@@ -25,7 +28,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 10
+  value: 50
 batch_size:
   value: 32
 optimizer:
@@ -37,7 +40,7 @@ learning_rate_decay:
 momentum:
   value: 0.0
 fine_tuning:
-  value: True
+  value: False
 fine_tuning_learning_rate:
   value: 0.0001
 fine_tuning_epochs:

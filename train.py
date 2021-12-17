@@ -4,6 +4,7 @@ import logging
 import wandb
 from wandb.keras import WandbCallback
 from evaluation import evaluate
+import sklearn.metrics
 
 
 class WandbLogger(tf.keras.callbacks.Callback):
@@ -16,15 +17,17 @@ class WandbLogger(tf.keras.callbacks.Callback):
 
 
     def on_epoch_end(self, epoch, logs):
-        train_precision, train_recall, train_f1, _ = evaluate(self.config, self.model, self.ds_train)
-        val_precision, val_recall, val_f1, _ = evaluate(self.config, self.model, self.ds_val)
-
+        train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_train)
+        val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_val)
+        print(f"Train QWK: {train_quadratic_weighted_kappa}, Val QWK: {val_quadratic_weighted_kappa}")
         wandb.log({"train_precision": train_precision,
                     "train_recall": train_recall,
                     "train_f1": train_f1,
+                    "train_quadratic_weighted_kappa": train_quadratic_weighted_kappa,
                     "val_precision": val_precision,
                     "val_recall": val_recall,
                     "val_f1": val_f1,
+                    "val_quadratic_weighted_kappa": val_quadratic_weighted_kappa,
                     "epoch": epoch})
         
 

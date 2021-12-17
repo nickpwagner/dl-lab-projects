@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import sklearn.metrics
 
 
 def evaluate(config, model, ds):
@@ -37,13 +38,12 @@ def evaluate(config, model, ds):
             recall_val = confm[i][i] / column_sum
             recall.append(recall_val)
 
-    #print(f"Precision: {np.array(precision)}")
-    #print(f"Recall: {np.array(recall)}")
+    
     p = np.mean(precision)
     r = np.mean(recall)
     f1 = 2*r*p/(r+p)
-
-    return p, r, f1, confm
+    quadratic_weighted_kappa = sklearn.metrics.cohen_kappa_score(y_true, y_pred)
+    return p, r, f1, confm, quadratic_weighted_kappa
        
     
     
@@ -74,4 +74,20 @@ if __name__ == "__main__":
 
     model = tf.keras.models.load_model('model.h5')
     print(model.summary())
-    evaluate(config, model, ds_test)
+
+
+    print("--- Validation Scores ---")
+    p, r, f1, confm, quadratic_weighted_kappa = evaluate(config, model, ds_val)
+    print(f"Precision: {p}")
+    print(f"Recall: {r}")
+    print(f"f1-Score: {f1}")
+    print(f"Confusion-Matrix: \n{confm}")
+    print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
+
+    print("--- Test Scores ---")
+    p, r, f1, confm, quadratic_weighted_kappa = evaluate(config, model, ds_test)
+    print(f"Precision: {p}")
+    print(f"Recall: {r}")
+    print(f"f1-Score: {f1}")
+    print(f"Confusion-Matrix: \n{confm}")
+    print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
