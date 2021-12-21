@@ -1,0 +1,58 @@
+  
+# data
+
+data_dir:
+  value: "C:/DL_Lab/GBR_dataset/" #"/content/"
+val_split:
+  value: 0.2
+test_split:
+  value: 0.2
+augment_crop:
+  value: 450
+number_of_bboxes:
+  value: 18
+img_width:
+  value: 1280
+img_height:
+  value: 720
+balancing:  # oversampling
+  value: True
+
+# train
+epochs:
+  value: 50
+batch_size:
+  value: 16
+optimizer:
+  value: "adam"
+learning_rate:
+  value: 0.1
+learning_rate_decay:
+  value: 10
+fine_tuning:
+  value: True
+fine_tuning_learning_rate:
+  value: 0.0001
+fine_tuning_epochs:
+  value: 5
+
+# architecture
+cnn_input_shape:
+  value: [416, 416, 3]
+architecture:
+  value: "resnet50" #"vgg16" # "resnet50"
+grid_size:
+  value: 13
+dense0:
+  value: 512
+dense1:
+  value: 1024
+c_d_interface:
+  value: "gap" # "flatten"
+dropout:
+  value: 0.1
+reg_lambda:
+  value: 0.01
+w_init_HeNormal:
+  value: False
+
