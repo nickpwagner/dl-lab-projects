@@ -27,12 +27,26 @@ def transfer_model(config):
     x = tf.cast(inputs, tf.float32)
     x = preprocess_input(x)
     x = base_model(x)
+
+    x = keras.layers.Conv2D(2048, (3,3), strides=(2,2), padding="same", activation="relu")(x)
+
+
     # one output for classification (objectness) and four for regression (bounding box coordinates)
+    # scale output of sigmoid to fit target values
     objectness = keras.layers.Conv2D(1, 1, 1, activation="sigmoid")(x)
     bbox = keras.layers.Conv2D(4, 1, 1, activation="linear")(x)
 
+    """
+    position = keras.layers.Conv2D(2, 1, 1)(x)
+    position = keras.activations.tanh(position)*0.5
+    width = keras.layers.Conv2D(1, 1, 1)(x)
+    width = keras.activations.sigmoid(width)*1.5
+    height = keras.layers.Conv2D(1, 1, 1)(x)
+    height = keras.activations.sigmoid(height)*2.5
+    """
+ 
     # merge both output layers to a total of 5 (objectness, center_x, center_y, width, height)
-    outputs = keras.layers.concatenate([objectness, bbox])
+    outputs = keras.layers.concatenate([objectness, bbox])  #([objectness, position, width, height])
 
     return keras.Model(inputs=inputs, outputs=outputs, name="yolo")
 

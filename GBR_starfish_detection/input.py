@@ -98,7 +98,8 @@ def bbox_to_grid(config, bboxes):
         y[i,j] = [1, x_center_rel, y_center_rel, width_rel, height_rel]
     return y
 
-def grid_to_bboxes(config, grid):
+# calculate bounding box coordinates relative to its grid cell center
+def grid_to_bboxes(config, grid, color="white"):
     bboxes = []
     colors = []
 
@@ -113,25 +114,43 @@ def grid_to_bboxes(config, grid):
             bottom_right_y = (j+0.5 + y_center_rel + height_rel / 2) / config.grid_size
 
             bboxes.append([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
-            colors.append([objectness, objectness, objectness])
+            if color == "white":
+                colors.append([objectness, objectness, objectness])
+            if color == "red":
+                colors.append([objectness, 0, 0])
     return bboxes, colors
 
 def show_annotated_image(config, img, grid, grid_ground_truth):
     bboxes, colors = grid_to_bboxes(config, grid)
     #if grid_ground_truth is show_annotated_image.__defaults__[3]:
         
-    bboxes_gt, colors_gt = grid_to_bboxes(config, grid_ground_truth)
-    colors_gt = [[0, 1, 0] for i in range(len(colors_gt))]
+    bboxes_gt, colors_gt = grid_to_bboxes(config, grid_ground_truth, "red")
+    
     bboxes_gt.extend(bboxes)
     colors_gt.extend(colors)
         
-    bboxes = np.array(bboxes)
-    colors = np.array(colors)
+    bboxes = np.array(bboxes_gt)
+    colors = np.array(colors_gt)
     img = tf.cast(img, dtype=tf.float32)/255.
     img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
     plt.imshow(img[0][0])
     plt.show()
     
+def evaluate_dataset_parameter_range(ds):
+    # evaluate in which range the channels are - used to determine the activation function for the final predictions
+    min_max_array = np.zeros((5,2))
+    for images, y in ds:
+        for i in range(config.batch_size):
+            for channel in range(5):
+                max = np.max(y[i][:,:, channel])
+                min = np.min(y[i][:,:, channel])
+
+                if min < min_max_array[channel, 0]:
+                    min_max_array[channel, 0] = min
+                if max > min_max_array[channel, 1]:
+                    min_max_array[channel, 1] = max
+    print(min_max_array)
+
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt    
@@ -148,7 +167,7 @@ if __name__ == "__main__":
     plt.figure("GBR", figsize=(10,10))
 
     for images, y in ds_train:
-        
+        #evaluate_dataset_parameter_range(ds)
         print(y.shape)
         print(y[0][:,:,0])
 
@@ -162,6 +181,6 @@ if __name__ == "__main__":
         #plt.show()
  
         break
+
         
-    
-    
+
