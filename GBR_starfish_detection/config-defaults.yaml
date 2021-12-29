@@ -20,7 +20,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 200
+  value: 150
 batch_size:
   value: 16
 optimizer:
@@ -28,7 +28,7 @@ optimizer:
 learning_rate:
   value: 0.1
 learning_rate_decay:
-  value: 100
+  value: 1000
 
 # architecture
 cnn_input_shape:
