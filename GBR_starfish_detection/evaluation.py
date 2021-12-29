@@ -11,11 +11,11 @@ if __name__ == "__main__":
     
     print("Download model:")
     api = wandb.Api()
-    run = api.run("stuttgartteam8/protect_gbr/npwd6agk")
+    run = api.run("stuttgartteam8/protect_gbr/flvlryvn")
     run.file("model.h5").download(replace=True)
 
     print("Load model:")
-    model = tf.keras.models.load_model('model.h5')
+    model = tf.keras.models.load_model('model.h5', compile=False)
     print(model.summary())
 
 
