@@ -88,6 +88,10 @@ def bbox_to_grid(config, bboxes):
         # grid coordinates
         i = int(x_center_abs / config.img_width * config.grid_size) # grid cell x
         j = int(y_center_abs / config.img_height * config.grid_size) # grid cell y
+        if i == config.grid_size:
+            i = i-1
+        if j == config.grid_size:
+            j = j-1
         
         cell_size_x_abs = config.img_width/config.grid_size
         cell_size_y_abs = config.img_height/config.grid_size
