@@ -40,7 +40,7 @@ def load(config):
 
     # generate train data             
     ds_train = text_ds_train.map(img_name_to_image)\
-                    .shuffle(len_train_ds, reshuffle_each_iteration=True)\
+                    .shuffle(int(len_train_ds/20), reshuffle_each_iteration=True)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
@@ -48,7 +48,6 @@ def load(config):
     len_val_ds = int(len(y)*config.val_split)    
     # generate val data   
     ds_val = text_ds_val.map(img_name_to_image)\
-                    .shuffle(len_val_ds, reshuffle_each_iteration=True)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
@@ -56,7 +55,6 @@ def load(config):
     len_test_ds = int(len(y)*config.test_split)  
     # generate test data
     ds_test = text_ds_test.map(img_name_to_image)\
-                    .shuffle(len_test_ds, reshuffle_each_iteration=True)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
