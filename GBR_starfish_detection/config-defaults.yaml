@@ -7,28 +7,27 @@ val_split:
   value: 0.2
 test_split:
   value: 0.2
-augment_crop:
-  value: 450
-number_of_bboxes:
-  value: 18
 img_width:
   value: 1280
 img_height:
   value: 720
-balancing:  # oversampling
-  value: True
+dataset_slice_start:
+  value: 0  # 20
+dataset_slice_end:
+  value: 23500  # 180
+
 
 # train
 epochs:
   value: 100
 batch_size:
-  value: 16
+  value: 128
 optimizer:
   value: "sgd"
 learning_rate:
   value: 0.01
 learning_rate_decay:
-  value: 100
+  value: 10
 momentum:
   value: 0.9
 
