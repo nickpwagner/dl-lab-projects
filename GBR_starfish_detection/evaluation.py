@@ -11,7 +11,7 @@ if __name__ == "__main__":
     
     print("Download model:")
     api = wandb.Api()
-    run = api.run("stuttgartteam8/protect_gbr/3okjp26z")
+    run = api.run("stuttgartteam8/protect_gbr/npwd6agk")
     run.file("model.h5").download(replace=True)
 
     print("Load model:")
