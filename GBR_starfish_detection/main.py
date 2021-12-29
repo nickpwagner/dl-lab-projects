@@ -25,7 +25,7 @@ def main(args):
     model = transfer_model(config)
     # start the training
     train(config, model, ds_train, ds_val)
-    for x,y in ds_test:
+    for x,y in ds_train:
         y_pred = model.predict(x)
         show_annotated_image(config, x[0], y_pred[0], y[0])
         print(f"y_true: {y[0][:,:,0]}")

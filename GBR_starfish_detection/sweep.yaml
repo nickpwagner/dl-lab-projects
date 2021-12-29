@@ -1,0 +1,102 @@
+program: main.py
+method: random
+
+parameters:
+  # data
+  n_classes:
+    value: 5
+  data_dir:
+    value: "/content/IDRID_dataset/" #"C:/DL_Lab/" 
+  val_split:
+    value: 0.8
+  augment_crop:
+    values: 
+      - 400
+      - 460
+      - 512
+  img_width:
+    value: 512
+  balancing:
+    value: True
+
+  # train
+  epochs:
+    value: 100
+  batch_size:
+    values: 
+      - 16
+      - 32
+  optimizer:
+    value: "sgd" # "adam"
+  learning_rate:
+    values: 
+      - 0.01
+      - 0.001
+  learning_rate_decay:
+    values: 
+      - 1
+      - 10
+  momentum:
+    values: 
+      - 0.0
+      - 0.9
+  fine_tuning:
+    value: True
+  fine_tuning_learning_rate:
+    values: 
+      - 0.001
+      - 0.0001
+  fine_tuning_epochs:
+    value: 100
+
+  # architecture
+  input_shape:
+    value: [224, 224, 3]
+  architecture:
+    values: 
+      - "vgg16" #- "resnet50"
+  dense0:
+    values: 
+      - 128
+      - 1024
+      - 2048
+      - 4096
+  dense1:
+    values: 
+      - 128
+      - 512
+      - 1024
+      - 2048
+  dense2:
+    values: 
+      - 0
+      - 32
+      - 64
+  dense_prep:
+    values: 
+      - "flatten"
+      - "gap"
+  dropout:
+    values: 
+      - 0
+      - 0.1
+      - 0.2
+  reg_lambda:
+    values: 
+      - 0      
+      - 0.001
+  w_init_HeNormal:
+    values: 
+      - True
+      - False
+
+
+name: run12_balancing_active
+description: "Using now metrics for balancing. recall, precision, f1-score."
+
+project: diabetic_retinopathy
+command:
+  - ${env}
+  - ${interpreter} #c:\Scarlett\base39\Scripts\python.exe  #if you want to sweep locally and need to select a specific python version...
+  - ${program}
+  - --log_wandb=online
