@@ -2,6 +2,8 @@ if __name__ == "__main__":
     import wandb
     import tensorflow as tf
     from input import load, show_annotated_image
+    import tensorflow.keras as keras
+
 
     wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="disabled") 
     config = wandb.config
@@ -11,11 +13,11 @@ if __name__ == "__main__":
     
     print("Download model:")
     api = wandb.Api()
-    run = api.run("stuttgartteam8/protect_gbr/3okjp26z")
+    run = api.run("stuttgartteam8/protect_gbr/1kz9henf")
     run.file("model.h5").download(replace=True)
 
     print("Load model:")
-    model = tf.keras.models.load_model('model.h5')
+    model = tf.keras.models.load_model('model.h5', compile=False) 
     print(model.summary())
 
 

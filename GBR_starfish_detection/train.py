@@ -18,7 +18,7 @@ def train(config, model, ds_train, ds_val):
         print("no optimizer specified!!!")
     
     
-    def custom_MSE(y_true, y_pred):
+    def gIOU(y_true, y_pred):
         mse = keras.losses.MeanSquaredError()
         mask = y_true[..., 0]
         mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
@@ -38,8 +38,18 @@ def train(config, model, ds_train, ds_val):
 
         y_pred = bbox_center_size_to_bbox_min_max(y_pred)
         y_true = bbox_center_size_to_bbox_min_max(y_true)
+        #loss = mse(y_true, y_pred)
+        loss = tfa.losses.giou_loss(y_true, y_pred)
+
+        return loss
+
+    def custom_MSE(y_true, y_pred):
+        mse = keras.losses.MeanSquaredError()
+        mask = y_true[..., 0]
+        mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
+        y_pred = tf.multiply(y_pred, mask)
+
         loss = mse(y_true, y_pred)
-        #loss = tfa.losses.giou_loss(y_true, y_pred)
 
         return loss
     

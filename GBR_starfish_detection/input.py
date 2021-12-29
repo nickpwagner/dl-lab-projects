@@ -135,6 +135,19 @@ def show_annotated_image(config, img, grid, grid_ground_truth):
     img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
     plt.imshow(img[0][0])
     plt.show()
+
+def annotate_image(config, img, grid, grid_ground_truth):
+    bboxes, colors = grid_to_bboxes(config, grid)
+    #if grid_ground_truth is show_annotated_image.__defaults__[3]:
+    bboxes_gt, colors_gt = grid_to_bboxes(config, grid_ground_truth, "red")
+    bboxes_gt.extend(bboxes)
+    colors_gt.extend(colors)
+        
+    bboxes = np.array(bboxes_gt)
+    colors = np.array(colors_gt)
+    img = tf.cast(img, dtype=tf.float32)/255.
+    img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
+    return img[0][0]
     
 def evaluate_dataset_parameter_range(ds):
     # evaluate in which range the channels are - used to determine the activation function for the final predictions
