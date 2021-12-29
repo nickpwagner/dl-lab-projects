@@ -9,16 +9,31 @@ import ast
 def load(config):
 
     # read csv file
-    df = pd.read_csv(config.data_dir + "train.csv")[20:180]
+    df = pd.read_csv(config.data_dir + "_annotations.csv")
 
     print(df.head())
 
     # read image names and convert them into the path video_id/img_id
-    img_names = [f"video_{img_name.split('-')[0]}/{img_name.split('-')[1]}.jpg" for img_name in df["image_id"]]
-    # read bounding box locations
-    bboxes = df["annotations"]
-    # translate y string from csv to 7x7x5 grid
-    y = [bbox_to_grid(config, bboxes.iloc[i]) for i in range(len(bboxes))]
+    img_names = df["filename"] #[f"video_{img_name.split('-')[0]}/{img_name.split('-')[1]}.jpg" for img_name in df["image_id"]]
+    # read bounding box locations"
+
+    x_min = df["xmin"]
+    y_min = df["ymin"]
+    x_max = df["xmax"]
+    y_max = df["ymax"]
+
+    l_bbox_dict = []
+
+    for i in range(len(x_min)):
+        bboxes_dict = {}
+        bboxes_dict["x"] = x_min[i] 
+        bboxes_dict["y"] = y_min[i]
+        bboxes_dict["width"] = x_max[i] - x_min[i]
+        bboxes_dict["height"] = y_max[i] - y_min[i]
+        l_bbox_dict.append(bboxes_dict)
+    y = [bbox_to_grid(config, l_bbox_dict[i]) for i in range(len(l_bbox_dict))]
+    
+    
     len_train_ds = int(len(y)*(1-config.val_split - config.test_split))
     len_train_val_ds = int(len(y)*(1 - config.test_split))
     
@@ -32,7 +47,7 @@ def load(config):
 
 
     def img_name_to_image(img_names, y):
-        X = tf.io.read_file(config.data_dir + "train_images/" + img_names)
+        X = tf.io.read_file(config.data_dir + img_names)
         X = tf.image.decode_jpeg(X, channels=3)
         X = tf.image.resize(X, tuple(config.cnn_input_shape[:2]))
         return X, y
@@ -76,28 +91,26 @@ def convert_coord_to_bboxes(config, bboxes):
         target_bboxes.extend([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
     return np.array(target_bboxes)
 
-def bbox_to_grid(config, bboxes):
+def bbox_to_grid(config, bbox):
     y = np.zeros((config.grid_size, config.grid_size, 5))
 
-    bboxes = ast.literal_eval(bboxes)
-    # calculate grid positions for bbox centers
-    for bbox in bboxes:
-        # image coordinates
-        x_center_abs = bbox["x"] + int(bbox["width"] / 2)
-        y_center_abs = bbox["y"] + int(bbox["height"] / 2)
-        # grid coordinates
-        i = int(x_center_abs / config.img_width * config.grid_size) # grid cell x
-        j = int(y_center_abs / config.img_height * config.grid_size) # grid cell y
-        
-        cell_size_x_abs = config.img_width/config.grid_size
-        cell_size_y_abs = config.img_height/config.grid_size
-        # center coordinates relative to grid cell
-        x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
-        y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
-        # width/height relative to image
-        width_abs = bbox["width"] / config.img_width
-        height_abs = bbox["height"] / config.img_height
-        y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
+    
+    # image coordinates
+    x_center_abs = bbox["x"] + int(bbox["width"] / 2)
+    y_center_abs = bbox["y"] + int(bbox["height"] / 2)
+    # grid coordinates
+    i = int(x_center_abs / config.img_width * config.grid_size) # grid cell x
+    j = int(y_center_abs / config.img_height * config.grid_size) # grid cell y
+    
+    cell_size_x_abs = config.img_width/config.grid_size
+    cell_size_y_abs = config.img_height/config.grid_size
+    # center coordinates relative to grid cell
+    x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
+    y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
+    # width/height relative to image
+    width_abs = bbox["width"] / config.img_width
+    height_abs = bbox["height"] / config.img_height
+    y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
     return y
 
 # calculate bounding box coordinates relative to its grid cell center
@@ -164,8 +177,29 @@ if __name__ == "__main__":
 
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
+    df = pd.read_csv(config.data_dir + "_annotations.csv")
+    print(df.head())
 
-    
+    # read image names and convert them into the path video_id/img_id
+    img_names = df["filename"] #[f"video_{img_name.split('-')[0]}/{img_name.split('-')[1]}.jpg" for img_name in df["image_id"]]
+    # read bounding box locations"
+
+    x_min = df["xmin"]
+    y_min = df["ymin"]
+    x_max = df["xmax"]
+    y_max = df["ymax"]
+
+    l_bbox_dict = []
+
+    for i in range(len(x_min)):
+        bboxes_dict = {}
+        bboxes_dict["x"] = x_min[i] 
+        bboxes_dict["y"] = y_min[i]
+        bboxes_dict["width"] = x_max[i] - x_min[i]
+        bboxes_dict["height"] = y_max[i] - y_min[i]
+        l_bbox_dict.append(bboxes_dict)
+    y = [bbox_to_grid(config, l_bbox_dict[i]) for i in range(len(l_bbox_dict))]
+    print(y)
     ds_train, ds_val, ds_test = load(config)
 
 

@@ -2,7 +2,7 @@
 # data
 
 data_dir:
-  value: "C:/DL_Lab/GBR_dataset/" #"/content/"
+  value: "C:/DL_Lab/Racoon_dataset/train/" #"/content/"
 val_split:
   value: 0.2
 test_split:
@@ -12,9 +12,9 @@ augment_crop:
 number_of_bboxes:
   value: 18
 img_width:
-  value: 1280
+  value: 416
 img_height:
-  value: 720
+  value: 416
 balancing:  # oversampling
   value: True
 
@@ -34,7 +34,7 @@ momentum:
 
 # architecture
 cnn_input_shape:
-  value: [448, 448, 3]
+  value: [416, 416, 3]
 architecture:
   value: "resnet50" 
 grid_size:
