@@ -91,11 +91,13 @@ def bbox_to_grid(config, bboxes):
         
         cell_size_x_abs = config.img_width/config.grid_size
         cell_size_y_abs = config.img_height/config.grid_size
+        # center coordinates relative to grid cell
         x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
         y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
-        width_rel = bbox["width"] / cell_size_x_abs
-        height_rel = bbox["height"] / cell_size_y_abs
-        y[i,j] = [1, x_center_rel, y_center_rel, width_rel, height_rel]
+        # width/height relative to image
+        width_abs = bbox["width"] / config.img_width
+        height_abs = bbox["height"] / config.img_height
+        y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
     return y
 
 # calculate bounding box coordinates relative to its grid cell center
@@ -105,7 +107,10 @@ def grid_to_bboxes(config, grid, color="white"):
 
     for i in range(config.grid_size):
         for j in range(config.grid_size):
-            objectness, x_center_rel, y_center_rel, width_rel, height_rel = grid[i,j]
+            objectness, x_center_rel, y_center_rel, width_abs, height_abs = grid[i,j]
+
+            width_rel = width_abs * config.grid_size
+            height_rel = height_abs * config.grid_size
 
             # = center_grid_cell + bbox_center_rel - bbox_width/2
             top_left_x = (i+0.5 + x_center_rel - width_rel / 2) / config.grid_size
@@ -193,7 +198,7 @@ if __name__ == "__main__":
         #plt.imshow(img[0][0])
         #plt.show()
  
-        break
+        
 
         
 

@@ -5,8 +5,6 @@ import wandb
 from wandb.keras import WandbCallback
 from input import grid_to_bboxes
 import tensorflow_addons as tfa
-#from evaluation import evaluate
-
 
 
 def train(config, model, ds_train, ds_val): 
@@ -19,6 +17,8 @@ def train(config, model, ds_train, ds_val):
     
     
     def gIOU(y_true, y_pred):
+
+        # assumes that the width and height is in grid-size scale. Not the case since 2021-12-29 anymore.
         mse = keras.losses.MeanSquaredError()
         mask = y_true[..., 0]
         mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
@@ -26,21 +26,18 @@ def train(config, model, ds_train, ds_val):
 
         loss = 0
         def bbox_center_size_to_bbox_min_max(y):
-
             y_out = tf.zeros((16,7,7,4)) #[y_min, x_min, y_max, x_max]
             y_min = tf.subtract(y[..., 2], tf.divide(y[..., 4], 2))  # y_min = y_center - height/2
             x_min = tf.subtract(y[..., 1], tf.divide(y[..., 3], 2)) # x_min = x_center - width/2
             y_max = tf.add(y[..., 2], tf.divide(y[..., 4], 2))  # y_max = y_center + height/2
             x_max = tf.add(y[..., 1], tf.divide(y[..., 3], 2)) # x_max = x_center + width/2
             y_out = tf.stack([y_min, x_min, y_max, x_max], axis=3)
-
             return y_out
 
         y_pred = bbox_center_size_to_bbox_min_max(y_pred)
         y_true = bbox_center_size_to_bbox_min_max(y_true)
         #loss = mse(y_true, y_pred)
         loss = tfa.losses.giou_loss(y_true, y_pred)
-
         return loss
 
     def custom_MSE(y_true, y_pred):
@@ -48,13 +45,10 @@ def train(config, model, ds_train, ds_val):
         mask = y_true[..., 0]
         mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
         y_pred = tf.multiply(y_pred, mask)
-
         loss = mse(y_true, y_pred)
-
         return loss
     
     metrics = []
-
     model.compile(optimizer=opt, 
                     loss = custom_MSE,
                     metrics = metrics)    

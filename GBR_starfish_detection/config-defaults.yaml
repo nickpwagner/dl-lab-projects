@@ -20,9 +20,9 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 200
+  value: 100
 batch_size:
-  value: 8
+  value: 16
 optimizer:
   value: "sgd"
 learning_rate:
