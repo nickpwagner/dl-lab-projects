@@ -9,7 +9,7 @@ import ast
 def load(config):
 
     # read csv file
-    df = pd.read_csv(config.data_dir + "train.csv")[config.dataset_slice_start:config.dataset_slice_start]  #[20:180]
+    df = pd.read_csv(config.data_dir + "train.csv")[config.dataset_slice_start:config.dataset_slice_end]  #[20:180]
 
     print(df.head())
 
