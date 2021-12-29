@@ -31,7 +31,7 @@ def main(args):
         print(f"y_true: {y[0][:,:,0]}")
         print(f"y_pred: {y_pred[0][:,:,0]}")
     # save the trained model locally
-    model.save(os.path.join(wandb.run.dir, "model.h5"))
+    model.save("model.h5")
 
 
 if __name__ == "__main__":

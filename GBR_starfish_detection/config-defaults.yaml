@@ -20,7 +20,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 100
+  value: 200
 batch_size:
   value: 16
 optimizer:

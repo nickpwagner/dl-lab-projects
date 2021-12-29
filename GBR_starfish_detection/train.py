@@ -47,19 +47,7 @@ def train(config, model, ds_train, ds_val):
 
     model.compile(optimizer=opt, 
                     loss = custom_MSE,
-                    metrics = metrics)
-
-    model.fit(ds_train,  
-                batch_size=config.batch_size,
-                epochs=config.epochs,
-                verbose=2,
-                validation_data=ds_val,
-                callbacks=[WandbCallback()])
-
-    opt = keras.optimizers.Adam(learning_rate=0.001)
-    model.compile(optimizer=opt, 
-                    loss = custom_MSE,
-                    metrics = metrics)            
+                    metrics = metrics)    
 
     def lr_scheduler(epoch, lr):
         # exponential decay
