@@ -11,7 +11,7 @@ import tensorflow_addons as tfa
 
 def train(config, model, ds_train, ds_val): 
     if config.optimizer=="sgd":
-        opt = keras.optimizers.SGD(learning_rate=config.learning_rate)#, momentum=config.momentum)
+        opt = keras.optimizers.SGD(learning_rate=config.learning_rate, momentum=config.momentum)
     elif config.optimizer=="adam":
         opt = keras.optimizers.Adam(learning_rate=config.learning_rate)
     else:

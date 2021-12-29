@@ -20,33 +20,23 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 150
+  value: 200
 batch_size:
   value: 16
 optimizer:
-  value: "adam"
+  value: "sgd"
 learning_rate:
-  value: 0.1
+  value: 0.01
 learning_rate_decay:
-  value: 1000
+  value: 100
+momentum:
+  value: 0.9
 
 # architecture
 cnn_input_shape:
   value: [448, 448, 3]
 architecture:
-  value: "resnet50" #"vgg16" # "resnet50"
+  value: "resnet50" 
 grid_size:
   value: 7
-dense0:
-  value: 512
-dense1:
-  value: 1024
-c_d_interface:
-  value: "gap" # "flatten"
-dropout:
-  value: 0.1
-reg_lambda:
-  value: 0.01
-w_init_HeNormal:
-  value: False
-
+  

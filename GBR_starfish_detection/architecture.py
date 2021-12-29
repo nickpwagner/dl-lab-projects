@@ -31,14 +31,20 @@ def transfer_model(config):
     x = preprocess_input(x)
     x = base_model(x)
 
-    x = keras.layers.Conv2D(2048, (3,3), strides=(2,2), padding="same", activation="relu")(x)
+    x = keras.layers.Conv2D(2048, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
 
-
+    outputs = keras.layers.Conv2D(5, 1, 1, activation="linear")(x)
+    
     # one output for classification (objectness) and four for regression (bounding box coordinates)
     # scale output of sigmoid to fit target values
-    objectness = keras.layers.Conv2D(1, 1, 1, activation="sigmoid")(x)
+    """
+    objectness = keras.layers.Conv2D(1, 1, 1, activation="linear")(x)
     bbox = keras.layers.Conv2D(4, 1, 1, activation="linear")(x)
 
+    # merge both output layers to a total of 5 (objectness, center_x, center_y, width, height)
+    outputs = keras.layers.concatenate([objectness, bbox])  #([objectness, position, width, height])
+    """
+    
     """
     position = keras.layers.Conv2D(2, 1, 1)(x)
     position = keras.activations.tanh(position)*0.5
@@ -48,8 +54,7 @@ def transfer_model(config):
     height = keras.activations.sigmoid(height)*2.5
     """
  
-    # merge both output layers to a total of 5 (objectness, center_x, center_y, width, height)
-    outputs = keras.layers.concatenate([objectness, bbox])  #([objectness, position, width, height])
+    
 
     return keras.Model(inputs=inputs, outputs=outputs, name="yolo")
 
