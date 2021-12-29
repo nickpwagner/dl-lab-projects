@@ -22,7 +22,10 @@ def transfer_model(config):
         print(f"{config.architecture} model not defined!")
 
 
-    base_model.trainable = False
+    for layer in base_model.layers[:-4]:
+        layer.trainable = False
+
+    base_model.summary()
     inputs = keras.layers.Input(shape=config.cnn_input_shape, dtype=tf.uint8)
     x = tf.cast(inputs, tf.float32)
     x = preprocess_input(x)

@@ -38,8 +38,8 @@ def train(config, model, ds_train, ds_val):
 
         y_pred = bbox_center_size_to_bbox_min_max(y_pred)
         y_true = bbox_center_size_to_bbox_min_max(y_true)
-        #loss = mse(y_true, y_pred)
-        loss = tfa.losses.giou_loss(y_true, y_pred)
+        loss = mse(y_true, y_pred)
+        #loss = tfa.losses.giou_loss(y_true, y_pred)
 
         return loss
     
@@ -60,12 +60,22 @@ def train(config, model, ds_train, ds_val):
     model.compile(optimizer=opt, 
                     loss = custom_MSE,
                     metrics = metrics)            
+
+    def lr_scheduler(epoch, lr):
+        # exponential decay
+        # e.g. if epoch = 100 and lr_decay = 10: 0.1^0.01 = 0.977 -> the factor the lr is reduced each round
+        if epoch == 0:
+            return lr
+        return lr * (1/config.learning_rate_decay) ** (1 / (config.epochs-1))
+
+    learning_rate_callback = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=0) # verbose 0: quiet, verbose 1: output
+
     model.fit(ds_train,  
                 batch_size=config.batch_size,
-                epochs=20,
+                epochs=config.epochs,
                 verbose=2,
                 validation_data=ds_val,
-                callbacks=[WandbCallback()])
+                callbacks=[WandbCallback(), learning_rate_callback])
 
 
 if __name__ == "__main__":
