@@ -14,7 +14,7 @@ def main(args):
     # read terminal config
     args_config = vars(args)
     # wandb uses the yaml file and overrides the values with the args_config
-    wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="disabled")
+    wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="online")
     wandb.config.update(args, allow_val_change=True)
     config = wandb.config
     os.environ['WANDB_DIR'] = config.data_dir + "wandb/"
