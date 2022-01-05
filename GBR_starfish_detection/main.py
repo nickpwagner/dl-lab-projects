@@ -40,11 +40,6 @@ def main(args):
     
     # start the training
     train(config, model, ds_train, ds_val)
-    for x,y in ds_train:
-        y_pred = model.predict(x)
-        show_annotated_image(config, x[0], y_pred[0], y[0])
-        print(f"y_true: {y[0][:,:,0]}")
-        print(f"y_pred: {y_pred[0][:,:,0]}")
     # save the trained model locally
     model.save(os.path.join(wandb.run.dir, "model.h5"))
 
@@ -54,6 +49,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--data_dir', type=str, help='path to the dataset and wandb logging', default=argparse.SUPPRESS)
     parser.add_argument('-m', '--wandb_model', type=str, help='name of the wandb run that stores the model', default="New")
+    parser.add_argument('-d', '--dataset_slice_end', type=int, help='until which entry the csv dataframe shall be evaluated', default=argparse.SUPPRESS)
     args = parser.parse_args()
     main(args)
 

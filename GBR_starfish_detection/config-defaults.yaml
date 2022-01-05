@@ -19,13 +19,13 @@ dataset_slice_end:
 
 # train
 epochs:
-  value: 100
+  value: 70
 batch_size:
   value: 128
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.01
+  value: 0.1
 learning_rate_decay:
   value: 1
 momentum:
