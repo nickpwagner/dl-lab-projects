@@ -37,8 +37,6 @@ def main(args):
 
     else:
         print("Evaluating given model")
-        # not working, yet.
-        # 
         # model = wandb.restore('model.h5', run_path="stuttgartteam8/diabetic_retinopathy/1zktgvft")
         api = wandb.Api()
         run = api.run(config.evaluate_run)

@@ -23,7 +23,7 @@ def load(config):
 
             weights = np.ones(config.n_classes) / config.n_classes
             datasets = [tf.data.Dataset.from_tensor_slices((img_names_train, y_train)).filter(lambda x, y: y==i) for i in range(config.n_classes)]
-            text_ds = tf.data.Dataset.sample_from_datasets(datasets, weights, stop_on_empty_dataset=True)
+            text_ds = tf.data.experimental.sample_from_datasets(datasets, weights, stop_on_empty_dataset=True)
             #labels, counts = np.unique(y, return_counts=True)
             #weights = np.ones(len(y))
             # inverse of likelihood
@@ -63,14 +63,13 @@ def load(config):
             return image, y
 
         def augment(image, y, seed):
-            flip_seed = random.randint(0, 255)
             image = tf.image.stateless_random_contrast(image, 0.9, 1.1, seed=seed)
             image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
             image = tf.image.stateless_random_hue(image, 0.03, seed)
             image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
             image = tf.image.stateless_random_flip_left_right(image, seed=seed)
             image = tf.image.stateless_random_flip_up_down(image, seed=seed)
-            image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
+            # image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
             image = tf.image.resize(image, config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
 

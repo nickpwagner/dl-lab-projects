@@ -15,7 +15,7 @@ parameters:
       - 460
       - 512
   img_width:
-    value: 512
+    value: 600
   balancing:
     value: True
 

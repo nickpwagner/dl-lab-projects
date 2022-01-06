@@ -22,7 +22,7 @@ val_split:
 augment_crop:
   value: 450
 img_width:
-  value: 512
+  value: 600
 balancing:  # oversampling
   value: True
 
