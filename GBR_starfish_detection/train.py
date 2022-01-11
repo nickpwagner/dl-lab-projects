@@ -40,9 +40,13 @@ def train(config, model, ds_train, ds_val):
         loss = tfa.losses.giou_loss(y_true, y_pred)
         return loss
 
+    # force only loss if object in cell (otherwise network trains to all 0)
     def custom_MSE(y_true, y_pred):
+        #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
         mse = keras.losses.MeanSquaredError()
+        # [16,7,7,1]
         mask = y_true[..., 0]
+        # remove cell values from all out_channels which have objectness 0
         mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
         y_pred = tf.multiply(y_pred, mask)
         loss = mse(y_true, y_pred)
