@@ -14,14 +14,14 @@ img_height:
 dataset_slice_start:
   value: 0  # 20
 dataset_slice_end:
-  value: 23500  # 180
+  value: 300 # 23500
 
 
 # train
 epochs:
   value: 70
 batch_size:
-  value: 128
+  value: 32
 optimizer:
   value: "sgd"
 learning_rate:

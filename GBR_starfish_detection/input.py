@@ -6,12 +6,14 @@ import matplotlib.pyplot as plt
 import ast
 
 
+
 def load(config):
 
     # read csv file
     df = pd.read_csv(config.data_dir + "train.csv")[config.dataset_slice_start:config.dataset_slice_end]  #[20:180]
 
     print(df.head())
+    print(f"Loading {len(df)} images.")
 
     # read image names and convert them into the path video_id/img_id
     img_names = [f"video_{img_name.split('-')[0]}/{img_name.split('-')[1]}.jpg" for img_name in df["image_id"]]
@@ -180,12 +182,12 @@ if __name__ == "__main__":
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
 
-    
+    print("Load dataset")
     ds_train, ds_val, ds_test = load(config)
 
 
     plt.figure("GBR", figsize=(10,10))
-
+    print("show dataset")
     for images, y in ds_train:
         #evaluate_dataset_parameter_range(ds)
         print(y.shape)

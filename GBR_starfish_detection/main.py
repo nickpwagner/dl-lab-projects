@@ -23,25 +23,28 @@ def main(args):
     # load and preprocess data set
     ds_train, ds_val, ds_test = load(config)
 
-    if config.wandb_model == "New":
-        # set up model architecture
-        model = transfer_model(config)
-    else:
+    detection_model = transfer_model(config)
+
+    
+    if config.wandb_model != "New":
         # load model from wandb and continue training
+        print("Continue model training from wandb")
         print("Download model:")
         api = wandb.Api()
         run = api.run(config.wandb_model)
         run.file("model.h5").download(replace=True)
 
         print("Load model:")
-        model = keras.models.load_model('model.h5', compile=False) 
-        print(model.summary())
-
+        detection_model = keras.models.load_model('model.h5', compile=False) 
+    
+    
+    print(detection_model.summary())
+    
     
     # start the training
-    train(config, model, ds_train, ds_val)
+    train(config, detection_model, ds_train, ds_val)
     # save the trained model locally
-    model.save(os.path.join(wandb.run.dir, "model.h5"))
+    detection_model.save(os.path.join(wandb.run.dir, "model.h5"))
 
 
 if __name__ == "__main__":
