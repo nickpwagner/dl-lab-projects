@@ -5,29 +5,40 @@ parameters:
   # data
   n_classes:
     value: 5
+  # graham preprocessing
   data_dir:
-    value: "/content/IDRID_dataset/" #"C:/DL_Lab/" 
+    values: 
+      - "/content/IDRID_dataset/" #"C:/DL_Lab/" 
+      - "/content/IDRID_dataset_graham/"
   val_split:
     value: 0.8
+  augmentation:
+    values:
+      - True
+      - False
   augment_crop:
     values: 
-      - 400
-      - 460
-      - 512
+      - 500
+      - 600  # no crop
   img_width:
     value: 600
   balancing:
-    value: True
+    values:
+      - True
+      - False
 
   # train
   epochs:
     value: 100
   batch_size:
     values: 
+      - 8
       - 16
       - 32
   optimizer:
-    value: "sgd" # "adam"
+    values:
+      - "sgd"
+      - "adam"
   learning_rate:
     values: 
       - 0.01
@@ -40,21 +51,22 @@ parameters:
     values: 
       - 0.0
       - 0.9
-  fine_tuning:
-    value: True
   fine_tuning_learning_rate:
     values: 
+      - 0.01
       - 0.001
-      - 0.0001
   fine_tuning_epochs:
-    value: 100
+    value:
+      - 0
+      - 100
 
   # architecture
   input_shape:
     value: [224, 224, 3]
   architecture:
     values: 
-      - "vgg16" #- "resnet50"
+      - "vgg16" 
+      - "resnet50"
   dense0:
     values: 
       - 128
@@ -63,6 +75,7 @@ parameters:
       - 4096
   dense1:
     values: 
+      - 0
       - 128
       - 512
       - 1024
@@ -85,6 +98,7 @@ parameters:
     values: 
       - 0      
       - 0.001
+      - 0.01
   w_init_HeNormal:
     values: 
       - True

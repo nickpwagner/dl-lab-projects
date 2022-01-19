@@ -63,13 +63,14 @@ def load(config):
             return image, y
 
         def augment(image, y, seed):
-            image = tf.image.stateless_random_contrast(image, 0.9, 1.1, seed=seed)
-            image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
-            image = tf.image.stateless_random_hue(image, 0.03, seed)
-            image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
-            image = tf.image.stateless_random_flip_left_right(image, seed=seed)
-            image = tf.image.stateless_random_flip_up_down(image, seed=seed)
-            # image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
+            if config.augmentation:
+                image = tf.image.stateless_random_contrast(image, 0.9, 1.1, seed=seed)
+                image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
+                image = tf.image.stateless_random_hue(image, 0.03, seed)
+                image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
+                image = tf.image.stateless_random_flip_left_right(image, seed=seed)
+                image = tf.image.stateless_random_flip_up_down(image, seed=seed)
+            image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
             image = tf.image.resize(image, config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y
 
@@ -105,13 +106,8 @@ def load(config):
     return ds_train, ds_val, ds_test
 
 
-
-
 if __name__ == "__main__":
     
-    
-    
-
 
     import matplotlib.pyplot as plt    
     import wandb

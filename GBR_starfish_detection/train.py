@@ -41,20 +41,27 @@ def train(config, model, ds_train, ds_val):
         return loss
 
     # force only loss if object in cell (otherwise network trains to all 0)
-    def custom_MSE(y_true, y_pred):
+    
+    def custom_loss(y_true, y_pred):
         #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
+
+        mae = keras.losses.MeanAbsoluteError()
         mse = keras.losses.MeanSquaredError()
         # [16,7,7,1]
         mask = y_true[..., 0]
+        ones = tf.ones_like(mask)
         # remove cell values from all out_channels which have objectness 0
-        mask = tf.stack([mask, mask, mask, mask, mask], axis=3)
+        mask = tf.stack([ones, mask, mask, mask, mask], axis=3)
         y_pred = tf.multiply(y_pred, mask)
-        loss = mse(y_true, y_pred)
+        objectness_loss = mse(y_true[..., 0], y_pred[..., 0])  # is a starfish in the grid cell
+        bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
+        loss = 0.1 * objectness_loss + bbox_loss 
         return loss
+    
     
     metrics = []
     model.compile(optimizer=opt, 
-                    loss = custom_MSE,
+                    loss = custom_loss,
                     metrics = metrics)    
 
     def lr_scheduler(epoch, lr):

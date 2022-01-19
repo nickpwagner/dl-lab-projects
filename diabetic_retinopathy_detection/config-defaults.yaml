@@ -24,13 +24,13 @@ augment_crop:
 img_width:
   value: 600
 balancing:  # oversampling
-  value: True
+  value: False
 
 # train
 epochs:
-  value: 50
+  value: 5
 batch_size:
-  value: 32
+  value: 8
 optimizer:
   value: "sgd"
 learning_rate:
