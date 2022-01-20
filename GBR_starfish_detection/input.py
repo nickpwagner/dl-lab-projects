@@ -1,10 +1,8 @@
 import pandas as pd
 import tensorflow as tf
 import numpy as np
-import random
 import matplotlib.pyplot as plt 
 import ast
-
 
 
 def load(config):
@@ -21,16 +19,15 @@ def load(config):
     bboxes = df["annotations"]
     # translate y string from csv to 7x7x5 grid
     y = [bbox_to_grid(config, bboxes.iloc[i]) for i in range(len(bboxes))]
-    len_train_ds = int(len(y)*(1-config.val_split - config.test_split))
-    len_train_val_ds = int(len(y)*(1 - config.test_split))
+    len_train_ds = int(len(y)*(1 - config.test_split))
+    len_test_ds = int(len(y) * config.test_split)
     
-    # |    train      |     val           |    test  |
-    # |    60%        |     20%           |    20%   |
-    #        len_train_ds       len_train_val_ds   
+    # |    train      |         test  |
+    # |    80%        |         20%   |
+    #        len_train_ds          
 
     text_ds_train = tf.data.Dataset.from_tensor_slices((img_names[:len_train_ds], y[:len_train_ds]))
-    text_ds_val = tf.data.Dataset.from_tensor_slices((img_names[len_train_ds:len_train_val_ds], y[len_train_ds:len_train_val_ds]))
-    text_ds_test = tf.data.Dataset.from_tensor_slices((img_names[len_train_val_ds:], y[len_train_val_ds:]))
+    text_ds_test = tf.data.Dataset.from_tensor_slices((img_names[len_test_ds:], y[len_test_ds:]))
 
 
     def img_name_to_image(img_names, y):
@@ -39,42 +36,55 @@ def load(config):
         X = tf.image.resize(X, tuple(config.cnn_input_shape[:2]))
         return X, y
 
+    def augment(image, y, seed):
+        image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seed)
+        image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
+        image = tf.image.stateless_random_hue(image, 0.05, seed)
+        image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
+
+        image_flip_lr = tf.image.stateless_random_flip_left_right(image, seed=seed)
+        if tf.math.reduce_all(tf.equal(image, image_flip_lr)) == False:
+            y = tf.reverse(y, axis=[0]) # row, cols, 5 -> row = 0
+            y = tf.stack([y[:,:, 0], -y[:,:, 1], y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)
+            
+        image_flip_ud = tf.image.stateless_random_flip_up_down(image_flip_lr, seed=seed)
+        if tf.math.reduce_all(tf.equal(image_flip_lr, image_flip_ud)) == False:
+            y = tf.reverse(y, axis=[1]) # row, cols, 5 -> cols = 1
+            y = tf.stack([y[:,:, 0], y[:,:, 1], -y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)
+        return image_flip_ud, y
+
+    # Create a generator 
+    rng = tf.random.Generator.from_seed(123, alg='philox') 
+    def augment_seed(image, y):
+        # random number generator specifically for stateless_random augmentation functions
+        seeds = rng.make_seeds(2)[0]
+        #seeds = [random.randint(0, 2**16), 42]
+        image, y = augment(image, y, seeds)
+        return image, y
+
 
     # generate train data             
     ds_train = text_ds_train.map(img_name_to_image)\
-                    .shuffle(int(len_train_ds/20), reshuffle_each_iteration=True)\
+                    .shuffle(int(len_train_ds/10), reshuffle_each_iteration=True)\
+                    .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
-    # calculate length of val data set for shuffle function
-    len_val_ds = int(len(y)*config.val_split)    
+     
     # generate val data   
-    ds_val = text_ds_val.map(img_name_to_image)\
+    ds_train_not_shuffled = text_ds_train.map(img_name_to_image)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
-    # calculate length of test data set for shuffle function
-    len_test_ds = int(len(y)*config.test_split)  
+    ##################### map augment muss raus!!
     # generate test data
     ds_test = text_ds_test.map(img_name_to_image)\
+                    .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
-    return ds_train, ds_val, ds_test
+    return ds_train, ds_train_not_shuffled, ds_test
 
-def convert_coord_to_bboxes(config, bboxes):
-## only used to convert labels into drawable format - not required right now!!!!
-    #bboxes = bboxes.numpy()
-    #bboxes = bboxes.decode("UTF-8")
-    bboxes = ast.literal_eval(bboxes)
-    target_bboxes = []
-    for bbox in bboxes:
-        top_left_x = bbox["x"] / config.img_width
-        top_left_y = bbox["y"] / config.img_height
-        bottom_right_x = top_left_x + bbox["width"] / config.img_width 
-        bottom_right_y = top_left_y + bbox["height"] / config.img_height
-        target_bboxes.extend([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
-    return np.array(target_bboxes)
 
 def bbox_to_grid(config, bboxes):
     y = np.zeros((config.grid_size, config.grid_size, 5))
@@ -112,38 +122,23 @@ def grid_to_bboxes(config, grid, color="white"):
     for i in range(config.grid_size):
         for j in range(config.grid_size):
             objectness, x_center_rel, y_center_rel, width_abs, height_abs = grid[i,j]
+            if objectness >= config.bbox_confidence_threshold:
+                width_rel = width_abs * config.grid_size
+                height_rel = height_abs * config.grid_size
 
-            width_rel = width_abs * config.grid_size
-            height_rel = height_abs * config.grid_size
+                # = center_grid_cell + bbox_center_rel - bbox_width/2
+                top_left_x = (i+0.5 + x_center_rel - width_rel / 2) / config.grid_size
+                top_left_y = (j+0.5 + y_center_rel - height_rel / 2) / config.grid_size
+                bottom_right_x = (i+0.5 + x_center_rel + width_rel / 2) / config.grid_size
+                bottom_right_y = (j+0.5 + y_center_rel + height_rel / 2) / config.grid_size
 
-            # = center_grid_cell + bbox_center_rel - bbox_width/2
-            top_left_x = (i+0.5 + x_center_rel - width_rel / 2) / config.grid_size
-            top_left_y = (j+0.5 + y_center_rel - height_rel / 2) / config.grid_size
-            bottom_right_x = (i+0.5 + x_center_rel + width_rel / 2) / config.grid_size
-            bottom_right_y = (j+0.5 + y_center_rel + height_rel / 2) / config.grid_size
-
-            bboxes.append([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
-            if color == "white":
-                colors.append([objectness, objectness, objectness])
-            if color == "red":
-                colors.append([objectness, 0, 0])
+                bboxes.append([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
+                if color == "white":
+                    colors.append([objectness, objectness, objectness])
+                if color == "red":
+                    colors.append([objectness, 0, 0])
     return bboxes, colors
 
-def show_annotated_image(config, img, grid, grid_ground_truth):
-    bboxes, colors = grid_to_bboxes(config, grid)
-    #if grid_ground_truth is show_annotated_image.__defaults__[3]:
-        
-    bboxes_gt, colors_gt = grid_to_bboxes(config, grid_ground_truth, "red")
-    
-    bboxes_gt.extend(bboxes)
-    colors_gt.extend(colors)
-        
-    bboxes = np.array(bboxes_gt)
-    colors = np.array(colors_gt)
-    img = tf.cast(img, dtype=tf.float32)/255.
-    img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
-    plt.imshow(img[0][0])
-    plt.show()
 
 def annotate_image(config, img, grid, grid_ground_truth):
     bboxes, colors = grid_to_bboxes(config, grid)
@@ -155,23 +150,17 @@ def annotate_image(config, img, grid, grid_ground_truth):
     bboxes = np.array(bboxes_gt)
     colors = np.array(colors_gt)
     img = tf.cast(img, dtype=tf.float32)/255.
-    img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
-    return img[0][0]
+    img = tf.expand_dims(img, axis=0)
+    if len(bboxes_gt):
+        img = tf.image.draw_bounding_boxes(img, bboxes.reshape([1,-1,4]), colors, name=None) 
     
-def evaluate_dataset_parameter_range(ds):
-    # evaluate in which range the channels are - used to determine the activation function for the final predictions
-    min_max_array = np.zeros((5,2))
-    for images, y in ds:
-        for i in range(config.batch_size):
-            for channel in range(5):
-                max = np.max(y[i][:,:, channel])
-                min = np.min(y[i][:,:, channel])
+    img = img[0].numpy()
 
-                if min < min_max_array[channel, 0]:
-                    min_max_array[channel, 0] = min
-                if max > min_max_array[channel, 1]:
-                    min_max_array[channel, 1] = max
-    print(min_max_array)
+    img[img>1.0] = 1.0
+    img[img<0.0] = 0.0
+    return img
+
+
 
 
 if __name__ == "__main__":
@@ -183,24 +172,19 @@ if __name__ == "__main__":
     config = wandb.config
 
     print("Load dataset")
-    ds_train, ds_val, ds_test = load(config)
+    ds_train, _, ds_test = load(config)
 
 
     plt.figure("GBR", figsize=(10,10))
     print("show dataset")
-    for images, y in ds_train:
-        #evaluate_dataset_parameter_range(ds)
-        print(y.shape)
-        print(y[0][:,:,0])
-
-        show_annotated_image(config, images[0], y[0], y[0])
-        #img = tf.cast(images[0], dtype=tf.float32)/255.
-
-        #bboxes, colors = grid_to_bboxes(config, y[0])
-        #colors = np.array([[1. ,0 ,0 ]])
-        #img = tf.image.draw_bounding_boxes(tf.expand_dims(img, axis=0), bboxes.reshape([1,-1,4]), colors, name=None), 
-        #plt.imshow(img[0][0])
-        #plt.show()
+    for images, y in ds_test:
+        
+        i = np.random.randint(0, config.batch_size)
+        print(y[i][:,:,0])
+        img = annotate_image(config, images[i], y[i], y[i])
+ 
+        plt.imshow(img)
+        plt.show()
  
         
 

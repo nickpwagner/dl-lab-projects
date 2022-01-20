@@ -7,7 +7,7 @@ from input import grid_to_bboxes
 import tensorflow_addons as tfa
 
 
-def train(config, model, ds_train, ds_val): 
+def train(config, model, ds_train, ds_test): 
     if config.optimizer=="sgd":
         opt = keras.optimizers.SGD(learning_rate=config.learning_rate, momentum=config.momentum)
     elif config.optimizer=="adam":
@@ -77,7 +77,7 @@ def train(config, model, ds_train, ds_val):
                 batch_size=config.batch_size,
                 epochs=config.epochs,
                 verbose=2,
-                validation_data=ds_val,
+                validation_data=ds_test,
                 callbacks=[WandbCallback(), learning_rate_callback])
 
 

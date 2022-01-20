@@ -4,7 +4,7 @@ import argparse
 import tensorflow.keras as keras
 
 from architecture import transfer_model
-from input import load, show_annotated_image
+from input import load
 from train import train
 import os
 
@@ -21,7 +21,7 @@ def main(args):
     os.environ['WANDB_DIR'] = config.data_dir + "wandb/"
     
     # load and preprocess data set
-    ds_train, ds_val, ds_test = load(config)
+    ds_train, _, ds_test = load(config)
 
     detection_model = transfer_model(config)
 
@@ -42,7 +42,7 @@ def main(args):
     
     
     # start the training
-    train(config, detection_model, ds_train, ds_val)
+    train(config, detection_model, ds_train, ds_test)
     # save the trained model locally
     detection_model.save(os.path.join(wandb.run.dir, "model.h5"))
 

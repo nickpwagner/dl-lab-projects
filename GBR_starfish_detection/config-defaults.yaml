@@ -1,12 +1,9 @@
   
 # data
-
 data_dir:
   value: "C:/DL_Lab/GBR_dataset/" #"/content/"
-val_split:
-  value: 0.2
 test_split:
-  value: 0.2
+  value: 0.2 
 img_width:
   value: 1280
 img_height:
@@ -14,14 +11,14 @@ img_height:
 dataset_slice_start:
   value: 0  # 20
 dataset_slice_end:
-  value: 300 # 23500
+  value: 70 # 23500
 
 
 # train
 epochs:
   value: 70
 batch_size:
-  value: 32
+  value: 4
 optimizer:
   value: "sgd"
 learning_rate:
@@ -38,4 +35,14 @@ architecture:
   value: "resnet50" 
 grid_size:
   value: 7
-  
+
+
+# evaluate
+wandb_run:
+  value: "stuttgartteam8/protect_gbr/ipfa1i0p"
+eval_dataset:
+  value: "train"
+eval_samples:
+  value: 900
+bbox_confidence_threshold:
+  value: 0.2
