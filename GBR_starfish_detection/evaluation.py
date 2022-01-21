@@ -14,7 +14,7 @@ if __name__ == "__main__":
     config = wandb.config
 
 
-    _, ds_train, ds_test = load(config)
+    _, ds_train, ds_test = load(config) # load the unshuffled train dataset and the test dataset
     
     
     model_filename = "_".join(config.wandb_run.split("/")) + ".h5"

@@ -11,18 +11,18 @@ img_height:
 dataset_slice_start:
   value: 0  # 20
 dataset_slice_end:
-  value: 70 # 23500
+  value: 23500
 
 
 # train
 epochs:
-  value: 70
+  value: 50
 batch_size:
-  value: 4
+  value: 32
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.1
+  value: 0.05 # 0.1 for 90% of training, 0.05 for last 10%
 learning_rate_decay:
   value: 1
 momentum:
@@ -39,9 +39,9 @@ grid_size:
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/ipfa1i0p"
+  value: "stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
-  value: "train"
+  value: "test"
 eval_samples:
   value: 900
 bbox_confidence_threshold:

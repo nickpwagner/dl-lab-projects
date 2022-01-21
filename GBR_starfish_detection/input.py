@@ -76,10 +76,8 @@ def load(config):
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
-    ##################### map augment muss raus!!
     # generate test data
     ds_test = text_ds_test.map(img_name_to_image)\
-                    .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
