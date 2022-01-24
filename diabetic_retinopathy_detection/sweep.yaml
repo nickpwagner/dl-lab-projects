@@ -12,13 +12,15 @@ parameters:
       - "/content/IDRID_dataset_graham/"
   val_split:
     value: 0.8
-  augmentation:
+  augmentation: # does not affect augment_crop
     values:
-      - True
-      - False
+      - "strong"
+      - "weak"
+      - "none"
   augment_crop:
     values: 
-      - 500
+      - 450
+      - 550
       - 600  # no crop
   img_width:
     value: 600
@@ -41,6 +43,7 @@ parameters:
       - "adam"
   learning_rate:
     values: 
+      - 0.1
       - 0.01
       - 0.001
   learning_rate_decay:
@@ -58,7 +61,7 @@ parameters:
   fine_tuning_epochs:
     value:
       - 0
-      - 100
+      - 50
 
   # architecture
   input_shape:
@@ -105,8 +108,8 @@ parameters:
       - False
 
 
-name: run12_balancing_active
-description: "Using now metrics for balancing. recall, precision, f1-score."
+name: run_100_full_sweep_multi_class
+description: "Sweep almost all parameters"
 
 project: diabetic_retinopathy
 command:

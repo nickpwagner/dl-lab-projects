@@ -22,17 +22,14 @@ def load(config):
         if config.balancing and training:
 
             weights = np.ones(config.n_classes) / config.n_classes
-            datasets = [tf.data.Dataset.from_tensor_slices((img_names_train, y_train)).filter(lambda x, y: y==i) for i in range(config.n_classes)]
+
+            # create one dataset per class to create balanced datasets afterwards
+            # repeat the datasets 5 times, to ensure oversampling. 
+            # The sample providing stops, if the smallest dataset (class 1) has outputed all samples 5 times
+            datasets = [tf.data.Dataset.from_tensor_slices((img_names_train, y_train)).filter(lambda x, y: y==i).repeat(5) for i in range(config.n_classes)]
+                        
             text_ds = tf.data.experimental.sample_from_datasets(datasets, weights, stop_on_empty_dataset=True)
-            #labels, counts = np.unique(y, return_counts=True)
-            #weights = np.ones(len(y))
-            # inverse of likelihood
-            #for label in labels:
-            #    weights[y == label] = np.sum(counts) / counts[label]
             
-            #datasets = [tf.data.Dataset.from_tensor_slices((img_names, y)).filter(y==i) for i in range(config.n_classes)]
-            #text_ds = tf.data.Dataset.sample_from_datasets(datasets, weights)
-            #text_ds = tf.data.Dataset.from_tensor_slices((img_names, y, weights))
         else:  
             # creates tensors with image names and labels
             text_ds = tf.data.Dataset.from_tensor_slices((img_names, y))
@@ -63,13 +60,20 @@ def load(config):
             return image, y
 
         def augment(image, y, seed):
-            if config.augmentation:
+            if config.augmentation == "strong":
+                image = tf.image.stateless_random_contrast(image, 0.7, 1.3, seed=seed)
+                image = tf.image.stateless_random_brightness(image, 0.3, seed=seed)
+                image = tf.image.stateless_random_hue(image, 0.05, seed)
+                image = tf.image.stateless_random_saturation(image, 0.8, 1.2, seed=seed)
+                image = tf.image.stateless_random_flip_left_right(image, seed=seed)
+                image = tf.image.stateless_random_flip_up_down(image, seed=seed)
+            elif config.augmentation == "weak":
                 image = tf.image.stateless_random_contrast(image, 0.9, 1.1, seed=seed)
                 image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
                 image = tf.image.stateless_random_hue(image, 0.03, seed)
                 image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
                 image = tf.image.stateless_random_flip_left_right(image, seed=seed)
-                image = tf.image.stateless_random_flip_up_down(image, seed=seed)
+                # no up-down flip for weak augmentation 
             image = tf.image.stateless_random_crop(image, size=[config.augment_crop, config.augment_crop,3], seed=seed)
             image = tf.image.resize(image, config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
             return image, y

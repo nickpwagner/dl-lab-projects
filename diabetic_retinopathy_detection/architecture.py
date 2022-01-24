@@ -8,13 +8,13 @@ def transfer_model(config):
     # select transfer model type
     if config.architecture == "vgg16":
         base_model = keras.applications.VGG16(
-            weights='imagenet',
+            weights="imagenet",
             include_top=False,
             input_shape=config.cnn_input_shape)
         preprocess_input = keras.applications.vgg16.preprocess_input
     elif config.architecture == "resnet50":
         base_model = keras.applications.ResNet50(
-            weights='imagenet',
+            weights="imagenet",
             include_top=False,
             input_shape=config.cnn_input_shape)
         preprocess_input = keras.applications.resnet50.preprocess_input

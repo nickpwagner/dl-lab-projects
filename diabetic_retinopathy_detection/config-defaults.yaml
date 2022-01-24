@@ -19,12 +19,14 @@ data_dir:
   value: "C:/DL_Lab/IDRID_dataset/" #"/content/"
 val_split:
   value: 0.9
+augmentation:
+  value: "weak"
 augment_crop:
-  value: 450
+  value: 550
 img_width:
   value: 600
 balancing:  # oversampling
-  value: False
+  value: True
 
 # train
 epochs:
