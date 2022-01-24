@@ -27,7 +27,7 @@ def load(config):
     #        len_train_ds          
 
     text_ds_train = tf.data.Dataset.from_tensor_slices((img_names[:len_train_ds], y[:len_train_ds]))
-    text_ds_test = tf.data.Dataset.from_tensor_slices((img_names[len_test_ds:], y[len_test_ds:]))
+    text_ds_test = tf.data.Dataset.from_tensor_slices((img_names[len_train_ds:], y[len_train_ds:]))
 
 
     def img_name_to_image(img_names, y):

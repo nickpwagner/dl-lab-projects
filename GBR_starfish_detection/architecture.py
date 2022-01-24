@@ -31,7 +31,7 @@ def transfer_model(config):
     x = preprocess_input(x)
     x = base_model(x)
 
-    x = keras.layers.Conv2D(2048, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Conv2D(256, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
 
     outputs = keras.layers.Conv2D(5, 1, 1, activation="linear")(x)
     

@@ -22,7 +22,7 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.05 # 0.1 for 90% of training, 0.05 for last 10%
+  value: 0.1
 learning_rate_decay:
   value: 1
 momentum:
@@ -39,10 +39,10 @@ grid_size:
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/136q0aks"
+  value: "stuttgartteam8/protect_gbr/2wr9aft8"  #"stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
   value: "test"
 eval_samples:
   value: 900
 bbox_confidence_threshold:
-  value: 0.2
+  value: 0.0
