@@ -59,7 +59,7 @@ parameters:
       - 0.01
       - 0.001
   fine_tuning_epochs:
-    value:
+    values:
       - 0
       - 50
 
