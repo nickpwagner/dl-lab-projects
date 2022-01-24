@@ -35,6 +35,8 @@ architecture:
   value: "resnet50" 
 grid_size:
   value: 7
+trainable:
+  value: "full"
 
 
 # evaluate

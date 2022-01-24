@@ -21,10 +21,16 @@ def transfer_model(config):
     else:
         print(f"{config.architecture} model not defined!")
 
-
-    for layer in base_model.layers[:-4]:
-        layer.trainable = False
-
+    if config.trainable == "full":
+        for layer in base_model.layers:
+            layer.trainable = True
+    elif config.trainable == "last":
+        for layer in base_model.layers[:-4]:
+            layer.trainable = False
+    elif config.trainable == "none":
+        for layer in base_model.layers:
+            layer.trainable = False
+            
     #base_model.summary()
     inputs = keras.layers.Input(shape=config.cnn_input_shape, dtype=tf.uint8)
     x = tf.cast(inputs, tf.float32)
