@@ -48,18 +48,19 @@ def crop_resize_store(input_path, output_path, graham=True):
         
         save_img(output_path + file, image, quality=95)
 
-input_path = "c:/DL_Lab/IDRID_dataset_orig/images/train/"
-output_path = "c:/DL_Lab/IDRID_dataset_graham/images/train/"
-#crop_resize_store(input_path, output_path)
+if __name__ == "__main__":
+    # input_path = "c:/DL_Lab/IDRID_dataset_orig/images/train/"
+    # output_path = "c:/DL_Lab/IDRID_dataset_graham/images/train/"
+    # crop_resize_store(input_path, output_path)
 
-input_path = "c:/DL_Lab/IDRID_dataset_orig/images/test/"
-output_path = "c:/DL_Lab/IDRID_dataset_graham/images/test/"
-#crop_resize_store(input_path, output_path)
+    # input_path = "c:/DL_Lab/IDRID_dataset_orig/images/test/"
+    # output_path = "c:/DL_Lab/IDRID_dataset_graham/images/test/"
+    # crop_resize_store(input_path, output_path)
 
-input_path = "c:/DL_Lab/IDRID_dataset_orig/images/train/"
-output_path = "c:/DL_Lab/IDRID_dataset/images/train/"
-crop_resize_store(input_path, output_path, graham=False)
+    input_path = "c:/DL_Lab/IDRID_dataset_orig/images/train/"
+    output_path = "c:/DL_Lab/IDRID_dataset/images/train/"
+    crop_resize_store(input_path, output_path, graham=True)
 
-input_path = "c:/DL_Lab/IDRID_dataset_orig/images/test/"
-output_path = "c:/DL_Lab/IDRID_dataset/images/test/"
-crop_resize_store(input_path, output_path, graham=False)
+    input_path = "c:/DL_Lab/IDRID_dataset_orig/images/test/"
+    output_path = "c:/DL_Lab/IDRID_dataset/images/test/"
+    crop_resize_store(input_path, output_path, graham=False)

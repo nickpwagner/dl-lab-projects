@@ -18,8 +18,6 @@ def evaluate(config, model, ds):
         y_pred.extend(np.argmax(model.predict(X), axis=1))
 
     confm = tf.math.confusion_matrix(y_true, y_pred)#, num_classes=5)
-    #print(f"Confusion Matrix: \n {confm}")
-    #print(f"Accuracy: {np.mean(np.array(y_pred) == np.array(y_true)):.3f}")
 
     # calculate precision for each class
     precision = []
@@ -30,7 +28,6 @@ def evaluate(config, model, ds):
         precision.append(precision_val)  
 
         # calculate recall
-        
         column_sum = np.sum(confm, axis=0)[i] # use transpose of c_matrix to calculate column sums as row sums
         if (column_sum == 0): # avoid division by zero (column sum)
             recall.append(0)
@@ -38,12 +35,12 @@ def evaluate(config, model, ds):
             recall_val = confm[i][i] / column_sum
             recall.append(recall_val)
 
-    
+    acc = np.mean(np.array(y_pred) == np.array(y_true))
     p = np.mean(precision)
     r = np.mean(recall)
     f1 = 2*r*p/(r+p)
     quadratic_weighted_kappa = sklearn.metrics.cohen_kappa_score(y_true, y_pred)
-    return p, r, f1, confm, quadratic_weighted_kappa
+    return acc, p, r, f1, confm, quadratic_weighted_kappa
        
     
     
