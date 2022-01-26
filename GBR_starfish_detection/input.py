@@ -107,8 +107,8 @@ def bbox_to_grid(config, bboxes):
         x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
         y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
         # width/height relative to image
-        width_abs = bbox["width"] / config.img_width
-        height_abs = bbox["height"] / config.img_height
+        width_abs = bbox["width"] / config.img_width * config.grid_size
+        height_abs = bbox["height"] / config.img_height * config.grid_size
         y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
     return y
 
@@ -121,8 +121,8 @@ def grid_to_bboxes(config, grid, color="white"):
         for j in range(config.grid_size):
             objectness, x_center_rel, y_center_rel, width_abs, height_abs = grid[i,j]
             if objectness >= config.bbox_confidence_threshold:
-                width_rel = width_abs * config.grid_size
-                height_rel = height_abs * config.grid_size
+                width_rel = width_abs #* config.grid_size
+                height_rel = height_abs #* config.grid_size
 
                 # = center_grid_cell + bbox_center_rel - bbox_width/2
                 top_left_x = (i+0.5 + x_center_rel - width_rel / 2) / config.grid_size

@@ -16,7 +16,7 @@ dataset_slice_end:
 
 # train
 epochs:
-  value: 50
+  value: 20
 batch_size:
   value: 32
 optimizer:
@@ -27,6 +27,12 @@ learning_rate_decay:
   value: 1
 momentum:
   value: 0.9
+objectness_loss:
+  value: "bce"
+bbox_loss:
+  value: "mae"
+loss_weighting:
+  value: 0.1
 
 # architecture
 cnn_input_shape:
@@ -43,9 +49,9 @@ head_channels:
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/2wr9aft8"  #"stuttgartteam8/protect_gbr/136q0aks"
+  value: "stuttgartteam8/protect_gbr/3osdkj5x"  #"stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
-  value: "test"
+  value: "train"
 eval_samples:
   value: 900
 bbox_confidence_threshold:

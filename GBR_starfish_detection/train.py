@@ -44,10 +44,8 @@ def train(config, model, ds_train, ds_test):
     
     def custom_loss(y_true, y_pred):
         #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
-
         mae = keras.losses.MeanAbsoluteError()
         mse = keras.losses.MeanSquaredError()
-        # [16,7,7,1]
         mask = y_true[..., 0]
         ones = tf.ones_like(mask)
         # remove cell values from all out_channels which have objectness 0
@@ -57,12 +55,36 @@ def train(config, model, ds_train, ds_test):
         bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
         loss = 0.1 * objectness_loss + bbox_loss 
         return loss
+
+    def loss_bce_mae(y_true, y_pred):
+        #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
+        mae = keras.losses.MeanAbsoluteError()
+        bce = keras.losses.BinaryCrossentropy()
+        mse = keras.losses.MeanSquaredError()
+        mask = y_true[..., 0]
+        ones = tf.ones_like(mask)
+        # remove cell values from all out_channels which have objectness 0
+        mask = tf.stack([ones, mask, mask, mask, mask], axis=3)
+        y_pred = tf.multiply(y_pred, mask)
+
+        if config.objectness_loss == "mse":
+            objectness_loss = mse(y_true[..., 0], y_pred[..., 0])  # is a starfish in the grid cell
+        elif config.objectness_loss == "bce": 
+            objectness_loss = bce(y_true[..., 0], y_pred[..., 0])  # is a starfish in the grid cell
+        else:
+            objectness_loss = 0
+
+        if config.bbox_loss == "mse":
+            bbox_loss = mse(y_true[..., 1:], y_pred[..., 1:])
+        elif config.bbox_loss == "mae":
+            bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
+
+        loss = config.loss_weighting * objectness_loss + bbox_loss 
+        return loss
     
     
     metrics = []
-    model.compile(optimizer=opt, 
-                    loss = custom_loss,
-                    metrics = metrics)    
+    model.compile(optimizer=opt, loss = custom_loss, metrics = metrics)
 
     def lr_scheduler(epoch, lr):
         # exponential decay
