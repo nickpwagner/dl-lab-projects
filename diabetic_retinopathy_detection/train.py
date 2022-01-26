@@ -17,8 +17,8 @@ class WandbLogger(tf.keras.callbacks.Callback):
 
 
     def on_epoch_end(self, epoch, logs):
-        train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_train)
-        val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_val)
+        _, train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_train)
+        _, val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_val)
         print(f"Train QWK: {train_quadratic_weighted_kappa}, Val QWK: {val_quadratic_weighted_kappa}")
         wandb.log({"train_precision": train_precision,
                     "train_recall": train_recall,
