@@ -40,26 +40,11 @@ def train(config, model, ds_train, ds_test):
         loss = tfa.losses.giou_loss(y_true, y_pred)
         return loss
 
-    # force only loss if object in cell (otherwise network trains to all 0)
-    
+
     def custom_loss(y_true, y_pred):
         #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
         mae = keras.losses.MeanAbsoluteError()
-        mse = keras.losses.MeanSquaredError()
-        mask = y_true[..., 0]
-        ones = tf.ones_like(mask)
-        # remove cell values from all out_channels which have objectness 0
-        mask = tf.stack([ones, mask, mask, mask, mask], axis=3)
-        y_pred = tf.multiply(y_pred, mask)
-        objectness_loss = mse(y_true[..., 0], y_pred[..., 0])  # is a starfish in the grid cell
-        bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
-        loss = 0.1 * objectness_loss + bbox_loss 
-        return loss
-
-    def loss_bce_mae(y_true, y_pred):
-        #y = [batch, grid_width[7], grid_height (7), out_channels (5)]
-        mae = keras.losses.MeanAbsoluteError()
-        bce = keras.losses.BinaryCrossentropy()
+        bce = keras.losses.BinaryCrossentropy(from_logits=True)
         mse = keras.losses.MeanSquaredError()
         mask = y_true[..., 0]
         ones = tf.ones_like(mask)
@@ -82,8 +67,23 @@ def train(config, model, ds_train, ds_test):
         loss = config.loss_weighting * objectness_loss + bbox_loss 
         return loss
     
+    def bbox_loss(y_true, y_pred):
+        mae = keras.losses.MeanAbsoluteError()
+        mse = keras.losses.MeanSquaredError()
+        mask = y_true[..., 0]
+        ones = tf.ones_like(mask)
+        # remove cell values from all out_channels which have objectness 0
+        mask = tf.stack([ones, mask, mask, mask, mask], axis=3)
+        y_pred = tf.multiply(y_pred, mask)
+
+        if config.bbox_loss == "mse":
+            bbox_loss = mse(y_true[..., 1:], y_pred[..., 1:])
+        elif config.bbox_loss == "mae":
+            bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
+        return bbox_loss
+
     
-    metrics = []
+    metrics = [bbox_loss]
     model.compile(optimizer=opt, loss = custom_loss, metrics = metrics)
 
     def lr_scheduler(epoch, lr):
