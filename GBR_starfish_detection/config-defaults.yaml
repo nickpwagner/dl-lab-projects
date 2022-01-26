@@ -36,7 +36,9 @@ architecture:
 grid_size:
   value: 7
 trainable:
-  value: "full"
+  value: "none"
+head_channels:
+  value: 0
 
 
 # evaluate
