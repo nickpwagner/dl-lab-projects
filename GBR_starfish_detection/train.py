@@ -82,8 +82,11 @@ def train(config, model, ds_train, ds_test):
             bbox_loss = mae(y_true[..., 1:], y_pred[..., 1:]) # where is the bbox located and whats the size
         return bbox_loss
 
+    def mAP(y_true, y_pred):
+        return 0
+
     
-    metrics = [bbox_loss]
+    metrics = []  # [bbox_loss, mAP]
     model.compile(optimizer=opt, loss = custom_loss, metrics = metrics)
 
     def lr_scheduler(epoch, lr):
