@@ -42,14 +42,14 @@ architecture:
 grid_size:
   value: 7
 trainable:
-  value: "none"
+  value: "full"
 head_channels:
   value: 0
 
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/3osdkj5x"  #"stuttgartteam8/protect_gbr/136q0aks"
+  value: "stuttgartteam8/protect_gbr/1rmzs2cj"  #"stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
   value: "train"
 eval_samples:

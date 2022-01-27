@@ -65,7 +65,7 @@ def load(config):
 
     # generate train data             
     ds_train = text_ds_train.map(img_name_to_image)\
-                    .shuffle(int(len_train_ds/10), reshuffle_each_iteration=True)\
+                    .shuffle(int(len_train_ds/5), reshuffle_each_iteration=True)\
                     .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
