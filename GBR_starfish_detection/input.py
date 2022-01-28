@@ -63,9 +63,9 @@ def load(config):
         return image, y
 
 
-    # generate train data             
+    # generate train data  - more data than 1/7 th of the train DS doesn´t fit into RAM           
     ds_train = text_ds_train.map(img_name_to_image)\
-                    .shuffle(int(len_train_ds/5), reshuffle_each_iteration=True)\
+                    .shuffle(int(len_train_ds/7), reshuffle_each_iteration=True)\
                     .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
@@ -106,7 +106,7 @@ def bbox_to_grid(config, bboxes):
         # center coordinates relative to grid cell
         x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
         y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
-        # width/height relative to image
+        # width/height relative to grid cell!!
         width_abs = bbox["width"] / config.img_width * config.grid_size
         height_abs = bbox["height"] / config.img_height * config.grid_size
         y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     plt.figure("GBR", figsize=(10,10))
     print("show dataset")
-    for images, y in ds_test:
+    for images, y in ds_train:
         
         i = np.random.randint(0, config.batch_size)
         print(y[i][:,:,0])

@@ -9,7 +9,7 @@ img_width:
 img_height:
   value: 720
 dataset_slice_start:
-  value: 0  # 20
+  value: 20  # 20
 dataset_slice_end:
   value: 23500
 
@@ -18,7 +18,7 @@ dataset_slice_end:
 epochs:
   value: 20
 batch_size:
-  value: 32
+  value: 2
 optimizer:
   value: "sgd"
 learning_rate:
@@ -28,11 +28,13 @@ learning_rate_decay:
 momentum:
   value: 0.9
 objectness_loss:
-  value: "bce"
+  value: "weighted_bce"  # select from bce, mse, weighted_bce
+bce_weighting:
+  value: 20 # positive value, >1 increases the loss for False Negatives by this factor
 bbox_loss:
-  value: "mae"
-loss_weighting:
-  value: 0.1
+  value: "giou" # "mse", "mae", "giou"
+objectness_loss_weighting: # weights the loss overall, compared to bbox loss
+  value: 1
 
 # architecture
 cnn_input_shape:
@@ -49,7 +51,7 @@ head_channels:
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/1rmzs2cj"  #"stuttgartteam8/protect_gbr/136q0aks"
+  value: "stuttgartteam8/protect_gbr/34j65rft" # "stuttgartteam8/protect_gbr/1rmzs2cj"  "stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
   value: "train"
 eval_samples:
