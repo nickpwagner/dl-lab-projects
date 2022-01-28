@@ -93,21 +93,21 @@ def train(config, model, ds_train, ds_test):
 
 
     def TP_rate(y_true, y_pred):
-        # check if starfish objectness is correct. Use 0.2 as threshold, because the labels are highly imbalanced
+        # check if starfish objectness is correct. 
         P = tf.cast(tf.reduce_sum(y_true[..., 0]), dtype=tf.int32)  # positive in ground truth
         if P == 0:  # if there are no trues, assume TP rate = 0
             return tf.cast(0.0, dtype=tf.float64)
         else:
-            y_pred = tf.where(y_pred[..., 0] > 0.2, 1, 0)  # thesholding of y_pred-objectness
+            y_pred = tf.where(y_pred[..., 0] > 0.5, 1, 0)  # thesholding of y_pred-objectness
             TP = tf.reduce_sum(tf.multiply(y_pred, tf.cast(y_true[..., 0], dtype=tf.int32)))  # multiply y_pred and y_true and you get the true positives
             TP_rate = TP / P
             return TP_rate
 
     def TN_rate(y_true, y_pred):
         N = tf.reduce_sum(tf.where(y_true[..., 0] == 0, 1, 0))  # sum up all elements where y_true = 0
-        TN = tf.reduce_sum(tf.multiply(tf.where(y_pred[..., 0] < 0.2, 1, 0), N ))  # multiply the pred.negativ with GT negative
-        FN_rate = TN / N
-        return FN_rate
+        TN = tf.reduce_sum(tf.multiply(tf.where(y_pred[..., 0] < 0.5, 1, 0), tf.where(y_true[..., 0] == 0, 1, 0)))  # multiply the pred.negativ with GT negative
+        TN_rate = TN / N
+        return TN_rate
     
     model.compile(optimizer=opt, 
                     loss =  custom_loss,
