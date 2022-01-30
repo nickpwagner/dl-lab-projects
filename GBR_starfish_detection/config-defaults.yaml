@@ -9,7 +9,7 @@ img_width:
 img_height:
   value: 720
 dataset_slice_start:
-  value: 20  # 20
+  value: 20
 dataset_slice_end:
   value: 23500
 

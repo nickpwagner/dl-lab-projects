@@ -5,6 +5,7 @@ import wandb
 from wandb.keras import WandbCallback
 from input import grid_to_bboxes
 import tensorflow_addons as tfa
+from tensorflow import math as tfm
 
 
 def train(config, model, ds_train, ds_test): 
@@ -52,9 +53,35 @@ def train(config, model, ds_train, ds_test):
         return objectness_loss(y_true, y_pred) + bbox_loss(y_true, y_pred)
 
     def yolo_loss(y_true, y_pred):
-        # todo: implement exact loss function from the paper!
-        # confidence = iou * objectness
-        pass
+        weight_coord = 5
+        weight_noobj = 0.5
+
+        # only use cell entries which have an object in them
+        mask = y_true[...,0]
+        mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
+        y_pred_m = tfm.multiply(mask, y_pred)
+
+        # box center coordinate loss
+        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])
+        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])
+        bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
+        #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
+
+        # box size loss
+        # use absolute values and sign to avoid sqrt of negative vales (nan)
+        # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
+        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
+        bbox_size_loss = weight_coord * tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
+
+        # confidence (objectness) loss for cells with objects
+        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_m[...,0]), axis=(1,2))
+
+        # confidence (objectness) loss for cells without objects
+        no_obj_mask = 1-mask[...,0]
+        no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+
+        return bbox_center_loss + bbox_size_loss + obj_loss + no_obj_loss
 
     def bbox_center_size_to_bbox_min_max(y):  # required for IOU and gIOU, inputs 4 channels!
             y_out = tf.zeros((16,7,7,4)) #[y_min, x_min, y_max, x_max]
@@ -110,7 +137,7 @@ def train(config, model, ds_train, ds_test):
         return TN_rate
     
     model.compile(optimizer=opt, 
-                    loss =  custom_loss,
+                    loss =  yolo_loss,
                     metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
 
     def lr_scheduler(epoch, lr):
@@ -136,36 +163,61 @@ if __name__ == "__main__":
     import tensorflow as tf
     from input import load, annotate_image
     import tensorflow.keras as keras
+    from tensorflow import math as tfm
     import cv2
     import os
 
-
-
     wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="disabled") 
     config = wandb.config
-
-
-    _, ds_train, ds_test = load(config) # load the unshuffled train dataset and the test dataset
-    
-    
+    _, ds_train, ds_test = load(config) 
     model_filename = "_".join(config.wandb_run.split("/")) + ".h5"
-
     if os.path.isfile(model_filename):
         print("Using model from local .h5 file")
-
     else:
         print("Download model from wandb")
         api = wandb.Api()
         run = api.run(config.wandb_run)
         run.file("model.h5").download(replace=True)
         os.rename("model.h5", model_filename)
-
     model = tf.keras.models.load_model(model_filename, compile=False) 
-    print(model.summary())
 
-    ds = ds_train
+    mse = keras.losses.MeanSquaredError()
+
+    def yolo_loss(y_true, y_pred):
+        weight_coord = 5
+        weight_noobj = 0.5
+
+        # only use cell entries which have an object in them
+        mask = y_true[...,0]
+        mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
+        y_pred_m = tfm.multiply(mask, y_pred)
+
+        # box center coordinate loss
+        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])
+        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])
+        bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
+        #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
+
+        # box size loss
+        # use absolute values and sign to avoid sqrt of negative vales (nan)
+        # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
+        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]))))
+        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]))))
+        bbox_size_loss = weight_coord * tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
+
+        # confidence (objectness) loss for cells with objects
+        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_m[...,0]), axis=(1,2))
+
+        # confidence (objectness) loss for cells without objects
+        no_obj_mask = 1-mask[...,0]
+        no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+
+        return bbox_center_loss + bbox_size_loss + obj_loss + no_obj_loss
 
     counter = 0
     for x,y in ds_train:
         y_pred = model.predict(x)
-        print("end")
+        print(y_pred.shape)
+        print(y.shape)
+        #mse(y_pred[...,0],y[...,0])
+        yolo_loss(y,y_pred)
