@@ -33,6 +33,7 @@ def load(config):
     def img_name_to_image(img_names, y):
         X = tf.io.read_file(config.data_dir + "train_images/" + img_names)
         X = tf.image.decode_jpeg(X, channels=3)
+        # 1280x720 to cnn_input_shape size
         X = tf.image.resize(X, tuple(config.cnn_input_shape[:2]))
         return X, y
 
@@ -85,51 +86,66 @@ def load(config):
 
 
 def bbox_to_grid(config, bboxes):
+    """
+    read csv entry for bbox and transform it to matrices for x, y, width and height
+    e.g. {"x": 559, "y": 213, "width":50, "height": 32} to 7x7x5 tensor (including objectness)
+    return: y
+    """
     y = np.zeros((config.grid_size, config.grid_size, 5))
 
     bboxes = ast.literal_eval(bboxes)
     # calculate grid positions for bbox centers
     for bbox in bboxes:
-        # image coordinates
+        # absolute coordinates for center 
+        # e.g. x_abs = position + half the width 
         x_center_abs = bbox["x"] + int(bbox["width"] / 2)
         y_center_abs = bbox["y"] + int(bbox["height"] / 2)
-        # grid coordinates
+        # to which grid cell do those coordinates belong
+        # e.g. x_center_abs: 584 to cell 3
         i = int(x_center_abs / config.img_width * config.grid_size) # grid cell x
         j = int(y_center_abs / config.img_height * config.grid_size) # grid cell y
         if i == config.grid_size:
             i = i-1
         if j == config.grid_size:
             j = j-1
-        
+        # absolute width/height per cell
         cell_size_x_abs = config.img_width/config.grid_size
         cell_size_y_abs = config.img_height/config.grid_size
         # center coordinates relative to grid cell
+        # e.g. x_center_rel = (584 - 3.5 * 183) / 183 = -0.3 (left of center of cell 3)
         x_center_rel = (x_center_abs - (i+0.5) * cell_size_x_abs ) / cell_size_x_abs
         y_center_rel = (y_center_abs - (j+0.5) * cell_size_y_abs ) / cell_size_y_abs
-        # width/height relative to grid cell!!
-        width_abs = bbox["width"] / config.img_width * config.grid_size
-        height_abs = bbox["height"] / config.img_height * config.grid_size
-        y[i,j] = [1, x_center_rel, y_center_rel, width_abs, height_abs]
+        # width/height coordinates relative to grid cell
+        # e.g. width_rel = 50 / 1280 * 7 = 0.27 grid cells
+        width_rel = bbox["width"] / config.img_width * config.grid_size
+        height_rel = bbox["height"] / config.img_height * config.grid_size
+        # write [objectness, center_x, center_y, width, height] into bbox grid cell
+        y[i,j] = [1, x_center_rel, y_center_rel, width_rel, height_rel]
     return y
 
-# calculate bounding box coordinates relative to its grid cell center
+
 def grid_to_bboxes(config, grid, color="white"):
+    """
+    check each cell for a bounding box in relative format [objectness, center_x, center_y, width, height]
+    and transform it to absolute coordinates [x_topleft, y_topleft, x_bottomright, y_bottomright]    
+    return: list of bboxes for e.g. annotation in image (normalized to [0,1]) and their color
+    """
     bboxes = []
     colors = []
-
+    # iterate through grid cells
     for i in range(config.grid_size):
         for j in range(config.grid_size):
-            objectness, x_center_rel, y_center_rel, width_abs, height_abs = grid[i,j]
+            # relative coordinates
+            objectness, x_center_rel, y_center_rel, width_rel, height_rel = grid[i,j]
+            # non-maxima suppression with configurable threshold
             if objectness >= config.bbox_confidence_threshold:
-                width_rel = width_abs #* config.grid_size
-                height_rel = height_abs #* config.grid_size
-
-                # = center_grid_cell + bbox_center_rel - bbox_width/2
+                # add grid center position relative center to get grid position
+                # and subtract half the bbox width to get the corner coordinate (+normalized)
                 top_left_x = (i+0.5 + x_center_rel - width_rel / 2) / config.grid_size
                 top_left_y = (j+0.5 + y_center_rel - height_rel / 2) / config.grid_size
                 bottom_right_x = (i+0.5 + x_center_rel + width_rel / 2) / config.grid_size
                 bottom_right_y = (j+0.5 + y_center_rel + height_rel / 2) / config.grid_size
-
+                # fill list with bboxes
                 bboxes.append([top_left_y, top_left_x, bottom_right_y, bottom_right_x])
                 if color == "white":
                     colors.append([objectness, objectness, objectness])
@@ -138,27 +154,32 @@ def grid_to_bboxes(config, grid, color="white"):
     return bboxes, colors
 
 
-def annotate_image(config, img, grid, grid_ground_truth):
-    bboxes, colors = grid_to_bboxes(config, grid)
-    #if grid_ground_truth is show_annotated_image.__defaults__[3]:
-    bboxes_gt, colors_gt = grid_to_bboxes(config, grid_ground_truth, "red")
-    bboxes_gt.extend(bboxes)
-    colors_gt.extend(colors)
-        
-    bboxes = np.array(bboxes_gt)
-    colors = np.array(colors_gt)
+def annotate_image(config, img, y_pred, y_true):
+    """
+    take input image and draw predicted and true bounding boxes
+    returns: image with bboxes
+    """
+    # change from y_pred to [x_topleft, y_topleft, x_bottomright, y_bottomright] format
+    bboxes_pred, colors_pred = grid_to_bboxes(config, y_pred)
+    # change from y_true to [x_topleft, y_topleft, x_bottomright, y_bottomright] format
+    bboxes_true, colors_true = grid_to_bboxes(config, y_true, "red")
+    # put all boxes in one list and their colors in another
+    bboxes_true.extend(bboxes_pred)
+    colors_true.extend(colors_pred)
+    bboxes_pred = np.array(bboxes_true)
+    colors_pred = np.array(colors_true)
+    # prepare image for draw function
     img = tf.cast(img, dtype=tf.float32)/255.
     img = tf.expand_dims(img, axis=0)
-    if len(bboxes_gt):
-        img = tf.image.draw_bounding_boxes(img, bboxes.reshape([1,-1,4]), colors, name=None) 
-    
+    # if there are boxes to be drawn in the image
+    if len(bboxes_true):
+        # function expects a batch size so expand dims by 1
+        img = tf.image.draw_bounding_boxes(img, bboxes_pred.reshape([1,-1,4]), colors_pred, name=None) 
     img = img[0].numpy()
-
+    # clip image to [0,1]
     img[img>1.0] = 1.0
     img[img<0.0] = 0.0
     return img
-
-
 
 
 if __name__ == "__main__":

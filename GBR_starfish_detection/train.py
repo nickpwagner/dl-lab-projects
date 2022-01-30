@@ -33,7 +33,6 @@ def train(config, model, ds_train, ds_test):
             objectness_loss = 0
         return config.objectness_loss_weighting * objectness_loss
 
-
     def bbox_loss(y_true, y_pred):
         # objectness is stored in channels 1-4
         mask = y_true[..., 0]
@@ -54,6 +53,7 @@ def train(config, model, ds_train, ds_test):
 
     def yolo_loss(y_true, y_pred):
         # todo: implement exact loss function from the paper!
+        # confidence = iou * objectness
         pass
 
     def bbox_center_size_to_bbox_min_max(y):  # required for IOU and gIOU, inputs 4 channels!
@@ -72,7 +72,7 @@ def train(config, model, ds_train, ds_test):
         y_pred = bbox_center_size_to_bbox_min_max(y_pred[..., 1:])
         y_true = bbox_center_size_to_bbox_min_max(y_true[..., 1:])
 
-        y_pred = tf.boolean_mask(y_pred, mask)  # requried because bboxes without a true label shall not be counted
+        y_pred = tf.boolean_mask(y_pred, mask)  # required because bboxes without a true label shall not be counted
         y_true = tf.boolean_mask(y_true, mask)
 
         iou = tfa.losses.GIoULoss(mode="iou")
@@ -114,7 +114,7 @@ def train(config, model, ds_train, ds_test):
                     metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
 
     def lr_scheduler(epoch, lr):
-        # exponential decay
+        # exponential decay = initial_learning_rate * decay_rate ^ (steps / decay_step_rate)
         # e.g. if epoch = 100 and lr_decay = 10: 0.1^0.01 = 0.977 -> the factor the lr is reduced each round
         if epoch == 0:
             return lr
@@ -131,4 +131,41 @@ def train(config, model, ds_train, ds_test):
 
 
 if __name__ == "__main__":
-    pass
+    # used for loss function tests
+    import wandb
+    import tensorflow as tf
+    from input import load, annotate_image
+    import tensorflow.keras as keras
+    import cv2
+    import os
+
+
+
+    wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="disabled") 
+    config = wandb.config
+
+
+    _, ds_train, ds_test = load(config) # load the unshuffled train dataset and the test dataset
+    
+    
+    model_filename = "_".join(config.wandb_run.split("/")) + ".h5"
+
+    if os.path.isfile(model_filename):
+        print("Using model from local .h5 file")
+
+    else:
+        print("Download model from wandb")
+        api = wandb.Api()
+        run = api.run(config.wandb_run)
+        run.file("model.h5").download(replace=True)
+        os.rename("model.h5", model_filename)
+
+    model = tf.keras.models.load_model(model_filename, compile=False) 
+    print(model.summary())
+
+    ds = ds_train
+
+    counter = 0
+    for x,y in ds_train:
+        y_pred = model.predict(x)
+        print("end")
