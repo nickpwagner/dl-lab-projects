@@ -61,13 +61,15 @@ def train(config, model, ds_train, ds_test):
         mask = y_true[...,0]
         mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
         y_pred_m = tfm.multiply(mask, y_pred)
-
+        """
         # box center coordinate loss
         bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])  # index 1: center x
         bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])  # index 2: center y
         bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
         #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
-
+        """
+        mse = keras.losses.MeanSquaredError()
+        bbox_center_loss = mse(y_true[..., 1:3], y_pred_m[..., 1:3])
         return bbox_center_loss
 
     def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
@@ -89,7 +91,7 @@ def train(config, model, ds_train, ds_test):
     def yolo_no_obj_loss(y_true, y_pred):
         weight_noobj = 0.5
         # confidence (objectness) loss for cells without objects
-        no_obj_mask = tf.where(y_true[...,0] == 0, 1, 0)  # consider only 0-objectness grid cells as relevant.
+        no_obj_mask = tf.cast(tf.where(y_true[...,0] == 0, 1, 0), dtype=tf.float32)  # consider only 0-objectness grid cells as relevant.
         no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
         return no_obj_loss
 
@@ -97,6 +99,7 @@ def train(config, model, ds_train, ds_test):
         # confidence (objectness) loss for cells with objects
         y_pred_obj_m = tfm.multiply(y_true[...,0], y_pred[...,0])
         obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_obj_m), axis=(1,2))
+        return obj_loss
 
     def yolo_loss(y_true, y_pred):
         return yolo_bbox_center_loss(y_true, y_pred) + yolo_bbox_size_loss(y_true, y_pred) + yolo_obj_loss(y_true, y_pred) + yolo_no_obj_loss(y_true, y_pred)
@@ -160,10 +163,17 @@ def train(config, model, ds_train, ds_test):
         TN_rate = TN / N
         return TN_rate
     
-    model.compile(optimizer=opt, 
-                    loss =  yolo_loss,
-                    metrics = [yolo_bbox_center_loss, yolo_bbox_size_loss, yolo_obj_loss, yolo_no_obj_loss, objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
+    if config.loss_function == "custom":
+        loss = custom_loss
+        metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU]
+    elif config.loss_function == "yolo":
+        loss = yolo_loss
+        metrics = [yolo_bbox_center_loss, yolo_bbox_size_loss, yolo_obj_loss, yolo_no_obj_loss, TP_rate, TN_rate, IOU, gIOU]
 
+    model.compile(optimizer=opt, 
+                    loss =  loss,
+                    metrics = metrics)
+                    
     def lr_scheduler(epoch, lr):
         # exponential decay = initial_learning_rate * decay_rate ^ (steps / decay_step_rate)
         # e.g. if epoch = 100 and lr_decay = 10: 0.1^0.01 = 0.977 -> the factor the lr is reduced each round
