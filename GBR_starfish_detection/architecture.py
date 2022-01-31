@@ -39,6 +39,7 @@ def transfer_model(config):
     
     if config.head_channels > 0:
         x = keras.layers.Conv2D(config.head_channels, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+        x = keras.layers.Dropout(config.dropout)(x)
         outputs = keras.layers.Conv2D(5, 1, 1, activation="linear")(x)
 
     else:

@@ -53,9 +53,9 @@ def train(config, model, ds_train, ds_test):
     def custom_loss(y_true, y_pred):
         return objectness_loss(y_true, y_pred) + bbox_loss(y_true, y_pred)
 
-    def yolo_loss(y_true, y_pred):
+
+    def yolo_bbox_center_loss(y_true, y_pred): # mse
         weight_coord = 5
-        weight_noobj = 0.5
 
         # only use cell entries which have an object in them
         mask = y_true[...,0]
@@ -63,11 +63,20 @@ def train(config, model, ds_train, ds_test):
         y_pred_m = tfm.multiply(mask, y_pred)
 
         # box center coordinate loss
-        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])
-        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])
+        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])  # index 1: center x
+        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])  # index 2: center y
         bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
         #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
 
+        return bbox_center_loss
+
+    def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
+        weight_coord = 5
+
+        # only use cell entries which have an object in them
+        mask = y_true[...,0]
+        mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
+        y_pred_m = tfm.multiply(mask, y_pred)
         # box size loss
         # use absolute values and sign to avoid sqrt of negative vales (nan)
         # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
@@ -75,14 +84,22 @@ def train(config, model, ds_train, ds_test):
         bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
         bbox_size_loss = weight_coord * tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
 
-        # confidence (objectness) loss for cells with objects
-        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_m[...,0]), axis=(1,2))
+        return bbox_size_loss
 
+    def yolo_no_obj_loss(y_true, y_pred):
+        weight_noobj = 0.5
         # confidence (objectness) loss for cells without objects
-        no_obj_mask = 1-mask[...,0]
+        no_obj_mask = tf.where(y_true[...,0] == 0, 1, 0)  # consider only 0-objectness grid cells as relevant.
         no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+        return no_obj_loss
 
-        return bbox_center_loss + bbox_size_loss + obj_loss + no_obj_loss
+    def yolo_obj_loss(y_true, y_pred):
+        # confidence (objectness) loss for cells with objects
+        y_pred_obj_m = tfm.multiply(y_true[...,0], y_pred[...,0])
+        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_obj_m), axis=(1,2))
+
+    def yolo_loss(y_true, y_pred):
+        return yolo_bbox_center_loss(y_true, y_pred) + yolo_bbox_size_loss(y_true, y_pred) + yolo_obj_loss(y_true, y_pred) + yolo_no_obj_loss(y_true, y_pred)
 
 
 
@@ -100,7 +117,7 @@ def train(config, model, ds_train, ds_test):
     def IOU(y_true, y_pred):  # used as metric! in the range 0 ...1.  1=worst IOU, 0=ideal, identical Bboxes
         # assumes that the width and height is in grid-size scale
         if tf.reduce_sum(y_true[...,0]) == 0:  # if no object in the batch of images, return 0 loss!
-            return tf.cast(0.0, dtype=tf.float64)
+            return tf.cast(0.0, dtype=tf.float32)
 
         # only use loss for samples where y_true has an object and weight those samples up
         sample_weighting = y_true[..., 0] * config.batch_size*config.grid_size*config.grid_size/tf.reduce_sum(y_true[...,0])
@@ -114,7 +131,7 @@ def train(config, model, ds_train, ds_test):
     def gIOU(y_true, y_pred):# used as metric and loss
         # assumes that the width and height is in grid-size scale
         if tf.reduce_sum(y_true[...,0]) == 0:  # if no object in the batch of images, return 0 loss!
-            return tf.cast(0.0, dtype=tf.float64)
+            return tf.cast(0.0, dtype=tf.float32)
 
         # only use loss for samples where y_true has an object and weight those samples up
         sample_weighting = y_true[..., 0] * config.batch_size*config.grid_size*config.grid_size/tf.reduce_sum(y_true[...,0])
@@ -144,8 +161,8 @@ def train(config, model, ds_train, ds_test):
         return TN_rate
     
     model.compile(optimizer=opt, 
-                    loss =  custom_loss,
-                    metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
+                    loss =  yolo_loss,
+                    metrics = [yolo_bbox_center_loss, yolo_bbox_size_loss, yolo_obj_loss, yolo_no_obj_loss, objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
 
     def lr_scheduler(epoch, lr):
         # exponential decay = initial_learning_rate * decay_rate ^ (steps / decay_step_rate)

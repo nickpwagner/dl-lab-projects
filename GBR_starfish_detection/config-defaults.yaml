@@ -44,9 +44,11 @@ architecture:
 grid_size:
   value: 7
 trainable:
-  value: "full"
+  value: "last"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 head_channels:
-  value: 0
+  value: 2048  # if a hidden conv layer is required after the resnet base-model and with how many layers
+dropout:
+  value: 0.5 # dropout between last hidden conv layer and the output conv layer
 
 
 # evaluate
