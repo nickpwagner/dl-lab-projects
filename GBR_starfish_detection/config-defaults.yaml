@@ -11,7 +11,7 @@ img_height:
 dataset_slice_start:
   value: 20
 dataset_slice_end:
-  value: 23500
+  value: 235 #00
 
 
 # train
@@ -22,7 +22,7 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.001
+  value: 0.01
 learning_rate_decay:
   value: 1
 momentum:
@@ -32,9 +32,9 @@ objectness_loss:
 bce_weighting:
   value: 20 # positive value, >1 increases the loss for False Negatives by this factor
 bbox_loss:
-  value: "mse" # "mse", "mae", "giou"
+  value: "giou" # "mse", "mae", "giou"
 objectness_loss_weighting: # weights the loss overall, compared to bbox loss
-  value: 0.1
+  value: 1
 
 # architecture
 cnn_input_shape:

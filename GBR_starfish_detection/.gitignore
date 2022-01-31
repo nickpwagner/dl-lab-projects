@@ -1,5 +1,6 @@
 *.h5
 *.mp4
+sandbox.py
 
 
 # Byte-compiled / optimized / DLL files

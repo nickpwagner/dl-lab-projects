@@ -8,6 +8,7 @@ import tensorflow_addons as tfa
 from tensorflow import math as tfm
 
 
+
 def train(config, model, ds_train, ds_test): 
     if config.optimizer=="sgd":
         opt = keras.optimizers.SGD(learning_rate=config.learning_rate, momentum=config.momentum)
@@ -83,41 +84,47 @@ def train(config, model, ds_train, ds_test):
 
         return bbox_center_loss + bbox_size_loss + obj_loss + no_obj_loss
 
-    def bbox_center_size_to_bbox_min_max(y):  # required for IOU and gIOU, inputs 4 channels!
-            y_out = tf.zeros((16,7,7,4)) #[y_min, x_min, y_max, x_max]
-            y_min = tf.subtract(y[..., 1], tf.divide(y[..., 3], 2))  # y_min = y_center - height/2
-            x_min = tf.subtract(y[..., 0], tf.divide(y[..., 2], 2)) # x_min = x_center - width/2
-            y_max = tf.add(y[..., 1], tf.divide(y[..., 3], 2))  # y_max = y_center + height/2
-            x_max = tf.add(y[..., 0], tf.divide(y[..., 2], 2)) # x_max = x_center + width/2
-            y_out = tf.stack([y_min, x_min, y_max, x_max], axis=3)
-            return y_out
 
-    def IOU(y_true, y_pred):  # used as metric!
+
+    def bbox_center_size_to_bbox_min_max(y):  # required for IOU and gIOU, inputs 4 channels!
+        y_out = tf.zeros((config.batch_size, config.grid_size, config.grid_size, 4)) #[y_min, x_min, y_max, x_max]
+        y_min = tf.subtract(y[..., 1], tf.divide(y[..., 3], 2))  # y_min = y_center - height/2
+        x_min = tf.subtract(y[..., 0], tf.divide(y[..., 2], 2)) # x_min = x_center - width/2
+        y_max = tf.add(y[..., 1], tf.divide(y[..., 3], 2))  # y_max = y_center + height/2
+        x_max = tf.add(y[..., 0], tf.divide(y[..., 2], 2)) # x_max = x_center + width/2
+        y_out = tf.stack([y_min, x_min, y_max, x_max], axis=3)
+        return y_out
+
+
+
+    def IOU(y_true, y_pred):  # used as metric! in the range 0 ...1.  1=worst IOU, 0=ideal, identical Bboxes
         # assumes that the width and height is in grid-size scale
-        mask = y_true[..., 0]
+        if tf.reduce_sum(y_true[...,0]) == 0:  # if no object in the batch of images, return 0 loss!
+            return tf.cast(0.0, dtype=tf.float64)
+
+        # only use loss for samples where y_true has an object and weight those samples up
+        sample_weighting = y_true[..., 0] * config.batch_size*config.grid_size*config.grid_size/tf.reduce_sum(y_true[...,0])
 
         y_pred = bbox_center_size_to_bbox_min_max(y_pred[..., 1:])
         y_true = bbox_center_size_to_bbox_min_max(y_true[..., 1:])
 
-        y_pred = tf.boolean_mask(y_pred, mask)  # required because bboxes without a true label shall not be counted
-        y_true = tf.boolean_mask(y_true, mask)
-
         iou = tfa.losses.GIoULoss(mode="iou")
-        return iou(y_true, y_pred)
+        return iou(y_true, y_pred, sample_weight=sample_weighting)
 
     def gIOU(y_true, y_pred):# used as metric and loss
         # assumes that the width and height is in grid-size scale
-        mask = y_true[..., 0]
+        if tf.reduce_sum(y_true[...,0]) == 0:  # if no object in the batch of images, return 0 loss!
+            return tf.cast(0.0, dtype=tf.float64)
+
+        # only use loss for samples where y_true has an object and weight those samples up
+        sample_weighting = y_true[..., 0] * config.batch_size*config.grid_size*config.grid_size/tf.reduce_sum(y_true[...,0])
+
 
         y_pred = bbox_center_size_to_bbox_min_max(y_pred[..., 1:])
         y_true = bbox_center_size_to_bbox_min_max(y_true[..., 1:])
 
-        y_pred = tf.boolean_mask(y_pred, mask)  # requried because bboxes without a true label shall not be counted
-        y_true = tf.boolean_mask(y_true, mask)
-
         iou = tfa.losses.GIoULoss(mode="giou")
-        return iou(y_true, y_pred)
-
+        return iou(y_true, y_pred, sample_weight=sample_weighting)
 
     def TP_rate(y_true, y_pred):
         # check if starfish objectness is correct. 
@@ -137,7 +144,7 @@ def train(config, model, ds_train, ds_test):
         return TN_rate
     
     model.compile(optimizer=opt, 
-                    loss =  yolo_loss,
+                    loss =  custom_loss,
                     metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU])
 
     def lr_scheduler(epoch, lr):
