@@ -1,0 +1,74 @@
+\documentclass[landscape,a3,final,24pt]{issposter}
+
+% If you encounter errors like "No room for a new ...", use etex (needs
+% to be the first package. This happens, if too many registers are used
+% because of too many packages or too many complex packages (like e.g. 
+% tikz, pstricks and longtable). etex extends the number of registers.
+% etex has to be the first package to be loaded!
+% \usepackage{etex}
+
+\usepackage[latin1]{inputenc}
+\usepackage{multicol}
+\usepackage{graphicx}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+% If you want to use latex, dvips and ps2pdf, use hyperref to get correct
+% page sizes. With hyperref, you won't have to specify them on the command
+% line.
+% \usepackage[pdfpagemode=UseNone,dvips,pdfborder={0 0 0}]{hyperref}
+
+% \usepackage{tikz} % nice graphics, also used for the fancy boxes
+
+% \usepackage{pstricks,pst-plot,pst-node} % nice graphics with PS
+% \psset{unit=3mm,nodesep=1.5,linewidth=.3}
+% Use auto-pst-pdf, to use PSTricks with pdflatex. In this case,
+% you have to add --shell-escape to your pdflatex command line.
+% \usepackage{auto-pst-pdf}
+
+% Set the font sizes. Change these, if you want to change only one or two.
+% Use the font size options of the document class (14pt, 17pt, 20pt, 15pt, 30pt, 36pt),
+% if you want to change all the sizes at once.
+\renewcommand{\titlesize}{\Huge}
+\renewcommand{\sectionsize} {\Large}
+\renewcommand{\authorsize}{\Large}
+\renewcommand{\instsize}{\large}
+
+% Insert your data
+\title{\MakeUppercase{The title of your outstanding poster}}
+\author{First Author and Second Author}
+\institute{Institute of Signal Processing and System Theory, University of Stuttgart, Germany}
+\conference{\normalsize \textbf{Deep Learning Lab 2020}, February 4, Stuttgart, Germany }
+
+% -----------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+% Justified text sometimes looks strange in narrow columns
+\raggedright
+
+\begin{multicols}{4}
+\section{First Section}
+
+This is just a little bit of text to show the font size.
+\begin{itemize}
+    \item Oh, a list!
+    \item How nice.
+    \begin{itemize}
+        \item Uuuuh, a list in a list
+        \begin{itemize}
+            \item and another step with a long line to see, if everything goes well
+            \begin{itemize}
+                \item Listception!
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    \item Back to normal!
+\end{itemize}
+
+\end{multicols}
+\end{document}
+
+
