@@ -16,13 +16,13 @@ dataset_slice_end:
 
 # train
 epochs:
-  value: 20
+  value: 50
 batch_size:
-  value: 2
+  value: 32
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.0001
+  value: 0.01
 learning_rate_decay:
   value: 1
 momentum:
@@ -41,7 +41,15 @@ bbox_loss:
 objectness_loss_weighting: # weights the loss overall, compared to bbox loss
   value: 1
 
-
+# settings for yolo loss
+yolo_weight_center:
+  value: 5
+yolo_weight_size:
+  value: 0.5
+yolo_weight_obj:
+  value: 1
+yolo_weight_noobj:
+  value: 0.1
 
 # architecture
 cnn_input_shape:
@@ -51,9 +59,9 @@ architecture:
 grid_size:
   value: 7
 trainable:
-  value: "last"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
+  value: "none"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 head_channels:
-  value: 2048  # if a hidden conv layer is required after the resnet base-model and with how many layers
+  value: 1024  # if a hidden conv layer is required after the resnet base-model and with how many layers
 dropout:
   value: 0.5 # dropout between last hidden conv layer and the output conv layer
 

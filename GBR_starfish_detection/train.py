@@ -17,6 +17,7 @@ def train(config, model, ds_train, ds_test):
     else:
         print("no optimizer specified!!!")
     
+    ############################# -- CUSTOM LOSS SECTION -- #################################################################################################
     
     mae = keras.losses.MeanAbsoluteError()
     bce = keras.losses.BinaryCrossentropy(from_logits=True)
@@ -54,9 +55,10 @@ def train(config, model, ds_train, ds_test):
         return objectness_loss(y_true, y_pred) + bbox_loss(y_true, y_pred)
 
 
-    def yolo_bbox_center_loss(y_true, y_pred): # mse
-        weight_coord = 5
 
+    ############################# -- YOLO LOSS SECTION -- #################################################################################################
+
+    def yolo_bbox_center_loss(y_true, y_pred): # mse
         # only use cell entries which have an object in them
         mask = y_true[...,0]
         mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
@@ -70,11 +72,9 @@ def train(config, model, ds_train, ds_test):
         """
         mse = keras.losses.MeanSquaredError()
         bbox_center_loss = mse(y_true[..., 1:3], y_pred_m[..., 1:3])
-        return bbox_center_loss
+        return config.yolo_weight_center * bbox_center_loss
 
     def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
-        weight_coord = 5
-
         # only use cell entries which have an object in them
         mask = y_true[...,0]
         mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
@@ -82,29 +82,32 @@ def train(config, model, ds_train, ds_test):
         # box size loss
         # use absolute values and sign to avoid sqrt of negative vales (nan)
         # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
-        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
-        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
-        bbox_size_loss = weight_coord * tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
+        # ( sqrt(abs(true - pred)) ) **2
+        bbox_width_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,3], y_pred_m[...,3])))  
+        #tfm.square(tfm.add(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+        bbox_height_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,4], y_pred_m[...,4])))  
+        #tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
+        bbox_size_loss = tf.reduce_mean(bbox_width_loss) + tf.reduce_mean(bbox_height_loss) #, axis=(1,2))
 
-        return bbox_size_loss
+        return config.yolo_weight_size * bbox_size_loss
 
     def yolo_no_obj_loss(y_true, y_pred):
-        weight_noobj = 0.5
         # confidence (objectness) loss for cells without objects
         no_obj_mask = tf.cast(tf.where(y_true[...,0] == 0, 1, 0), dtype=tf.float32)  # consider only 0-objectness grid cells as relevant.
-        no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
-        return no_obj_loss
+        no_obj_loss = tf.reduce_mean(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])))  # reduce_sum leads to a very high loss which makes backprob unstable
+        return config.yolo_weight_noobj * no_obj_loss
 
     def yolo_obj_loss(y_true, y_pred):
         # confidence (objectness) loss for cells with objects
         y_pred_obj_m = tfm.multiply(y_true[...,0], y_pred[...,0])
-        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_obj_m), axis=(1,2))
-        return obj_loss
+        obj_loss = tf.reduce_mean(tfm.square(y_true[...,0] - y_pred_obj_m))
+        return config.yolo_weight_obj * obj_loss
 
     def yolo_loss(y_true, y_pred):
         return yolo_bbox_center_loss(y_true, y_pred) + yolo_bbox_size_loss(y_true, y_pred) + yolo_obj_loss(y_true, y_pred) + yolo_no_obj_loss(y_true, y_pred)
 
 
+    ############################# -- METRICS SECTION -- #################################################################################################
 
     def bbox_center_size_to_bbox_min_max(y):  # required for IOU and gIOU, inputs 4 channels!
         y_out = tf.zeros((config.batch_size, config.grid_size, config.grid_size, 4)) #[y_min, x_min, y_max, x_max]
@@ -114,8 +117,6 @@ def train(config, model, ds_train, ds_test):
         x_max = tf.add(y[..., 0], tf.divide(y[..., 2], 2)) # x_max = x_center + width/2
         y_out = tf.stack([y_min, x_min, y_max, x_max], axis=3)
         return y_out
-
-
 
     def IOU(y_true, y_pred):  # used as metric! in the range 0 ...1.  1=worst IOU, 0=ideal, identical Bboxes
         # assumes that the width and height is in grid-size scale
@@ -163,6 +164,9 @@ def train(config, model, ds_train, ds_test):
         TN_rate = TN / N
         return TN_rate
     
+
+    ############################# -- TRAINING SECTION -- #################################################################################################
+
     if config.loss_function == "custom":
         loss = custom_loss
         metrics = [objectness_loss, bbox_loss, TP_rate, TN_rate, IOU, gIOU]
@@ -182,7 +186,7 @@ def train(config, model, ds_train, ds_test):
         return lr * (1/config.learning_rate_decay) ** (1 / (config.epochs-1))
 
     learning_rate_callback = keras.callbacks.LearningRateScheduler(lr_scheduler, verbose=0) # verbose 0: quiet, verbose 1: output
-
+#
     model.fit(ds_train,  
                 batch_size=config.batch_size,
                 epochs=config.epochs,
