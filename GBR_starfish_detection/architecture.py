@@ -37,13 +37,10 @@ def transfer_model(config):
     x = preprocess_input(x)
     x = base_model(x)
     
-    if config.head_channels > 0:
-        x = keras.layers.Conv2D(config.head_channels, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
-        x = keras.layers.Dropout(config.dropout)(x)
-        outputs = keras.layers.Conv2D(5, 1, 1, activation="linear")(x)
+    x = keras.layers.Conv2D(config.head_channels, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    outputs = keras.layers.Conv2D(5, (3,3), strides=(2,2), padding="same", activation="linear")(x)
 
-    else:
-        outputs = keras.layers.Conv2D(5, (3,3), strides=(2,2), padding="same", activation="linear")(x)
     
     # one output for classification (objectness) and four for regression (bounding box coordinates)
     # scale output of sigmoid to fit target values
