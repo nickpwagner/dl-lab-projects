@@ -63,15 +63,13 @@ def train(config, model, ds_train, ds_test):
         mask = y_true[...,0]
         mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
         y_pred_m = tfm.multiply(mask, y_pred)
-        """
+        
         # box center coordinate loss
         bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])  # index 1: center x
         bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])  # index 2: center y
-        bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
+        bbox_center_loss = tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
         #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
-        """
-        mse = keras.losses.MeanSquaredError()
-        bbox_center_loss = mse(y_true[..., 1:3], y_pred_m[..., 1:3])
+        
         return config.yolo_weight_center * bbox_center_loss
 
     def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
@@ -84,7 +82,9 @@ def train(config, model, ds_train, ds_test):
         # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
         # ( sqrt(abs(true - pred)) ) **2
         bbox_width_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,3], y_pred_m[...,3])))  
+
         #tfm.square(tfm.add(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+
         bbox_height_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,4], y_pred_m[...,4])))  
         #tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
         bbox_size_loss = tf.reduce_mean(bbox_width_loss) + tf.reduce_mean(bbox_height_loss) #, axis=(1,2))
