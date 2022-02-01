@@ -1,7 +1,7 @@
   
 # data
 data_dir:
-  value: "C:/DL_Lab/GBR_dataset/" #"/content/"
+  value: "C:/DL_Lab/GBR_dataset_896/" #"/content/"
 test_split:
   value: 0.2 
 img_width:

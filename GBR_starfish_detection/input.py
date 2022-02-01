@@ -196,14 +196,15 @@ if __name__ == "__main__":
 
     plt.figure("GBR", figsize=(10,10))
     print("show dataset")
+    i = np.random.randint(0, config.batch_size)
     for images, y in ds_train:
+        if np.any(y[i][:,:,0] == 1):
+            print(y[i][:,:,0])
+            img = annotate_image(config, images[i], y[i], y[i])
+            plt.imshow(img)
+            plt.show()
+
         
-        i = np.random.randint(0, config.batch_size)
-        print(y[i][:,:,0])
-        img = annotate_image(config, images[i], y[i], y[i])
- 
-        plt.imshow(img)
-        plt.show()
  
         
 
