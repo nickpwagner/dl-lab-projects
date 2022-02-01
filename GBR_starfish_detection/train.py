@@ -70,7 +70,7 @@ def train(config, model, ds_train, ds_test):
         bbox_center_loss = tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
         #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
         
-        return config.yolo_weight_center * bbox_center_loss
+        return config.yolo_weight_center * tf.reduce_mean(bbox_center_loss)
 
     def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
         # only use cell entries which have an object in them
@@ -80,28 +80,27 @@ def train(config, model, ds_train, ds_test):
         # box size loss
         # use absolute values and sign to avoid sqrt of negative vales (nan)
         # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
-        # ( sqrt(abs(true - pred)) ) **2
-        bbox_width_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,3], y_pred_m[...,3])))  
 
-        #tfm.square(tfm.add(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
+        bbox_size_loss = tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
 
-        bbox_height_loss = tfm.square(tfm.abs(tfm.subtract(y_true[...,4], y_pred_m[...,4])))  
-        #tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
-        bbox_size_loss = tf.reduce_mean(bbox_width_loss) + tf.reduce_mean(bbox_height_loss) #, axis=(1,2))
-
-        return config.yolo_weight_size * bbox_size_loss
+        return config.yolo_weight_size * tf.reduce_mean(bbox_size_loss)
 
     def yolo_no_obj_loss(y_true, y_pred):
         # confidence (objectness) loss for cells without objects
-        no_obj_mask = tf.cast(tf.where(y_true[...,0] == 0, 1, 0), dtype=tf.float32)  # consider only 0-objectness grid cells as relevant.
-        no_obj_loss = tf.reduce_mean(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])))  # reduce_sum leads to a very high loss which makes backprob unstable
-        return config.yolo_weight_noobj * no_obj_loss
+        no_obj_mask = 1 - y_true[...,0]
+        no_obj_loss = tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+        
+        return config.yolo_weight_noobj * tf.reduce_mean(no_obj_loss)
 
     def yolo_obj_loss(y_true, y_pred):
+       
         # confidence (objectness) loss for cells with objects
         y_pred_obj_m = tfm.multiply(y_true[...,0], y_pred[...,0])
-        obj_loss = tf.reduce_mean(tfm.square(y_true[...,0] - y_pred_obj_m))
-        return config.yolo_weight_obj * obj_loss
+        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_obj_m), axis=(1,2))
+        
+        return config.yolo_weight_obj * tf.reduce_mean(obj_loss)
 
     def yolo_loss(y_true, y_pred):
         return yolo_bbox_center_loss(y_true, y_pred) + yolo_bbox_size_loss(y_true, y_pred) + yolo_obj_loss(y_true, y_pred) + yolo_no_obj_loss(y_true, y_pred)
@@ -219,38 +218,48 @@ if __name__ == "__main__":
         os.rename("model.h5", model_filename)
     model = tf.keras.models.load_model(model_filename, compile=False) 
 
-    mse = keras.losses.MeanSquaredError()
-
-    def yolo_loss(y_true, y_pred):
-        weight_coord = 5
-        weight_noobj = 0.5
-
+    def yolo_bbox_center_loss(y_true, y_pred): # mse
         # only use cell entries which have an object in them
         mask = y_true[...,0]
         mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
         y_pred_m = tfm.multiply(mask, y_pred)
-
         # box center coordinate loss
-        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])
-        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])
-        bbox_center_loss = weight_coord * tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
+        bbox_center_x_loss = tfm.square(y_true[...,1] - y_pred_m[...,1])  # index 1: center x
+        bbox_center_y_loss = tfm.square(y_true[...,2] - y_pred_m[...,2])  # index 2: center y
+        bbox_center_loss = tf.reduce_sum(bbox_center_x_loss + bbox_center_y_loss, axis=(1,2))
         #alternative one liner: weight_coord * tf.reduce_sum(tf.reduce_sum(tfm.square(y_true[...,1:3] - y_pred_m[...,1:3], axis=3)), axis=(1,2))
+        return config.yolo_weight_center * tf.reduce_mean(bbox_center_loss)
 
+    def yolo_bbox_size_loss(y_true, y_pred): # mse of sqrt
+        # only use cell entries which have an object in them
+        mask = y_true[...,0]
+        mask = tf.stack([mask,mask,mask,mask,mask], axis=3)
+        y_pred_m = tfm.multiply(mask, y_pred)
         # box size loss
         # use absolute values and sign to avoid sqrt of negative vales (nan)
         # tbc: add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)add small value to sqrt for predicted values to ensure numerical stability (derivative with input zero > inf)
-        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]))))
-        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]))))
-        bbox_size_loss = weight_coord * tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
 
-        # confidence (objectness) loss for cells with objects
-        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_m[...,0]), axis=(1,2))
+        bbox_width_loss = tfm.square(tfm.sqrt(y_true[...,3]) - tfm.multiply(tfm.sign(y_pred_m[...,3]), tfm.sqrt(tfm.abs(y_pred_m[...,3]) + 1e-10)))
+        bbox_height_loss = tfm.square(tfm.sqrt(y_true[...,4]) - tfm.multiply(tfm.sign(y_pred_m[...,4]), tfm.sqrt(tfm.abs(y_pred_m[...,4]) + 1e-10)))
+        bbox_size_loss = tf.reduce_sum(bbox_width_loss + bbox_height_loss, axis=(1,2))
 
+        return config.yolo_weight_size * tf.reduce_mean(bbox_size_loss)
+
+    def yolo_no_obj_loss(y_true, y_pred):
         # confidence (objectness) loss for cells without objects
-        no_obj_mask = 1-mask[...,0]
-        no_obj_loss = weight_noobj * tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+        no_obj_mask = 1 - y_true[...,0]
+        no_obj_loss = tf.reduce_sum(tfm.multiply(no_obj_mask, tfm.square(y_true[...,0] - y_pred[...,0])), axis=(1,2))
+        return config.yolo_weight_noobj * tf.reduce_mean(no_obj_loss)
 
-        return bbox_center_loss + bbox_size_loss + obj_loss + no_obj_loss
+    def yolo_obj_loss(y_true, y_pred):
+        # confidence (objectness) loss for cells with objects
+        y_pred_obj_m = tfm.multiply(y_true[...,0], y_pred[...,0])
+        obj_loss = tf.reduce_sum(tfm.square(y_true[...,0] - y_pred_obj_m), axis=(1,2))
+        return config.yolo_weight_obj * tf.reduce_mean(obj_loss)
+
+    def yolo_loss(y_true, y_pred):
+        return yolo_bbox_center_loss(y_true, y_pred) + yolo_bbox_size_loss(y_true, y_pred) + yolo_obj_loss(y_true, y_pred) + yolo_no_obj_loss(y_true, y_pred)
+
 
     counter = 0
     for x,y in ds_train:
@@ -258,4 +267,7 @@ if __name__ == "__main__":
         print(y_pred.shape)
         print(y.shape)
         #mse(y_pred[...,0],y[...,0])
-        yolo_loss(y,y_pred)
+        print("bbox_center", yolo_bbox_center_loss)
+        print("bbox_center", yolo_bbox_size_loss)
+        print("bbox_center", yolo_no_obj_loss)
+        print("bbox_center", yolo_loss)

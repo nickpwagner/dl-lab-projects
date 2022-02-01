@@ -11,18 +11,18 @@ img_height:
 dataset_slice_start:
   value: 20
 dataset_slice_end:
-  value: 235 #00
+  value: 23500 #00
 
 
 # train
 epochs:
   value: 50
 batch_size:
-  value: 32
+  value: 32 #2
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.01
+  value: 0.00001
 learning_rate_decay:
   value: 1
 momentum:
@@ -43,9 +43,9 @@ objectness_loss_weighting: # weights the loss overall, compared to bbox loss
 
 # settings for yolo loss
 yolo_weight_center:
-  value: 5
+  value: 1
 yolo_weight_size:
-  value: 0.5
+  value: 2
 yolo_weight_obj:
   value: 1
 yolo_weight_noobj:
