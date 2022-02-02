@@ -18,7 +18,7 @@ dataset_slice_end:
 epochs:
   value: 50
 batch_size:
-  value: 2 #2
+  value: 32 #2
 optimizer:
   value: "sgd"
 learning_rate:
@@ -61,7 +61,7 @@ grid_size:
 trainable:
   value: "none"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 head_channels:
-  value: 1024  # if a hidden conv layer is required after the resnet base-model and with how many layers
+  value: 2048  # if a hidden conv layer is required after the resnet base-model and with how many layers
 dropout:
   value: 0.5 # dropout between last hidden conv layer and the output conv layer
 
