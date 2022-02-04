@@ -3,15 +3,7 @@
 data_dir:
   value: "c:/DL_Lab/cones_multi_class_partial/"
 data_partial:
-  value: True
-img_width:
-  value: 1280
-img_height:
-  value: 720
-dataset_slice_start:
-  value: 20
-dataset_slice_end:
-  value: 23500 #00
+  value: False
 
 
 # train
@@ -22,7 +14,7 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.00001
+  value: 0.1
 learning_rate_decay:
   value: 1
 momentum:

@@ -4,7 +4,7 @@ import argparse
 import tensorflow.keras as keras
 
 from architecture import transfer_model
-from input import load
+from input import DataLoader
 from train import train
 import os
 
@@ -21,7 +21,8 @@ def main(args):
     os.environ['WANDB_DIR'] = config.data_dir + "wandb/"
     
     # load and preprocess data set
-    ds_train, _, ds_test = load(config)
+    dataLoader = DataLoader(config)
+    ds_train, ds_test = dataLoader.load()
 
     detection_model = transfer_model(config)
 
@@ -52,7 +53,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--data_dir', type=str, help='path to the dataset and wandb logging', default=argparse.SUPPRESS)
     parser.add_argument('-m', '--wandb_model', type=str, help='name of the wandb run that stores the model', default="New")
-    parser.add_argument('-d', '--dataset_slice_end', type=int, help='until which entry the csv dataframe shall be evaluated', default=argparse.SUPPRESS)
     args = parser.parse_args()
     main(args)
 
