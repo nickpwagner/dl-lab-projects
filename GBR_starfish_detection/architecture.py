@@ -37,31 +37,29 @@ def transfer_model(config):
     x = preprocess_input(x)
     x = base_model(x)
     
-    x = keras.layers.Conv2D(config.head_channels, (3,3), strides=(2,2), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    	# 28x28x2048
+    x = keras.layers.MaxPool2D(pool_size=(2,2))(x)
+    # 14x14x2048
+    x = keras.layers.Conv2D(512, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     x = keras.layers.Dropout(config.dropout)(x)
-    outputs = keras.layers.Conv2D(5, (3,3), strides=(2,2), padding="same", activation="linear")(x)
-
-    
-    # one output for classification (objectness) and four for regression (bounding box coordinates)
-    # scale output of sigmoid to fit target values
-    """
-    objectness = keras.layers.Conv2D(1, 1, 1, activation="linear")(x)
-    bbox = keras.layers.Conv2D(4, 1, 1, activation="linear")(x)
-
-    # merge both output layers to a total of 5 (objectness, center_x, center_y, width, height)
-    outputs = keras.layers.concatenate([objectness, bbox])  #([objectness, position, width, height])
-    """
-    
-    """
-    position = keras.layers.Conv2D(2, 1, 1)(x)
-    position = keras.activations.tanh(position)*0.5
-    width = keras.layers.Conv2D(1, 1, 1)(x)
-    width = keras.activations.sigmoid(width)*1.5
-    height = keras.layers.Conv2D(1, 1, 1)(x)
-    height = keras.activations.sigmoid(height)*2.5
-    """
- 
-    
+    x = keras.layers.Conv2D(256, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.Conv2D(512, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.Conv2D(256, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.Conv2D(512, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.MaxPool2D(pool_size=(2,2))(x)
+    # 7x7x512
+    x = keras.layers.Conv2D(512, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.Conv2D(256, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    x = keras.layers.Conv2D(128, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Dropout(config.dropout)(x)
+    outputs = keras.layers.Conv2D(5, (1,1), strides=(1,1), padding="same", activation="linear")(x)
+    # 7x7x5 
 
     return keras.Model(inputs=inputs, outputs=outputs, name="yolo")
 
