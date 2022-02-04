@@ -1,9 +1,9 @@
   
 # data
 data_dir:
-  value: "C:/DL_Lab/GBR_dataset/" #"/content/"
-test_split:
-  value: 0.2 
+  value: "c:/DL_Lab/cones_multi_class_partial/"
+data_partial:
+  value: True
 img_width:
   value: 1280
 img_height:
