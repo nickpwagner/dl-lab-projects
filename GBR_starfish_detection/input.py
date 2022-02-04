@@ -38,17 +38,16 @@ def load(config):
         return X, y
 
     def augment(image, y, seed):
-        image = tf.image.stateless_random_contrast(image, 0.8, 1.2, seed=seed)
-        image = tf.image.stateless_random_brightness(image, 0.1, seed=seed)
-        image = tf.image.stateless_random_hue(image, 0.05, seed)
-        image = tf.image.stateless_random_saturation(image, 0.9, 1.1, seed=seed)
-
-        image_flip_lr = tf.image.stateless_random_flip_left_right(image, seed=seed)
+        image = tf.image.stateless_random_contrast(image, 0.7, 1.5, seed=seed)
+        image = tf.image.stateless_random_brightness(image, 0.3, seed=seed+1)
+        image = tf.image.stateless_random_hue(image, 0.1, seed+2)
+        image = tf.image.stateless_random_saturation(image, 0.8, 1.5, seed=seed+3)
+        image_flip_lr = tf.image.stateless_random_flip_left_right(image, seed=seed+4)
         if tf.math.reduce_all(tf.equal(image, image_flip_lr)) == False:
             y = tf.reverse(y, axis=[0]) # row, cols, 5 -> row = 0
             y = tf.stack([y[:,:, 0], -y[:,:, 1], y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)
             
-        image_flip_ud = tf.image.stateless_random_flip_up_down(image_flip_lr, seed=seed)
+        image_flip_ud = tf.image.stateless_random_flip_up_down(image_flip_lr, seed=seed+5)
         if tf.math.reduce_all(tf.equal(image_flip_lr, image_flip_ud)) == False:
             y = tf.reverse(y, axis=[1]) # row, cols, 5 -> cols = 1
             y = tf.stack([y[:,:, 0], y[:,:, 1], -y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)

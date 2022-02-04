@@ -22,22 +22,22 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.00001
+  value: 0.1
 learning_rate_decay:
   value: 1
 momentum:
   value: 0.9
 
 loss_function:
-  value: "yolo"  # "custom"
+  value: "custom"  # "yolo", "custom"
 
 # settings for custom loss
 objectness_loss:
   value: "weighted_bce"  # select from bce, mse, weighted_bce
 bce_weighting:
-  value: 20 # positive value, >1 increases the loss for False Negatives by this factor
+  value: 25 # positive value, >1 increases the loss for False Negatives by this factor
 bbox_loss:
-  value: "giou" # "mse", "mae", "giou"
+  value: "mae" # "mse", "mae", "giou"
 objectness_loss_weighting: # weights the loss overall, compared to bbox loss
   value: 1
 
@@ -60,10 +60,8 @@ grid_size:
   value: 7
 trainable:
   value: "none"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
-head_channels:
-  value: 1024  # if a hidden conv layer is required after the resnet base-model and with how many layers
 dropout:
-  value: 0.5 # dropout between last hidden conv layer and the output conv layer
+  value: 0.2 # dropout between last hidden conv layer and the output conv layer
 
 
 # evaluate
