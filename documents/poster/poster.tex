@@ -1,104 +1,105 @@
-\documentclass[landscape,a2,final,10pt]{issposter}
-
-% If you encounter errors like "No room for a new ...", use etex (needs
-% to be the first package. This happens, if too many registers are used
-% because of too many packages or too many complex packages (like e.g. 
-% tikz, pstricks and longtable). etex extends the number of registers.
-% etex has to be the first package to be loaded!
-% \usepackage{etex}
+\documentclass[landscape,a2,final,12pt]{issposter}
 
 \usepackage[latin1]{inputenc}
 \usepackage{multicol}
-\usepackage{graphicx,wrapfig,lipsum}
-\usepackage[ngerman]{babel}
+\usepackage{graphicx,wrapfig}
+\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{dsfont}
-\usepackage[justification=centering]{caption}
+\usepackage{caption}
+\usepackage[font=scriptsize,labelfont=bf]{caption}
+%\usepackage{enumitem} \setlist[itemize]{noitemsep}
+\usepackage{enumitem}
+\setlength{\abovecaptionskip}{5pt plus 3pt minus 2pt} % distance between image and caption
 
-% If you want to use latex, dvips and ps2pdf, use hyperref to get correct
-% page sizes. With hyperref, you won't have to specify them on the command
-% line.
-% \usepackage[pdfpagemode=UseNone,dvips,pdfborder={0 0 0}]{hyperref}
-
-% \usepackage{tikz} % nice graphics, also used for the fancy boxes
-
-% \usepackage{pstricks,pst-plot,pst-node} % nice graphics with PS
-% \psset{unit=3mm,nodesep=1.5,linewidth=.3}
-% Use auto-pst-pdf, to use PSTricks with pdflatex. In this case,
-% you have to add --shell-escape to your pdflatex command line.
-% \usepackage{auto-pst-pdf}
-
-% Set the font sizes. Change these, if you want to change only one or two.
-% Use the font size options of the document class (14pt, 17pt, 20pt, 15pt, 30pt, 36pt),
-% if you want to change all the sizes at once.
 \renewcommand{\titlesize}{\LARGE}
 \renewcommand{\sectionsize} {\Large}
 \renewcommand{\authorsize}{\Large}
 \renewcommand{\instsize}{\large}
-\renewcommand{\figurename}{Fig.}
-\usepackage[font=scriptsize,labelfont=bf]{caption}
-\setlength{\abovecaptionskip}{5pt plus 3pt minus 2pt} % Chosen fairly arbitrarily
 
-
-
-% Insert your data
 \title{\MakeUppercase{Great Barrier Reef: Invasive Starfish Detector}}
 \author{Nick Wagner and David Unger}
 \institute{Institute of Signal Processing and System Theory, University of Stuttgart, Germany}
 \conference{\normalsize \textbf{Deep Learning Lab 2022}, February 8, Stuttgart, Germany }
 
-% -----------------------------------------------------------------------------
 \begin{document}
 \maketitle
 
 % Justified text sometimes looks strange in narrow columns
 \raggedright
-
 \begin{multicols}{3}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Problem Statement}
     \textbf{Abstract}\\
     \begin{small} The Great Barrier Reef in Australia is known world-wide for its diverse animal and coral species.
-        Recently, the overpopulation of the coral-eating crown-of-thorns starfish threatens the existance of many corals.
-        To allow divers to efficiently remove these star fishes from the corals, we develop an object detection algorithm. \newline
-        The algorithm is based on the ''YOLO''--framework and takes video sequences as input, detects the starfishes and draws bounding boxes around them.
-    \bigskip   
+        Recently, the overpopulation of the coral-eating crown-of-thorns starfish starts threatening the existance of many corals.
+        To allow divers to efficiently remove these star fishes from the corals, an object detection algorithm gets used. \newline
+        The algorithm is based on the ''YOLO''--framework and takes video sequences as input, detects the starfishes and draws bounding boxes around them.\\
     \end{small}
-    % starfish image 
-    \begin{wrapfigure}{r}{0pt}
-    \includegraphics[scale=0.8]{1_starfishes.png}
-    \caption{test123}
-    \end{wrapfigure} 
-
+    \vspace{0.5cm}
     \textbf{Dataset}
+    %starfish image 
+    \begin{wrapfigure}{r}{0pt}
+    \centering
+        \includegraphics[scale=0.8]{1_starfishes.png}
+        \caption{Example bounding boxes}
+    \end{wrapfigure} 
+    \vspace*{-0.5cm}
     \begin{small}
     \begin{itemize}
         \item \raisebox{-0.6ex}{\~{}}23000 images\\ from 3 video sequences
-        \item bounding box labels from csv\\
+        \item bounding box labels from csv
         \item binary problem
     \end{itemize}
     \end{small}
-    \hfill \break
-    \hfill \break
+    \vspace*{2cm}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \section{Architecture}
+\section{Architecture}
+    \begin{small}
+        The basis for the following customized architecture is the YOLO ("You Only Look Once") paper.
+        The most significant changes are the removal of a dense layer, the addition of a dropout layer and dimension changes.
+    \end{small}
+
+    \begin{center}
+        \includegraphics[scale=0.7]{2_architecture.png}
+        \captionof{figure}{customized YOLO architecture}
+    \end{center}
+    \begin{small}
         \begin{itemize}
-            \item Text item
-            \item Text item
-            \item Text item
+            \item {\textbf{input layer}: image size of 448x448 with three color channels (R,G,B)}
+            \item {\textbf{resnet50}: transfer model that is pretrained on ImageNet data}
+            \item {\textbf{conv1}: reduction of channels and grid size to 7x7 due to stride}
+            \item {\textbf{dropout}: generalization technique to prevent overfitting}
+            \item {\textbf{conv2}: final reduction of channels to 5 with padding}
         \end{itemize}
+    \end{small}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-    \section{Network Output}
+\section{Network Output}
+    \begin{small}
+        The final output of the network is a 7x7 grid. Each grid cell predicts one bounding box, which results in 49 possibly predicted bounding boxes.
+    \end{small}
+    \begin{center}
+        \includegraphics[scale=0.55]{3_channels.png}
+        \captionof{figure}{customized YOLO architecture}
+    \end{center}
+    \begin{small}
         \begin{itemize}
-            \item Text item
-            \item Text item
-            \item Text item
+            \item {\textbf{objectness}: confidence of the prediction}
+            \item {\textbf{x-center}: x-coordinate in relation to its cell center}
+            \item {\textbf{y-center}: y-coordinate in relation to its cell center}
+            \item {\textbf{width}: box-width measured in cell widths}
+            \item {\textbf{height}: box-height measured in cell heights}
         \end{itemize}
-    \columnbreak
+    \end{small}
+    \begin{footnotesize}
+        * The values are shown in pixel for understanding purposes. In reality, smaller values relative to the cell size are easier for the model to predict. Hence, the implementation is done that way.
+    \end{footnotesize}
+    
 \end{multicols}
 
 
