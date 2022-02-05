@@ -10,7 +10,106 @@ class DataLoader:
     def __init__(self, config):
         self.config = config
         if not self.config.data_partial:
-            self.black_list_files_train = ["00001505_skid-pad.txt", 
+            self.black_list_files_train = ["cjt313jnxb2if0890tekvbtph.txt",
+                        "cjt3196dak77u0997grhsqr71.txt",
+                        "cjt31enuhb45l08909dkubjmz.txt",
+                        "cjt31pclzk0sy09664jijvuyq.txt",
+                        "cjt31risfdh6i0707vyo2z13e.txt",
+                        "cjt31ulj9k9gt0997ftrulot6.txt",
+                        "cjt31vht4dhn90707elnq32yn.txt",
+                        "cjt31xf0ok1rl09668w8nsg2a.txt",
+                        "cjt328sdqkafk0997leyogzkk.txt",
+                        "cjt32aoqlkakz09971zfohkzv.txt",
+                        "cjt32cmfwkh690990cu1bfxta.txt",
+                        "cjt38fg6dl1z00997gs0o25fo.txt",
+                        "cjt38fu1wl22l0997s7uotd4x.txt",
+                        "cjt38g2bsl9lr0990czjw8kem.txt",
+                        "cjt38gkxbbz2h0890jjl6u6k0.txt",
+                        "cjt38gqi1zqeg0a83kg5w3z6l.txt",
+                        "cjt38h7ockvhu0966l7jolfnw.txt",
+                        "cjt38hnfil2k90997a3fouv2f.txt",
+                        "cjt38i8qrl2vv0997jfzva6um.txt",
+                        "cjt38imhszrbc0a83qizcpf2n.txt",
+                        "cjt38j1wfzrnu0a831cendr6b.txt",
+                        "cjt38jswhzs670a8305bzaxvc.txt",
+                        "cjt38ka0glbsw0990f5df95h8.txt",
+                        "cjt38kqs9zsxd0a83ok0m20ze.txt",
+                        "cjt38kwn0lcgq09907xuo7iv1.txt",
+                        "cjt38le7zc28l0890i59lbqta.txt",
+                        "cjt38lkg1lcxg0990psfraasc.txt",
+                        "cjt38lze1eede070716nszjcr.txt",
+                        "cjt38mf0dkzdt0966bcp77soi.txt",
+                        "cjt38muoozust0a83pjh8tbzm.txt",
+                        "cjt38npz8l0hu0966mrjx9xgx.txt",
+                        "cjt38ppkvzx1a0a834pt1kui2.txt",
+                        "cjt38sj0slap3099738fms6mi.txt",
+                        "cjt38uejp00jn0a83bnn6lns1.txt",
+                        "cjt38wtt5cawi0890ku2q1elu.txt",
+                        "cjt38ywbqlf4i0997nh709nf5.txt",
+                        "cjt39hr7elr260997ikfcjkt1.txt",
+                        "cjt39i5e0lxvr0990gmvj9key.txt",
+                        "cjt39iepaly2z09903izubtdd.txt",
+                        "cjt39iv4lcp8n0890r17qdq74.txt",
+                        "cjt39jtbgcpwm0890qlzscn6b.txt",
+                        "cjt39kb3e0hdb0a83wsfqwy73.txt",
+                        "cjt39kuijcqnv0890wq4va5v1.txt",
+                        "cjt39lbhvf0si070757rxgnwm.txt",
+                        "cjt39lralm0e0099020om3hjb.txt",
+                        "cjt39m569lu6f0997oxta2mhk.txt",
+                        "cjt39mgzmlue90997e3hwhi9k.txt",
+                        "cjt39mtgxlnpo0966icclozxt.txt",
+                        "cjt39n4l30jad0a83r9sbpb60.txt",
+                        "cjt39nbj5f27d0707x8oq30dj.txt",
+                        "cjt39np1jlo8y0966vl8h3wap.txt",
+                        "cjt39o1mlcspn089087mut7z1.txt",
+                        "cjt39of90f2zh070790s6x3oo.txt",
+                        "cjt39osdpct870890jvxlhuny.txt",
+                        "cjt39oxyclvyl0997ppufm0ra.txt",
+                        "cjt39paabf3id07071zt30w7r.txt",
+                        "cjt39pflplwa60997myz5mljp.txt",
+                        "cjt39psvam2ur0990bvhl00qh.txt",
+                        "cjt39q7vxlwp80997oxs4el2l.txt",
+                        "cjt39ql5mm3bn0990n94rke23.txt",
+                        "cjt39qxf8f4fo070721ip39fd.txt",
+                        "cjt39rgv8lqmo0966n97t39o9.txt",
+                        "cjt39rrrvlxpu09979aknvnju.txt",
+                        "cjt39s38ccvap089068kouk5c.txt",
+                        "cjt39sg85ly2n09978lfdbb2k.txt",
+                        "cjt39sod2lrcd0966b7zohdhc.txt",
+                        "cjt39sxksm4k80990nbbh8ch2.txt",
+                        "cjt39t5sr0myn0a83xkr9oh3w.txt",
+                        "cjt39td9tm4ur09908cnnlwrp.txt",
+                        "cjt39tr7ylry10966lpx13pog.txt",
+                        "cjt39tyutlz2r09978i7d5gm1.txt",
+                        "cjt39u5vylz6b09971x1rnx9b.txt",
+                        "cjt39ueuwf6ib0707t9j6pezp.txt",
+                        "cjt39uniaf6n607071lx8pn5n.txt",
+                        "cjt39utvllzhr0997cenaibgq.txt",
+                        "cjt39uw3ncwvf0890b74iu8pu.txt",
+                        "cjt39vnymlt9t09663mn1uop3.txt",
+                        "cjt39vvaqltfv09667lh056tn.txt",
+                        "cjt39w2iqcxo20890ipz8dppp.txt",
+                        "cjt39wuebf85f070716mozibk.txt",
+                        "cjt39x169m0pb0997l51mh1aa.txt",
+                        "cjt39x7jam77x09905h12podm.txt",
+                        "cjt39xdxpcylf0890zd1xk60z.txt",
+                        "cjt39xm81cyp20890038ncgwb.txt",
+                        "cjt39xsomcyur0890kaly6072.txt",
+                        "cjt39xyrqm7p20990exx4lyea.txt",
+                        "cjt39y57ym1fq0997biq6193c.txt",
+                        "cjt39yfbfcz7c0890nfrro4fu.txt",
+                        "cjt39ymcqm1us0997scmdc4f7.txt",
+                        "cjt39yywfm22d099755bfy7z9.txt",
+                        "cjt47h2333e3t099788ndcmgv.txt",
+                        "cjt47kaxfi5ol0a835bfmcwj2.txt",
+                        "cjt47m5q4i6kt0a83uq1facfl.txt",
+                        "cjt4849523tt70990g8raf1pv.txt",
+                        "cjt48gsn1ikiu0a83qrwlddow.txt",
+                        "cjt4faafo09xn07074md1qtqk.txt",
+                        "cjt4fc3nf0aax0707aatkjhqz.txt",
+                        "cjt4febsj0anu07073fmot6o1.txt",
+                        "cjt4kdm8o09jx090302fpsa62.txt",
+                        "00001505_skid-pad.txt", 
                         "Renningen_08_04_video_second_frame_8.txt", 
                         "Aidlingen_07_12_video_first_frame_4.txt",
                         "Aidlingen_07_12_video_first_frame_8.txt",
@@ -24,7 +123,7 @@ class DataLoader:
                         "213(2).txt",
                         "Aidlingen_07_12_video_first_frame_3.txt",
                         "00001464_skid-pad.txt"
-                        ]  
+                        ]    
                         # the labels of this samples are currupt and may not be used
         else:
             self.black_list_files_train = [] 
@@ -66,11 +165,11 @@ class DataLoader:
         n_samples = 0
         for file in os.listdir(path):
             if file.endswith(".txt"):
-                n_samples += 1
-        n_samples -= len(black_list_files)
+                if file not in black_list_files:
+                    n_samples += 1
 
         sample_ctr = 0
-        y = np.zeros((n_samples, 7, 7, 5)) #12))  # obj + bbox + classes = 1 + 4 + 7 = 12
+        y = np.zeros((n_samples, self.config.grid_size, self.config.grid_size, 5)) #12))  # obj + bbox + classes = 1 + 4 + 7 = 12
         for file in os.listdir(path):
             if file.endswith(".txt"):
             
@@ -122,7 +221,6 @@ class DataLoader:
                                 .prefetch(tf.data.AUTOTUNE)
         ds_test = self.ds_test.map(self.read_image)\
                                 .map(self.resize)\
-                                .shuffle(1000, reshuffle_each_iteration=True)\
                                 .batch(self.config.batch_size, drop_remainder=True)\
                                 .prefetch(tf.data.AUTOTUNE)
         return ds_train, ds_test

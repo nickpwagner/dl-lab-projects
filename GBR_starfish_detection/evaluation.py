@@ -1,7 +1,7 @@
 if __name__ == "__main__":
     import wandb
     import tensorflow as tf
-    from input import load, annotate_image
+    from input import DataLoader, annotate_image
     import tensorflow.keras as keras
     import cv2
     import os
@@ -14,8 +14,9 @@ if __name__ == "__main__":
     config = wandb.config
 
 
-    _, ds_train, ds_test = load(config) # load the unshuffled train dataset and the test dataset
-    
+    # load and preprocess data set
+    dataLoader = DataLoader(config)
+    ds_train, ds_test = dataLoader.load()
     
     model_filename = "_".join(config.wandb_run.split("/")) + ".h5"
 

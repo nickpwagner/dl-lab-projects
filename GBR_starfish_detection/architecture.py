@@ -46,16 +46,15 @@ def transfer_model(config):
     #x = keras.layers.Dropout(config.dropout)(x)
     x = keras.layers.Conv2D(128, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     #x = keras.layers.Dropout(config.dropout)(x)
-    x = keras.layers.Conv2D(256, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    x = keras.layers.Conv2D(128, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     #x = keras.layers.Dropout(config.dropout)(x)
-    x = keras.layers.MaxPool2D(pool_size=(2,2))(x)
-    # 7x7x512
-    
-    x = keras.layers.Conv2D(256, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    #x = keras.layers.MaxPool2D(pool_size=(2,2))(x)
+
+    #x = keras.layers.Conv2D(256, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     #x = keras.layers.Dropout(config.dropout)(x)
-    x = keras.layers.Conv2D(128, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    #x = keras.layers.Conv2D(128, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     #x = keras.layers.Dropout(config.dropout)(x)
-    x = keras.layers.Conv2D(64, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+    #x = keras.layers.Conv2D(64, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
     x = keras.layers.Dropout(config.dropout)(x)
     outputs = keras.layers.Conv2D(5, (1,1), strides=(1,1), padding="same", activation="linear")(x)
     # 7x7x5 
