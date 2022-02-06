@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1644149513 "c:/DL_Lab/dl-lab-21w-team08/documents/poster/poster.tex" "poster.pdf" "poster" 1644149518
+["pdflatex"] 1644155176 "c:/DL_Lab/dl-lab-21w-team08/documents/poster/poster.tex" "poster.pdf" "poster" 1644155180
   "1_starfishes.png" 1644133946 245685 fc36c74679262bef1b47b260ea3d12b0 ""
   "2_architecture.png" 1644133952 118973 603fb87d0f5885e2cf7cd55aab2666b3 ""
   "3_channels.png" 1644133952 181982 6f5483349d624696047f5c6474c67857 ""
@@ -161,13 +161,13 @@
   "C:/Scarlett/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1636284872 56029 3f7889dab51d620aa43177c391b7b190 ""
   "C:/Users/david/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1644135804 82666 6ae954049cbd801ff08c004e318ae5a8 ""
   "C:/Users/david/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1643837214 10235495 180aa80be38959ae8f5d7959e9dccbfb ""
-  "c:/DL_Lab/dl-lab-21w-team08/documents/poster/poster.tex" 1644149508 8632 6065a22ad51dd06fadb14c819b3e35da ""
+  "c:/DL_Lab/dl-lab-21w-team08/documents/poster/poster.tex" 1644155172 8570 d25561cbb176932d372ed994672404d3 ""
   "isslogocolor.pdf" 1643957617 48759 e585e5c2cf48affa205dbc4af7462878 ""
   "issposter.cls" 1643957617 30755 c70f4dfd6d2febd98c8badcb22e9ecc5 ""
   "issposter_background_landscape.png" 1643957617 344751 7bf35532335c59bc1112c7de1226c96c ""
   "issposter_section_background.png" 1643957617 33602 f4e68f6b94b50f3b5e94a68f18adb5f3 ""
-  "poster.aux" 1644149518 1127 98ca9614271c12b0ddae315d868f0224 "pdflatex"
-  "poster.tex" 1644149508 8632 6065a22ad51dd06fadb14c819b3e35da ""
+  "poster.aux" 1644155180 1127 98ca9614271c12b0ddae315d868f0224 "pdflatex"
+  "poster.tex" 1644155172 8570 d25561cbb176932d372ed994672404d3 ""
   "unilogo_hochkant.pdf" 1643957617 9099 77bef02d95b95203fac95ea37b110484 ""
   (generated)
   "poster.aux"
