@@ -12,6 +12,7 @@
 \usepackage[font=scriptsize,labelfont=bf]{caption}
 %\usepackage{enumitem} \setlist[itemize]{noitemsep}
 \usepackage{enumitem}
+
 \setlength{\abovecaptionskip}{5pt plus 3pt minus 2pt} % distance between image and caption
 
 \renewcommand{\titlesize}{\LARGE}
@@ -25,6 +26,7 @@
 \conference{\normalsize \textbf{Deep Learning Lab 2022}, February 8, Stuttgart, Germany }
 
 \begin{document}
+\begin{samepage}
 \maketitle
 
 % Justified text sometimes looks strange in narrow columns
@@ -45,7 +47,7 @@
     \begin{wrapfigure}{r}{0pt}
     \centering
         \includegraphics[scale=0.8]{1_starfishes.png}
-        \caption{Example bounding boxes}
+        \caption{Example bounding boxes [1]}
     \end{wrapfigure} 
     \vspace*{-0.5cm}
     \begin{small}
@@ -109,47 +111,83 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Input Pipeline}
         \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
-        labels which are dependent on the image content and that change, if the image is scaled, rotated, cropped or flipped.Therefore, the input pipeline consists of the following steps:
+        labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
         \begin{itemize}
             \item CSV loading
             \item Bounding box text to grid conversion
-            \item Image reading
-            \item Image resizing
+            \item Image reading and resizing
             \item Image augmentation
-            \item Image visualization
         \end{itemize}
+
+        \begin{center}
+            \includegraphics[scale=0.05]{4_augmentation.png}
+            \captionof{figure}{input image augmentated differently }
+        \end{center}
+
         \end{small}
        
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Loss Function}
-        \begin{small} To ensure that the network learns the bounding boxes as represented by the ground truth labels, 
-        using a standard loss function is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
-        that it fits the described problem setup.
-        
-        
-        The four parts of our loss function are the following and summed up during training 
-        \begin{itemize}
-            \item Objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
-            \item No object loss: \quad \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
-            \item BBox center loss: \quad $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
-            \item BBox size loss: \quad \quad$l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
-        \end{itemize}
+        \begin{minipage}[b]{0.3\textwidth}
+            \begin{scriptsize} To ensure that the network learns the bounding boxes as represented by the ground truth labels, 
+            using a standard loss function is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
+            that it fits the described problem setup.
+            
+            The four parts of our loss function are the following and summed up during training 
+            \begin{itemize}
+                \item Objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
+                \item No object loss: \quad \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
+                \item BBox center loss: \quad $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
+                \item BBox size loss: \quad \quad$l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
+            \end{itemize}
 
-        The loss term weightings $\lambda$ are determined in a way, that all loss terms are in a 
-        similar range and therefore are optimized in a similar strength.
+            The loss term weightings $\lambda$ are determined in a way, that all loss terms are in a 
+            similar range and therefore are optimized in a similar strength.
 
-        \end{small}
+            \begin{figure}
+                \centering
+                \begin{minipage}{.5\textwidth}
+                \centering
+                \includegraphics[width=.4\linewidth]{5_loss_center.png}
+                \captionof{figure}{A figure}
+                \label{fig:test1}
+                \end{minipage}%
+                \begin{minipage}{.5\textwidth}
+                \centering
+                \includegraphics[width=.4\linewidth]{5_loss_size.png}
+                \captionof{figure}{Another figure}
+                \label{fig:test2}
+                \end{minipage}
+                \end{figure}
+            
+
+            \end{scriptsize}
+        \end{minipage}
+
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     \section{Challenge}
-        \begin{itemize}
-            \item Text item
-            \item Text item
-            \item Text item
-        \end{itemize}
+        \begin{minipage}[b]{0.3\textwidth}
+            \begin{scriptsize}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
+                labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
+                \begin{itemize}
+                    \item CSV loading
+                    \item Bounding box text to grid conversion
+                    \item Image reading and resizing
+                    \item Image augmentation
+                \end{itemize}
+
+                \begin{center}
+                    \includegraphics[scale=0.3]{6_img_quality.png}
+                    \captionof{figure}{Starfish at downscaled images with poor quality}
+                \end{center}
+
+            \end{scriptsize}
+        \end{minipage}
     \columnbreak
 \end{multicols}
+\end{samepage}
 \end{document}
 
 
