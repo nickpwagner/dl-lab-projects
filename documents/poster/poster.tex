@@ -26,7 +26,6 @@
 \conference{\normalsize \textbf{Deep Learning Lab 2022}, February 8, Stuttgart, Germany }
 
 \begin{document}
-\begin{samepage}
 \maketitle
 
 % Justified text sometimes looks strange in narrow columns
@@ -109,28 +108,32 @@
 
 \begin{multicols}{3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Input Pipeline}
-        \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
-        labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
-        \begin{itemize}
-            \item CSV loading
-            \item Bounding box text to grid conversion
-            \item Image reading and resizing
-            \item Image augmentation
-        \end{itemize}
-
-        \begin{center}
-            \includegraphics[scale=0.05]{4_augmentation.png}
-            \captionof{figure}{input image augmentated differently }
-        \end{center}
-
-        \end{small}
-       
+    \begin{samepage}
+    \section{Input Pipeline}
+        
+            \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
+            labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
+            \begin{itemize}
+                \item CSV loading
+                \item Bounding box text to grid conversion
+                \item Image reading and resizing
+                \item Image augmentation
+            \end{itemize}
+            \begin{minipage}[t]{0.3\textwidth}
+                \begin{center}
+                    \includegraphics[scale=0.2]{4_augmentation.png}
+                    \captionof{figure}{input image augmentated differently }
+                \end{center}
+            \end{minipage}
+            \end{small}
+            \vspace*{5cm}
+    \end{samepage}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \begin{samepage}
     \section{Loss Function}
-        \begin{minipage}[b]{0.3\textwidth}
-            \begin{scriptsize} To ensure that the network learns the bounding boxes as represented by the ground truth labels, 
+    \begin{minipage}[t]{0.3\textwidth}
+            \begin{small} To ensure that the network learns the bounding boxes as represented by the ground truth labels, 
             using a standard loss function is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
             that it fits the described problem setup.
             
@@ -139,7 +142,7 @@
                 \item Objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
                 \item No object loss: \quad \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
                 \item BBox center loss: \quad $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
-                \item BBox size loss: \quad \quad$l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
+                \item BBox size loss: \quad $l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
             \end{itemize}
 
             The loss term weightings $\lambda$ are determined in a way, that all loss terms are in a 
@@ -162,32 +165,36 @@
                 \end{figure}
             
 
-            \end{scriptsize}
+            \end{small}
         \end{minipage}
-
+    \end{samepage}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+    \begin{samepage}
     \section{Challenge}
-        \begin{minipage}[b]{0.3\textwidth}
-            \begin{scriptsize}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
-                labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
-                \begin{itemize}
-                    \item CSV loading
-                    \item Bounding box text to grid conversion
-                    \item Image reading and resizing
-                    \item Image augmentation
-                \end{itemize}
+        \begin{minipage}[t]{0.32\textwidth}
+            \begin{scriptsize}fff
+
+                fff
+
+                ffff
+
+                ffff
 
                 \begin{center}
                     \includegraphics[scale=0.3]{6_img_quality.png}
                     \captionof{figure}{Starfish at downscaled images with poor quality}
                 \end{center}
 
+                As an alternative dataset, we looked into the detection of traffic cones. The almost same network that failed to generalize on the starfish dataset was able to master the traffic cone dataset quickly.
+                The results are shown in the follwoing:
+                
+                
+
             \end{scriptsize}
         \end{minipage}
-    \columnbreak
+    \end{samepage}
 \end{multicols}
-\end{samepage}
 \end{document}
 
 
