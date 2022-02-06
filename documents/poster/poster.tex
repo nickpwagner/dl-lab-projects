@@ -30,10 +30,11 @@
 
 % Justified text sometimes looks strange in narrow columns
 \raggedright
+\raggedbottom
+\raggedcolumns
 \begin{multicols}{3}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\begin{samepage}
 \section{Problem Statement}
     \textbf{Abstract}\\
     \begin{small} The Great Barrier Reef in Australia is known world-wide for its diverse animal and coral species.
@@ -57,7 +58,7 @@
         \item binary problem
     \end{itemize}
     \end{small}
-    \vspace*{2cm}
+\end{samepage}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Architecture}
@@ -112,8 +113,9 @@
     \begin{samepage}
     \section{Input Pipeline}
         
-            \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. This mainly comes from the 
-            labels which are dependent on the image content and scale, rotation, crop and flip variant.Therefore, the input pipeline consists of the following steps:
+            \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. 
+            This mainly comes from the labels which are more complex and in addition dependent on the image content and scale,
+             rotation, crop and flip variant. The input pipeline consists of the following steps:
             \begin{itemize}
                 \item CSV loading
                 \item Bounding box text to grid conversion
@@ -123,26 +125,23 @@
             \begin{minipage}[t]{0.3\textwidth}
                 \begin{center}
                     \includegraphics[scale=0.2]{4_augmentation.png}
-                    \captionof{figure}{input image augmentated differently }
+                    \captionof{figure}{Input image augmentated differently }
                 \end{center}
             \end{minipage}
             \end{small}
-            \vspace*{5cm}
     \end{samepage}
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \begin{samepage}
     \section{Loss Function}
             \begin{small} To ensure that the network learns the bounding boxes as represented by the ground truth labels, 
-            using a standard loss function is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
-            that it fits the described problem setup.
-            
-            The four parts of our loss function are the following and summed up during training 
+            using a standard loss function like MSE is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
+            that it fits the described problem setup. The loss function consists of four parts, that are summed up during training:
             \begin{itemize}
                 \item Objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
-                \item No object loss: \quad \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
-                \item BBox center loss: \quad $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
-                \item BBox size loss: \quad $l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
+                \item No object loss: \; \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
+                \item BBox center loss: \enspace $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
+                \item BBox size loss: \quad \enspace $l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
             \end{itemize}
 
             The loss term weightings $\lambda$ are determined in a way, that all loss terms are in a 
@@ -150,16 +149,16 @@
 
             \begin{figure}
                 \centering
-                \begin{minipage}{.5\textwidth}
+                \begin{minipage}[b]{.5\textwidth}
                 \centering
-                \includegraphics[width=.4\linewidth]{5_loss_center.png}
-                \captionof{figure}{A figure}
+                \includegraphics[width=.6\linewidth]{5_loss_center.png}
+                \captionof{figure}{Bounding box center loss visualized}
                 \label{fig:test1}
                 \end{minipage}%
-                \begin{minipage}{.5\textwidth}
+                \begin{minipage}[b]{.5\textwidth}
                 \centering
-                \includegraphics[width=.4\linewidth]{5_loss_size.png}
-                \captionof{figure}{Another figure}
+                \includegraphics[width=.6\linewidth]{5_loss_size.png}
+                \captionof{figure}{Bounding box size loss visualized}
                 \label{fig:test2}
                 \end{minipage}
                 \end{figure}
@@ -170,28 +169,22 @@
     \columnbreak
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
     \begin{samepage}
-    \section{Challenge}
-        \begin{minipage}[t]{0.32\textwidth}
-            \begin{scriptsize}fff
-
-                fff
-
-                ffff
-
-                ffff
-
-                \begin{center}
-                    \includegraphics[scale=0.3]{6_img_quality.png}
-                    \captionof{figure}{Starfish at downscaled images with poor quality}
-                \end{center}
-
-                As an alternative dataset, we looked into the detection of traffic cones. The almost same network that failed to generalize on the starfish dataset was able to master the traffic cone dataset quickly.
-                The results are shown in the follwoing:
-                
-                
-
-            \end{scriptsize}
-        \end{minipage}
+    \section{Challenges}
+        \begin{small}The proposed method works well on the training dataset and shows that the architecture is in general 
+            capable of detecting starfishes. Due to the challenging dataset, the YOLO network is not able to detect the 
+            starfishes in the test dataset. 
+            The task is also for humans very challenging, since the starfishes are hard to detect in the original resolution 
+            and even harder to detect in the downscaled version with 448x448 pixel, as one can see in figure \ref{fig:img_qual}. 
+            \begin{center}
+                \includegraphics[scale=0.2]{6_img_quality.png}
+                \captionof{figure}{Top: starfishes in original resolution, bottom: starfishes downscaled to input resolution}
+                \label{fig:img_qual}
+            \end{center}
+            To endorse this hypothesis of the too challenging dataset for the standard YOLO network, the almost same network that 
+            failed to generalize on the starfish dataset was trained to detect traffic cones. The network is able to achieve 
+            over 90\% precision and an IOU \textgreater 0.5 on the test data, which are
+            decent results that show the performance of the architecture. 
+        \end{small}
     \end{samepage}
 \end{multicols}
 \end{document}
