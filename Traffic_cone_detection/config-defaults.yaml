@@ -8,7 +8,7 @@ data_partial:
 
 # train
 epochs:
-  value: 50
+  value: 20
 batch_size:
   value: 32 #2
 optimizer:
@@ -47,14 +47,12 @@ yolo_weight_noobj:
 # architecture
 cnn_input_shape:
   value: [448, 448, 3]
-architecture:
-  value: "resnet50" 
 grid_size:
   value: 14
 trainable:
-  value: "none"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
+  value: "full"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 dropout:
-  value: 0.25 # dropout between last hidden conv layer and the output conv layer
+  value: 0.5 # dropout between last hidden conv layer and the output conv layer
 
 
 # evaluate
