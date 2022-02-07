@@ -20,10 +20,10 @@
 \renewcommand{\authorsize}{\Large}
 \renewcommand{\instsize}{\large}
 
-\title{\MakeUppercase{Great Barrier Reef: Invasive Starfish Detector}}
+\title{\MakeUppercase{Great Barrier Reef: Starfish Detector}}
 \author{Nick Wagner and David Unger}
 \institute{Institute of Signal Processing and System Theory, University of Stuttgart, Germany}
-\conference{\normalsize \textbf{Deep Learning Lab 2022}, February 8, Stuttgart, Germany }
+\conference{\normalsize \textbf{Deep Learning Lab 2022}, February 8, Stuttgart, Germany \hspace{4cm} \scriptsize [1] \textit{https://www.kaggle.com/c/tensorflow-great-barrier-reef} [2] \textit{Redmon, J., et al.: You only look once: Unified, real-time object detection. In: CVPR (2016)}}
 
 \begin{document}
 \maketitle
@@ -39,7 +39,7 @@
     \textbf{Abstract}\\
     \begin{small} The Great Barrier Reef in Australia is known world-wide for its diverse animal and coral species.
         Recently, the overpopulation of the coral-eating crown-of-thorns starfish starts threatening the existance of many corals.
-        To allow divers to efficiently remove these star fishes from the corals, an object detection algorithm gets used. \newline
+        To allow divers to efficiently remove these star fishes from the corals, an object detection algorithm is used. \newline
         The algorithm is based on the ''YOLO''--framework and takes video sequences as input, detects the starfishes and draws bounding boxes around them.\\
     \end{small}
     \vspace{0.5cm}
@@ -48,14 +48,14 @@
     \begin{wrapfigure}{r}{0pt}
     \centering
         \includegraphics[scale=0.8]{1_starfishes.png}
-        \caption{Example bounding boxes [1]}
+        \caption{example bounding boxes [1]}
     \end{wrapfigure} 
     \vspace*{-0.5cm}
     \begin{small}
     \begin{itemize}
         \item \raisebox{-0.6ex}{\~{}}23000 images\\ from 3 video sequences
         \item bounding box labels from csv
-        \item binary problem
+        \item single class object \\detection problem
     \end{itemize}
     \end{small}
 \end{samepage}
@@ -63,7 +63,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Architecture}
     \begin{small}
-        The basis for the following customized architecture is the YOLO ("You Only Look Once") paper.
+        The basis for the following customized architecture is the YOLO ("You Only Look Once") paper [2].
         The most significant changes are the removal of a dense layer, the addition of a dropout layer and dimension changes.
     \end{small}
 
@@ -84,7 +84,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 \section{Network Output}
     \begin{small}
-        The final output of the network is a 7x7 grid. Each grid cell predicts one bounding box, which results in 49 possibly predicted bounding boxes.
+        The final output of the network is a 7x7 grid. Each grid cell predicts one bounding box, which results in 49 predicted bounding boxes.
     \end{small}
     \begin{center}
         \includegraphics[scale=0.55]{3_channels.png}
@@ -95,12 +95,12 @@
             \item {\textbf{objectness}: confidence of the prediction}
             \item {\textbf{x-center}: x-coordinate in relation to its cell center}
             \item {\textbf{y-center}: y-coordinate in relation to its cell center}
-            \item {\textbf{width}: box-width measured in cell widths}
-            \item {\textbf{height}: box-height measured in cell heights}
+            \item {\textbf{width}: box-width measured in relation to the cell size}
+            \item {\textbf{height}: box-height measured in relation to the cell size}
         \end{itemize}
     \end{small}
     \begin{footnotesize}
-        * The values are shown in pixel for understanding purposes. In reality, smaller values relative to the cell size are easier for the model to predict. Hence, the implementation is done that way.
+        * The values are shown in pixel for understanding purposes. In reality, smaller values relative to the cell size are easier for the model to predict. \\Hence, the implementation is done that way.
     \end{footnotesize}
     
 \end{multicols}
@@ -113,19 +113,19 @@
     \begin{samepage}
     \section{Input Pipeline}
         
-            \begin{small}Compared to a classification network, a detection network requires a more complicated input pipeline. 
+            \begin{small}Compared to a classification network, a detection network requires a more sophisticated input pipeline. 
             This mainly comes from the labels which are more complex and in addition dependent on the image content and scale,
              rotation, crop and flip variant. The input pipeline consists of the following steps:
             \begin{itemize}
-                \item CSV loading
-                \item Bounding box text to grid conversion
-                \item Image reading and resizing
-                \item Image augmentation
+                \item csv loading
+                \item bounding box text to grid conversion and back
+                \item image reading and resizing
+                \item image augmentation
             \end{itemize}
             \begin{minipage}[t]{0.3\textwidth}
                 \begin{center}
                     \includegraphics[scale=0.2]{4_augmentation.png}
-                    \captionof{figure}{Input image augmentated differently }
+                    \captionof{figure}{input image augmentated differently }
                 \end{center}
             \end{minipage}
             \end{small}
@@ -138,10 +138,10 @@
             using a standard loss function like MSE is not sufficient. Therefore, the loss function from the YOLO paper is used and adapted 
             that it fits the described problem setup. The loss function consists of four parts, that are summed up during training:
             \begin{itemize}
-                \item Objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
-                \item No object loss: \; \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
-                \item BBox center loss: \enspace $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
-                \item BBox size loss: \quad \enspace $l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
+                \item objectness loss: \quad $l_{obj} = \lambda_{obj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} (1 - \hat{p}_i)^2  $
+                \item no object loss: \; \quad $l_{noobj} = \lambda_{noobj} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{noobj} (0 - \hat{p}_i)^2  $
+                \item box center loss: \enspace $l_{center} = \lambda_{center} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(x_i - \hat{x}_i)^2 + (y_i - \hat{y}_i)^2] $
+                \item box size loss: \quad \enspace $l_{size} = \lambda_{size} \sum_{i=0}^{(S-1)^2} \mathds{1}_{i}^{obj} [(\sqrt{w_i} - \sqrt{\hat{w}_i})^2 + (\sqrt{h_i} - \sqrt{\hat{h}_i})^2] $
             \end{itemize}
 
             The loss term weightings $\lambda$ are determined in a way, that all loss terms are in a 
@@ -152,16 +152,16 @@
                 \begin{minipage}[b]{.5\textwidth}
                 \centering
                 \includegraphics[width=.6\linewidth]{5_loss_center.png}
-                \captionof{figure}{Bounding box center loss visualized}
+                \captionof{figure}{bounding box center loss visualized}
                 \label{fig:test1}
                 \end{minipage}%
                 \begin{minipage}[b]{.5\textwidth}
                 \centering
                 \includegraphics[width=.6\linewidth]{5_loss_size.png}
-                \captionof{figure}{Bounding box size loss visualized}
+                \captionof{figure}{bounding box size loss visualized}
                 \label{fig:test2}
                 \end{minipage}
-                \end{figure}
+            \end{figure}
             
 
             \end{small}
@@ -175,14 +175,28 @@
             starfishes in the test dataset. 
             The task is also for humans very challenging, since the starfishes are hard to detect in the original resolution 
             and even harder to detect in the downscaled version with 448x448 pixel, as one can see in figure \ref{fig:img_qual}. 
-            \begin{center}
-                \includegraphics[scale=0.2]{6_img_quality.png}
-                \captionof{figure}{Top: starfishes in original resolution, bottom: starfishes downscaled to input resolution}
-                \label{fig:img_qual}
-            \end{center}
+                \begin{figure}
+                    \begin{minipage}[b]{.5\textwidth}
+                        \begin{center}
+                        \includegraphics[width=.6\linewidth]{6_img_quality.png}
+                        \captionsetup{justification=centering}
+                        \captionof{figure}{top: original resolution, \\bottom: downscaled resolution}
+                        \label{fig:img_qual}
+                        \end{center}
+                    \end{minipage}%
+                    \begin{minipage}[b]{.4\textwidth}
+                        \begin{center}
+                        \includegraphics[width=.65\linewidth]{6_traffic_cones.png}
+                        \captionsetup{justification=centering}
+                        \captionof{figure}{traffic cone \\detection performance}
+                        \label{fig:cones}
+                        \end{center}
+                    \end{minipage}
+                \end{figure}
+
             To endorse this hypothesis of the too challenging dataset for the standard YOLO network, the almost same network that 
             failed to generalize on the starfish dataset was trained to detect traffic cones. The network is able to achieve 
-            over 90\% precision and an IOU \textgreater 0.5 on the test data, which are
+            over 90\% precision and an IOU \textgreater 0.4 on the test data, which are
             decent results that show the performance of the architecture. 
         \end{small}
     \end{samepage}
