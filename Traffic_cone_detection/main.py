@@ -12,8 +12,6 @@ import os
 
 
 def main(args): 
-    # read terminal config
-    args_config = vars(args)
     # wandb uses the yaml file and overrides the values with the args_config
     wandb.init(project="protect_gbr", entity="stuttgartteam8", mode="online")
     wandb.config.update(args, allow_val_change=True)
@@ -24,13 +22,13 @@ def main(args):
     dataLoader = DataLoader(config)
     ds_train, ds_test = dataLoader.load()
 
+    # load the model, a pretrained resnet50
     detection_model = transfer_model(config)
 
-    
+    # if a wandb_model is specified, load the model from wandb and continue training with it
     if config.wandb_model != "New":
-        # load model from wandb and continue training
         print("Continue model training from wandb")
-        print("Download model:")
+        print("Download model.")
         api = wandb.Api()
         run = api.run(config.wandb_model)
         run.file("model.h5").download(replace=True)

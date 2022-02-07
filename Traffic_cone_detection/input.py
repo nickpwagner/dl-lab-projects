@@ -9,8 +9,8 @@ class DataLoader:
 
     def __init__(self, config):
         self.config = config
-        if not self.config.data_partial:
-            self.black_list_files_train = ["cjt313jnxb2if0890tekvbtph.txt",
+        # this long list is required, because the dataset contains corrupted data that needs to be excluded from training!
+        self.black_list_files_train = ["cjt313jnxb2if0890tekvbtph.txt",
                         "cjt3196dak77u0997grhsqr71.txt",
                         "cjt31enuhb45l08909dkubjmz.txt",
                         "cjt31pclzk0sy09664jijvuyq.txt",
@@ -125,8 +125,7 @@ class DataLoader:
                         "00001464_skid-pad.txt"
                         ]    
                         # the labels of this samples are currupt and may not be used
-        else:
-            self.black_list_files_train = [] 
+
         self.black_list_files_test = []
         self.jpg_paths_train, self.y_train = self.read_data(self.config.data_dir + "train/", black_list_files=self.black_list_files_train)
         self.jpg_paths_test, self.y_test = self.read_data(self.config.data_dir + "test/")
@@ -216,7 +215,7 @@ class DataLoader:
         ds_train = self.ds_train.map(self.read_image)\
                                 .map(self.resize)\
                                 .map(self.augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
-                                .shuffle(1000, reshuffle_each_iteration=True)\
+                                .shuffle(self.config.ds_train_shuffle_buffer, reshuffle_each_iteration=True)\
                                 .batch(self.config.batch_size, drop_remainder=True)\
                                 .prefetch(tf.data.AUTOTUNE)
         ds_test = self.ds_test.map(self.read_image)\

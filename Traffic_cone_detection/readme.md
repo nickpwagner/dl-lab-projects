@@ -43,3 +43,5 @@ In addition one can create a video of the test data with the oredictions of the 
 
 
 
+## Troubleshooting
+If you receive a OOM error or a semaphore failure, you can try to reduce batch size or the shuffle buffer of ds_train.

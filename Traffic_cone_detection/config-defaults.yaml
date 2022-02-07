@@ -4,6 +4,8 @@ data_dir:
   value: "c:/GoogleDriveNot/Datasets/cones_multi_class/"  # "c:/DL_Lab/cones_multi_class_partial/"  #
 data_partial:
   value: False
+ds_train_shuffle_buffer:
+  value: 1000
 
 
 # train
