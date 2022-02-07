@@ -39,14 +39,11 @@ def transfer_model(config):
         x = keras.layers.Conv2D(128, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
         x = keras.layers.MaxPool2D(pool_size=(2,2))(x)
 
-        #x = keras.layers.Conv2D(256, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
-        #x = keras.layers.Dropout(config.dropout)(x)
-        #x = keras.layers.Conv2D(128, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
-        #x = keras.layers.Dropout(config.dropout)(x)
-        #x = keras.layers.Conv2D(64, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+        x = keras.layers.Conv2D(256, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+        x = keras.layers.Conv2D(128, (1,1), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
+        x = keras.layers.Conv2D(64, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
         x = keras.layers.Dropout(config.dropout)(x)
         outputs = keras.layers.Conv2D(5, (1,1), strides=(1,1), padding="same", activation="linear")(x)
-        # 7x7x5 
  
     elif config.grid_size == 14:
         # if grid size = 14, no pooling is requried
@@ -57,7 +54,6 @@ def transfer_model(config):
         #x = keras.layers.Conv2D(128, (3,3), strides=(1,1), padding="same", activation=tf.keras.layers.LeakyReLU(alpha=0.01))(x)
         x = keras.layers.Dropout(config.dropout)(x)
         outputs = keras.layers.Conv2D(5, (1,1), strides=(1,1), padding="same", activation="linear")(x)
-        # 7x7x5 
 
     else:
         print("Other grid size than 7 or 14 is not supported by architecture.py")
