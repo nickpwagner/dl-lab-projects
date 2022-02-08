@@ -9,5 +9,9 @@ Both students contributed equally to the code.
 # How to run the code
 to do
 
+## Important
+We are using images downscaled to 600x600 pix to speed up training. 
+Please use the downscaled images from https://drive.google.com/uc?id=1TjyYDws_yFafhVtq2r5itv9SU1EnmXjg or run the dataset_conversion.py before!
+
 # Results
 to do

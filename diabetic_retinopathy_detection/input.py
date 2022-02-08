@@ -6,7 +6,17 @@ import matplotlib.pyplot as plt
 
 
 def load(config):
+    """
+    Loads the csv file and inputs the according labels and images
 
+    Adds augmentation to the images and outputs a train, val and test dataset
+
+    Config parameters: 
+    - balancing
+    - augmentation
+    - augment_crop
+    
+    """
     df_train = pd.read_csv(config.data_dir + "labels/train.csv")
     # takes val_split portion of the full df_train for training and the rest for validation. 
     y_train = df_train["Retinopathy grade"][:int(df_train.shape[0]*config.val_split)]
@@ -121,6 +131,9 @@ if __name__ == "__main__":
     ds_train, ds_val, ds_test = load(config)
 
     def show_ds (ds, win_name):
+        """
+        this function shows 25 images of the passed dataset and counts and prints out the quantity of samples in the dataset
+        """
         plt.figure(win_name, figsize=(10,10))
         count = 0
         ys = []
@@ -137,15 +150,17 @@ if __name__ == "__main__":
                     else:
                         plt.title(int(y[i]))
                 count += 1
-                #if count >= 25:
-                #    break
-            ys.extend(np.argmax(y, axis=1))
-            #if count >= 25:
-            #    break
+
+            if config.mode == "binary_class":
+                ys.extend(y)
+            else:
+                ys.extend(np.argmax(y, axis=1))
+
         print("Label distribution for " + win_name, np.unique(ys, return_counts=True))
         plt.show()
     
     show_ds(ds_train, "train_ds")
+    show_ds(ds_val, "val_ds")
     show_ds(ds_test, "test_ds")
 
     # print a dataset analyis (how many samples of each class are part of the datasets)

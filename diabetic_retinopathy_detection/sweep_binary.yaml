@@ -7,7 +7,9 @@ parameters:
     value: 5
   # graham preprocessing
   data_dir:
-    value: "/content/IDRID_dataset/" 
+    values: 
+      - "/content/IDRID_dataset/" #"C:/DL_Lab/" 
+      - "/content/IDRID_dataset_graham/"
   val_split:
     value: 0.8
   augmentation: # does not affect augment_crop
@@ -23,7 +25,9 @@ parameters:
   img_width:
     value: 600
   balancing:
-    value: True
+    values:
+      - True
+      - False
 
   # train
   epochs:
@@ -38,11 +42,13 @@ parameters:
       - "sgd"
       - "adam"
   learning_rate:
-    value: 0.001
+    values: 
+      - 0.1
+      - 0.01
+      - 0.001
   learning_rate_decay:
     values: 
       - 1
-      - 2
       - 10
   momentum:
     values: 
@@ -53,13 +59,21 @@ parameters:
       - 0.01
       - 0.001
   fine_tuning_epochs:
-    value: 0
+    values:
+      - 0
+      - 50
 
   # architecture
   input_shape:
     value: [224, 224, 3]
   architecture:
-    value: "resnet50"
+    values: 
+      - "vgg16" 
+      - "resnet50"
+  base_model_trainable:
+    values: 
+      - False
+      - True
   dense0:
     values: 
       - 128
@@ -74,9 +88,14 @@ parameters:
       - 1024
       - 2048
   dense2:
-    value: 0
+    values: 
+      - 0
+      - 32
+      - 64
   dense_prep:
-    value: "gap"
+    values: 
+      - "flatten"
+      - "gap"
   dropout:
     values: 
       - 0
@@ -93,8 +112,8 @@ parameters:
       - False
 
 
-name: run_101_advanced_sweep_multi_class
-description: "Sweep many parameters"
+name: run_100_full_sweep_multi_class
+description: "Sweep almost all parameters"
 
 project: diabetic_retinopathy
 command:
