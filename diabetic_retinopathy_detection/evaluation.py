@@ -79,7 +79,7 @@ def evaluate_binary(config, model, ds):
     p = np.mean(precision)
     r = np.mean(recall)
     f1 = 2*r*p/(r+p)
-    return acc, p, r, f1, 
+    return acc, p, r, f1
     
 if __name__ == "__main__":
     import wandb

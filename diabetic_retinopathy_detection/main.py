@@ -10,7 +10,7 @@ import argparse
 from input import load
 from architecture import transfer_model
 from train import train
-from evaluation import evaluate
+from evaluation import evaluate_multiclass, evaluate_binary
 
 def main(args): 
     # seeds
@@ -37,13 +37,17 @@ def main(args):
 
     else:
         print("Evaluating given model")
-        # model = wandb.restore('model.h5', run_path="stuttgartteam8/diabetic_retinopathy/1zktgvft")
         api = wandb.Api()
         run = api.run(config.evaluate_run)
         run.file("model.h5").download(replace=True)
         model = tf.keras.models.load_model('model.h5')
         print(model.summary())
-        evaluate(config, model, ds_val)
+        if config.mode == "binary_class":
+            acc, p, r, f1 = evaluate_binary(config, model, ds_test)
+            print("acc, p, r, f1", acc, p, r, f1)
+        if config.mode == "multi_class":
+            acc, p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_test)
+            print("acc, p, r, f1, confm, quadratic_weighted_kappa", acc, p, r, f1, confm, quadratic_weighted_kappa)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
