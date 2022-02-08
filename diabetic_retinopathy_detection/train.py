@@ -3,7 +3,7 @@ import tensorflow as tf
 import logging
 import wandb
 from wandb.keras import WandbCallback
-from evaluation import evaluate
+from evaluation import evaluate_multiclass, evaluate_binary
 import sklearn.metrics
 
 
@@ -16,19 +16,32 @@ class WandbLogger(tf.keras.callbacks.Callback):
         self.ds_val = ds_val
 
 
-    def on_epoch_end(self, epoch, logs):
-        _, train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_train)
-        _, val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate(self.config, self.model, self.ds_val)
-        print(f"Train QWK: {train_quadratic_weighted_kappa}, Val QWK: {val_quadratic_weighted_kappa}")
-        wandb.log({"train_precision": train_precision,
-                    "train_recall": train_recall,
-                    "train_f1": train_f1,
-                    "train_quadratic_weighted_kappa": train_quadratic_weighted_kappa,
-                    "val_precision": val_precision,
-                    "val_recall": val_recall,
-                    "val_f1": val_f1,
-                    "val_quadratic_weighted_kappa": val_quadratic_weighted_kappa,
-                    "epoch": epoch})
+    def on_epoch_end(self, config, epoch, logs):
+
+        if config.mode == "multi_class":
+            _, train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate_multiclass(self.config, self.model, self.ds_train)
+            _, val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate_multiclass(self.config, self.model, self.ds_val)
+            wandb.log({"train_precision": train_precision,
+                        "train_recall": train_recall,
+                        "train_f1": train_f1,
+                        "train_quadratic_weighted_kappa": train_quadratic_weighted_kappa,
+                        "val_precision": val_precision,
+                        "val_recall": val_recall,
+                        "val_f1": val_f1,
+                        "val_quadratic_weighted_kappa": val_quadratic_weighted_kappa,
+                        "epoch": epoch})
+        if config.mode == "binary_class":
+            accuracy, train_precision, train_recall, train_f1 = evaluate_binary(self.config, self.model, self.ds_train)
+            val_accuarcy, val_precision, val_recall, val_f1 = evaluate_binary(self.config, self.model, self.ds_val)
+            wandb.log({"train_acc": accuracy,
+                        "train_precision": train_precision,
+                        "train_recall": train_recall,
+                        "train_f1": train_f1,
+                        "val_acc": val_accuarcy,
+                        "val_precision": val_precision,
+                        "val_recall": val_recall,
+                        "val_f1": val_f1,
+                        "epoch": epoch})
         
 
 def train(config, model, ds_train, ds_val): 
