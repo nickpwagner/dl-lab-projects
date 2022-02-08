@@ -112,7 +112,7 @@ parameters:
       - False
 
 
-name: run_100_full_sweep_multi_class
+name: run_200_full_sweep_binary_class
 description: "Sweep almost all parameters"
 
 project: diabetic_retinopathy
