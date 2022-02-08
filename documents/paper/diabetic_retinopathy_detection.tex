@@ -63,11 +63,26 @@ doctors and medical personnel, a classification model shall be trained to classi
 \section{Introduction}
 Text about why diabetic retinopathy Detection
 
-Dataset?
-% 2 %%
-\section{Object Detection}
+Dataset
+% 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Object Classification}
 \subsection{Problem analysis}
-Regression, binary , multiclass
+To tackle the problem of diabetic retinopathy detection, several methods are possible. Because the dataset consists of 
+ordinally scaled data of 5 classes, regression could be used to estimate the serverity of a case. In addition, a the problem 
+can be handled as a classification problem after one-hot-encoding the labels. As a third option, one can define a threshold 
+to define problematic diabetic retinopathy and non-problematic diabetic retinopathy and can handle the problem as a binary 
+classification. Further, only binary and multiclass classification are anaylzed.
+
+A binary classification has the advantage of higher accuracy, but lacks details, because the network only outputs 0 or 1
+and no information about the exact serverity of the disease. Metrics are also easy to implement, because precision, 
+recall and f1-score are standard implementations and nicely interpretable.
+
+A multiclass classification has typically a lower accuracy, because the network needs to pick the right class among 
+several classes. It provides the benefit or receiving richer information, i.e. the exact serverity of the disease.
+Evaluating a multiclass classification problem becomes harder, because missclassifications can vary in their error.
+Classifiying a class 1 as class 2 is for example less problematic than classifying class 1 as class 5.
+
+
 \subsection{Architecture}
 VGG, Resnet, Weight freeeze / unfreeze, GAP, Flatten, Dense Layers
 \subsection{Weight initialization}
@@ -80,6 +95,7 @@ incl. QWC
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
+The established process for finding
 WandB sweeps
 \subsection{Hyperparameter selection}
 \subsection{Grad cam}

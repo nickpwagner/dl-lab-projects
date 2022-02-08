@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1644247314 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644247315
+["pdflatex"] 1644303883 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644303885
   "C:/Scarlett/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "C:/Scarlett/Programs/MiKTeX/fonts/tfm/adobe/times/ptmb8r.tfm" 1136768654 4524 6bce29db5bc272ba5f332261583fee9c ""
   "C:/Scarlett/Programs/MiKTeX/fonts/tfm/adobe/times/ptmb8t.tfm" 1136768654 6880 f19b8995b61c334d78fc734065f6b4d4 ""
@@ -109,10 +109,10 @@
   "C:/Users/david/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ectt1000.pk" 1644244733 20028 7c7d15b39d5c6966565e13f4c228d18a ""
   "C:/Users/david/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1643837214 10235495 180aa80be38959ae8f5d7959e9dccbfb ""
   "arxiv.sty" 1578914260 7500 f12f4e37fb88cc7b19e63ecce8ed0185 ""
-  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644247314 6632 aaaf30dc5cf2de976cf55e5ee50a9987 ""
-  "diabetic_retinopathy_detection.aux" 1644247315 4014 1a3961981032898b84346c61cc043855 "pdflatex"
-  "diabetic_retinopathy_detection.out" 1644247315 2746 c4cc8bf8d0344841873f9c6dcdab7990 "pdflatex"
-  "diabetic_retinopathy_detection.tex" 1644247314 6632 aaaf30dc5cf2de976cf55e5ee50a9987 ""
+  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644303883 8100 b0f1b4e9c6bd435ee55f4fd4c9460603 ""
+  "diabetic_retinopathy_detection.aux" 1644303884 4019 7760843b68c5437aad35e340b9fc2ff3 "pdflatex"
+  "diabetic_retinopathy_detection.out" 1644303884 2771 4e017564a1eb0b4c0bc2f88bbf2873a0 "pdflatex"
+  "diabetic_retinopathy_detection.tex" 1644303883 8100 b0f1b4e9c6bd435ee55f4fd4c9460603 ""
   (generated)
   "diabetic_retinopathy_detection.aux"
   "diabetic_retinopathy_detection.log"
