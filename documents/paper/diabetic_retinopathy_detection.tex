@@ -67,6 +67,8 @@ Dataset
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
 \subsection{Problem analysis}
+Einordnung als supervised learning problem
+
 To tackle the problem of diabetic retinopathy detection, several methods are possible. Because the dataset consists of 
 ordinally scaled data of 5 classes, regression could be used to estimate the serverity of a case. In addition, a the problem 
 can be handled as a classification problem after one-hot-encoding the labels. As a third option, one can define a threshold 
@@ -95,9 +97,24 @@ incl. QWC
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
-The established process for finding
-WandB sweeps
+The training of the deep neural network classifier requires the selection of suitable hyperparameters that differ from
+problem to problem. A useful strategy to find a good set of hyperparameters are parameter sweeps. Weights\&Biases is a 
+python library that enables the easy implementation of sweeps. 
+
+Hyperparameter optimization requires besides training and test dataset a third, the validation dataset, to evaluate the
+model after hyperparameter tuning and to avoid overfitting on the hyperparameters. Because the given dataset only contains 
+training and test data, the original training dataset was split into 80\% training data and 20\% validation data.
+
+In total, x sweeps consisting of x runs and x epochs were performed during the project.
+
 \subsection{Hyperparameter selection}
+The following parameters show a big effect on the performance of the neural network on the validation data, 
+why they are selected for the final classifier.
+
+Balancing
+
+...
+
 \subsection{Grad cam}
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
