@@ -5,11 +5,6 @@ import sklearn.metrics
 
 def evaluate_multiclass(config, model, ds):
 
-    if config.mode == "regression" or config.mode == "binary_class":
-        print("evaluation not supported, yet.")
-        return 0
-
-
     y_pred = []
     y_true = []
     for X,y in ds:
@@ -44,11 +39,6 @@ def evaluate_multiclass(config, model, ds):
        
 
 def evaluate_binary(config, model, ds):
-
-    if config.mode == "regression" or config.mode == "binary_class":
-        print("evaluation not supported, yet.")
-        return 0
-
 
     y_pred = []
     y_true = []

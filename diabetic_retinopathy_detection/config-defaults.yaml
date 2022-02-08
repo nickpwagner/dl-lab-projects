@@ -1,7 +1,7 @@
 # mode
 # note that regression is quite sensitive to the optimizer (e.g. SGD with Batchsize 16 you will get exploding gradients). Adam works fine.
 mode:
-  value: "binary_class" # select from "multi_class", "regression", "binary_class"
+  value: "binary_class" # select from "multi_class", "regression", "binary_class" # regression not supported, yet!!!
 
 # evaluate
 evaluate_run:
