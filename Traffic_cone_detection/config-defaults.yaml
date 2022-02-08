@@ -48,9 +48,9 @@ yolo_weight_noobj:
 
 # architecture
 cnn_input_shape:
-  value: [448, 448, 3]
+  value: [640, 640, 3]
 grid_size:
-  value: 14
+  value: 20
 trainable:
   value: "full"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 dropout:
@@ -59,10 +59,10 @@ dropout:
 
 # evaluate
 wandb_run:
-  value: "stuttgartteam8/protect_gbr/10tc4omb" # "stuttgartteam8/protect_gbr/1rmzs2cj"  "stuttgartteam8/protect_gbr/136q0aks"
+  value: "stuttgartteam8/protect_gbr/5k8v447o" # "stuttgartteam8/protect_gbr/1rmzs2cj"  "stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
   value: "test"
 eval_samples:
   value: 900
 bbox_confidence_threshold:
-  value: 0.0
+  value: 0.5
