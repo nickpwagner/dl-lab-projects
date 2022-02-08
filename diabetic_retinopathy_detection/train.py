@@ -16,9 +16,9 @@ class WandbLogger(tf.keras.callbacks.Callback):
         self.ds_val = ds_val
 
 
-    def on_epoch_end(self, config, epoch, logs):
+    def on_epoch_end(self, epoch, logs):
 
-        if config.mode == "multi_class":
+        if self.config.mode == "multi_class":
             _, train_precision, train_recall, train_f1, _, train_quadratic_weighted_kappa = evaluate_multiclass(self.config, self.model, self.ds_train)
             _, val_precision, val_recall, val_f1, _, val_quadratic_weighted_kappa = evaluate_multiclass(self.config, self.model, self.ds_val)
             wandb.log({"train_precision": train_precision,
@@ -30,7 +30,7 @@ class WandbLogger(tf.keras.callbacks.Callback):
                         "val_f1": val_f1,
                         "val_quadratic_weighted_kappa": val_quadratic_weighted_kappa,
                         "epoch": epoch})
-        if config.mode == "binary_class":
+        if self.config.mode == "binary_class":
             accuracy, train_precision, train_recall, train_f1 = evaluate_binary(self.config, self.model, self.ds_train)
             val_accuarcy, val_precision, val_recall, val_f1 = evaluate_binary(self.config, self.model, self.ds_val)
             wandb.log({"train_acc": accuracy,
