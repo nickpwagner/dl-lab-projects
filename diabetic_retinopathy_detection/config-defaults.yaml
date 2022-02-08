@@ -1,7 +1,7 @@
 # mode
 # note that regression is quite sensitive to the optimizer (e.g. SGD with Batchsize 16 you will get exploding gradients). Adam works fine.
 mode:
-  value: "multi_class" #"binary_class" #"multi_class" # "regression", "binary_class"
+  value: "binary_class" # select from "multi_class", "regression", "binary_class"
 
 # evaluate
 evaluate_run:
@@ -53,6 +53,8 @@ cnn_input_shape:
   value: [224, 224, 3]
 architecture:
   value: "vgg16" # "resnet50"
+base_model_trainable:
+  value: False
 dense0:
   value: 2048
 dense1:

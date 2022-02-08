@@ -1,0 +1,104 @@
+program: main.py
+method: random
+
+parameters:
+  # data
+  n_classes:
+    value: 5
+  # graham preprocessing
+  data_dir:
+    value: "/content/IDRID_dataset/" 
+  val_split:
+    value: 0.8
+  augmentation: # does not affect augment_crop
+    values:
+      - "strong"
+      - "weak"
+      - "none"
+  augment_crop:
+    values: 
+      - 450
+      - 550
+      - 600  # no crop
+  img_width:
+    value: 600
+  balancing:
+    value: True
+
+  # train
+  epochs:
+    value: 100
+  batch_size:
+    values: 
+      - 8
+      - 16
+      - 32
+  optimizer:
+    values:
+      - "sgd"
+      - "adam"
+  learning_rate:
+    value: 0.001
+  learning_rate_decay:
+    values: 
+      - 1
+      - 2
+      - 10
+  momentum:
+    values: 
+      - 0.0
+      - 0.9
+  fine_tuning_learning_rate:
+    values: 
+      - 0.01
+      - 0.001
+  fine_tuning_epochs:
+    value: 0
+
+  # architecture
+  input_shape:
+    value: [224, 224, 3]
+  architecture:
+    value: "resnet50"
+  dense0:
+    values: 
+      - 128
+      - 1024
+      - 2048
+      - 4096
+  dense1:
+    values: 
+      - 0
+      - 128
+      - 512
+      - 1024
+      - 2048
+  dense2:
+    value: 0
+  dense_prep:
+    value: "gap"
+  dropout:
+    values: 
+      - 0
+      - 0.1
+      - 0.2
+  reg_lambda:
+    values: 
+      - 0      
+      - 0.001
+      - 0.01
+  w_init_HeNormal:
+    values: 
+      - True
+      - False
+
+
+name: run_101_advanced_sweep_multi_class
+description: "Sweep many parameters"
+
+project: diabetic_retinopathy
+command:
+  - ${env}
+  - ${interpreter} #c:\Scarlett\base39\Scripts\python.exe  #if you want to sweep locally and need to select a specific python version...
+  - ${program}
+  - --log_wandb=online

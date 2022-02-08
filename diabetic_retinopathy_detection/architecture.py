@@ -5,7 +5,13 @@ import numpy as np
 
 
 def transfer_model(config): 
-    # select transfer model type
+    """
+    this function can be used to configure an load a transfer learning model.
+
+    Via config file, one can deside the model type (resnet50, vgg16), the number of dense channels in the head and others
+    """
+
+    # select transfer model type including the corresponding preprocessing
     if config.architecture == "vgg16":
         base_model = keras.applications.VGG16(
             weights="imagenet",
@@ -21,14 +27,14 @@ def transfer_model(config):
     else:
         print(f"{config.architecture} model not defined!")
 
+    # select if the transfered model weights are trainable or not
+    base_model.trainable = config.base_model_trainable
 
-    base_model.trainable = False
     inputs = keras.layers.Input(shape=config.cnn_input_shape, dtype=tf.uint8)
     x = tf.cast(inputs, tf.float32)
     x = preprocess_input(x)
     x = base_model(x)
 
-    
 
     # select interface layer between conv and dense
     if config.c_d_interface == "gap":
@@ -47,18 +53,24 @@ def transfer_model(config):
 
     # select how many dense layers and how many neurons each
     # only weights get regularized, not biases (except last layer)
+
+    # dense layer 0
     if config.dense0 > 0:
         x = keras.layers.Dense(config.dense0, activation="relu", 
                 kernel_initializer = weight_init, 
                 kernel_regularizer = keras.regularizers.l2(config.reg_lambda))(x)
         if config.dropout > 0:
             x = keras.layers.Dropout(config.dropout)(x)
+
+    # dense layer 1
     if config.dense1 > 0:
         x = keras.layers.Dense(config.dense1, activation="relu", 
                 kernel_initializer = weight_init, 
                 kernel_regularizer = keras.regularizers.l2(config.reg_lambda))(x)
         if config.dropout > 0:
             x = keras.layers.Dropout(config.dropout)(x)
+
+    # dense layer 2
     if config.dense2 > 0:
         dense2 = keras.layers.Dense(config.dense2, activation="relu", 
                 kernel_initializer = weight_init, 
@@ -68,6 +80,7 @@ def transfer_model(config):
             dropout2 = keras.layers.Dropout(config.dropout)
             x = dropout2(x)
 
+    # output layer - different for binary classification / multiclass classification / regression
     if config.mode == "binary_class":
         outputs = keras.layers.Dense(1, activation=keras.activations.sigmoid)(x)
     elif config.mode == "multi_class":
@@ -85,9 +98,9 @@ def transfer_model(config):
     return keras.Model(inputs=inputs, outputs=outputs, name=config.mode + "_" + config.architecture)
 
 if __name__ == "__main__":
+
+    # load and show the architecture currently specified in the config
     import wandb
-    #from tensorflow.python.framework.ops import disable_eager_execution
-    #disable_eager_execution()
 
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
