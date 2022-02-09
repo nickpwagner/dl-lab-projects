@@ -112,8 +112,8 @@ parameters:
       - False
 
 
-name: run_200_full_sweep_binary_class
-description: "Sweep almost all parameters"
+name: run_201_full_sweep_binary_class
+description: "Sweep almost all parameters - fixed metrics"
 
 project: diabetic_retinopathy
 command:

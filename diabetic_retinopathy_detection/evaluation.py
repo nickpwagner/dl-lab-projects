@@ -44,8 +44,8 @@ def evaluate_binary(config, model, ds):
     y_true = []
 
     for X,y in ds:
-        y_true.extend(y)
-        y_pred.extend(np.round(model.predict(X)))
+        y_true.extend(y.numpy())
+        y_pred.extend(np.round(model.predict(X))[:,0])
 
     confm = tf.math.confusion_matrix(y_true, y_pred)#, num_classes=5)
 
@@ -75,6 +75,7 @@ if __name__ == "__main__":
     import wandb
     from input import load
     import os
+    import time
 
     wandb.init(project="diabetic_retinopathy", entity="davidu", mode="disabled") 
     config = wandb.config
@@ -92,6 +93,7 @@ if __name__ == "__main__":
         api = wandb.Api()
         run = api.run(config.evaluate_run)
         run.file("model.h5").download(replace=True)
+        time.sleep(1)
         os.rename("model.h5", model_filename)
 
 
