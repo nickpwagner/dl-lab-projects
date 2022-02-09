@@ -5,7 +5,8 @@ mode:
 
 # evaluate
 evaluate_run:
-  value: "davidu/diabetic_retinopathy/9cf0hr55"
+  value: "davidu/diabetic_retinopathy/z89dlvr4"  # binary sweep 200 - different-sweep-13
+  #"davidu/diabetic_retinopathy/9cf0hr55"
   #"davidu/diabetic_retinopathy/49d802at" # run12 - lemon-sweep-8 - balanced training dataset
   #"davidu/diabetic_retinopathy/9cf0hr55" # run12 - daily-sweep-8 - balanced training dataset
   #"davidu/diabetic_retinopathy/1cge9ja4" # wise-sweep-30

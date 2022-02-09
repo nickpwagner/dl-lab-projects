@@ -74,44 +74,58 @@ def evaluate_binary(config, model, ds):
 if __name__ == "__main__":
     import wandb
     from input import load
+    import os
 
     wandb.init(project="diabetic_retinopathy", entity="davidu", mode="disabled") 
     config = wandb.config
 
 
     ds_train, ds_val, ds_test = load(config)
-    print("Keras Version: ", tf.keras.__version__)
-    print("Evaluating given model")
+    
+    model_filename = "_".join(config.evaluate_run.split("/")) + ".h5"
 
-    # model = wandb.restore('model.h5', run_path="stuttgartteam8/diabetic_retinopathy/1zktgvft")
-    print("Download model:")
-    api = wandb.Api()
-    run = api.run(config.evaluate_run)
-    run.file("model.h5").download(replace=True)
+    # check if weights file was already downloaded before
+    if os.path.isfile(model_filename):
+        print("Using model from local .h5 file")
+    else:
+        print("Download model from wandb")
+        api = wandb.Api()
+        run = api.run(config.evaluate_run)
+        run.file("model.h5").download(replace=True)
+        os.rename("model.h5", model_filename)
 
-    import h5py
 
-    f = h5py.File('Model.h5', 'r')
-    print("Model Keras Version: ", f.attrs.get('keras_version'))
-
-    print("Load model:")
-
-    model = tf.keras.models.load_model('model.h5')
+    model = tf.keras.models.load_model(model_filename, compile=False)
     print(model.summary())
 
+    if config.mode == "binary_class":
+        print("--- Binary - Validation Scores ---")
+        acc, p, r, f1 = evaluate_binary(config, model, ds_val)
+        print(f"Accuracy: {acc}")
+        print(f"Precision: {p}")
+        print(f"Recall: {r}")
+        print(f"f1-Score: {f1}")
 
-    print("--- Validation Scores ---")
-    p, r, f1, confm, quadratic_weighted_kappa = evaluate(config, model, ds_val)
-    print(f"Precision: {p}")
-    print(f"Recall: {r}")
-    print(f"f1-Score: {f1}")
-    print(f"Confusion-Matrix: \n{confm}")
-    print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
+        print("--- Binary - Test Scores ---")
+        acc, p, r, f1 = evaluate_binary(config, model, ds_test)
+        print(f"Accuracy: {acc}")
+        print(f"Precision: {p}")
+        print(f"Recall: {r}")
+        print(f"f1-Score: {f1}")
 
-    print("--- Test Scores ---")
-    p, r, f1, confm, quadratic_weighted_kappa = evaluate(config, model, ds_test)
-    print(f"Precision: {p}")
-    print(f"Recall: {r}")
-    print(f"f1-Score: {f1}")
-    print(f"Confusion-Matrix: \n{confm}")
-    print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
+    if config.mode == "multi_class":
+        print("--- Validation Scores ---")
+        p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_val)
+        print(f"Precision: {p}")
+        print(f"Recall: {r}")
+        print(f"f1-Score: {f1}")
+        print(f"Confusion-Matrix: \n{confm}")
+        print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
+
+        print("--- Test Scores ---")
+        p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_test)
+        print(f"Precision: {p}")
+        print(f"Recall: {r}")
+        print(f"f1-Score: {f1}")
+        print(f"Confusion-Matrix: \n{confm}")
+        print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
