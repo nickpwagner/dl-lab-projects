@@ -6,13 +6,14 @@ import ast
 
 
 def load(config):
-
+    """
+    input pipeline: load dataset content, translate to grid, augment
+    return: tf.Dataset for train/test
+    """
     # read csv file
     df = pd.read_csv(config.data_dir + "train.csv")[config.dataset_slice_start:config.dataset_slice_end]  #[20:180]
-
     print(df.head())
     print(f"Loading {len(df)} images.")
-
     # read image names and convert them into the path video_id/img_id
     img_names = [f"video_{img_name.split('-')[0]}/{img_name.split('-')[1]}.jpg" for img_name in df["image_id"]]
     # read bounding box locations
@@ -23,14 +24,15 @@ def load(config):
     len_test_ds = int(len(y) * config.test_split)
     
     # |    train      |         test  |
-    # |    80%        |         20%   |
-    #        len_train_ds          
-
+    # |    80%        |         20%   |      
     text_ds_train = tf.data.Dataset.from_tensor_slices((img_names[:len_train_ds], y[:len_train_ds]))
     text_ds_test = tf.data.Dataset.from_tensor_slices((img_names[len_train_ds:], y[len_train_ds:]))
 
-
     def img_name_to_image(img_names, y):
+        """
+        read images from jpeg and resize them to the CNN input
+        return: images, labels
+        """
         X = tf.io.read_file(config.data_dir + "train_images/" + img_names)
         X = tf.image.decode_jpeg(X, channels=3)
         # 1280x720 to cnn_input_shape size
@@ -38,40 +40,52 @@ def load(config):
         return X, y
 
     def augment(image, y, seed):
+        """
+        apply color jittering and random flips to images
+        return: images, labels
+        """
+        # color jittering
         image = tf.image.stateless_random_contrast(image, 0.7, 1.5, seed=seed)
         image = tf.image.stateless_random_brightness(image, 0.3, seed=seed+1)
         image = tf.image.stateless_random_hue(image, 0.1, seed+2)
         image = tf.image.stateless_random_saturation(image, 0.8, 1.5, seed=seed+3)
+        # flipping left/right
         image_flip_lr = tf.image.stateless_random_flip_left_right(image, seed=seed+4)
+        # adaption of the bounding boxes to the flipped image
         if tf.math.reduce_all(tf.equal(image, image_flip_lr)) == False:
             y = tf.reverse(y, axis=[0]) # row, cols, 5 -> row = 0
-            y = tf.stack([y[:,:, 0], -y[:,:, 1], y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)
-            
+            y = tf.stack([y[:,:, 0], -y[:,:, 1], y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2) # -x_center
+        # flipping up/down 
         image_flip_ud = tf.image.stateless_random_flip_up_down(image_flip_lr, seed=seed+5)
+        # adaption of the bounding boxes to the flipped image
         if tf.math.reduce_all(tf.equal(image_flip_lr, image_flip_ud)) == False:
             y = tf.reverse(y, axis=[1]) # row, cols, 5 -> cols = 1
-            y = tf.stack([y[:,:, 0], y[:,:, 1], -y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2)
+            y = tf.stack([y[:,:, 0], y[:,:, 1], -y[:,:, 2], y[:,:, 3], y[:,:, 4]], axis=2) # -y_center
         return image_flip_ud, y
 
     # Create a generator 
     rng = tf.random.Generator.from_seed(123, alg='philox') 
+
     def augment_seed(image, y):
+        """
+        generate random number and call stateless_random augment functions with it
+        return: augmented images, labels
+        """
         # random number generator specifically for stateless_random augmentation functions
         seeds = rng.make_seeds(2)[0]
         #seeds = [random.randint(0, 2**16), 42]
         image, y = augment(image, y, seeds)
         return image, y
 
-
-    # generate train data  - more data than 1/7 th of the train DS doesn´t fit into RAM           
+    # generation of the datasets including mapping to the augmentation functions
+    # note: more data than 1/7 th of the train DS doesn´t fit into RAM           
     ds_train = text_ds_train.map(img_name_to_image)\
                     .shuffle(int(len_train_ds/7), reshuffle_each_iteration=True)\
                     .map(augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
     
-     
-    # generate val data   
+    # experimental: generate train data that is not shuffled  
     ds_train_not_shuffled = text_ds_train.map(img_name_to_image)\
                     .batch(config.batch_size, drop_remainder=True)\
                     .prefetch(tf.data.AUTOTUNE)
@@ -182,25 +196,21 @@ def annotate_image(config, img, y_pred, y_true):
 
 
 if __name__ == "__main__":
+    # print annotated ground truth images from training set
     import matplotlib.pyplot as plt    
     import wandb
     import ast
 
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
-
     print("Load dataset")
     ds_train, _, ds_test = load(config)
-
-
     plt.figure("GBR", figsize=(10,10))
     print("show dataset")
     for images, y in ds_train:
-        
         i = np.random.randint(0, config.batch_size)
         print(y[i][:,:,0])
         img = annotate_image(config, images[i], y[i], y[i])
- 
         plt.imshow(img)
         plt.show()
  

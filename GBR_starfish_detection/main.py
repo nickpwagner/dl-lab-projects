@@ -6,9 +6,6 @@ import tensorflow.keras as keras
 from architecture import transfer_model
 from input import load
 from train import train
-import os
-
-
 
 
 def main(args): 
@@ -22,24 +19,20 @@ def main(args):
     
     # load and preprocess data set
     ds_train, _, ds_test = load(config)
-
+    # load pre-trained transfer model and construct the rest
     detection_model = transfer_model(config)
-
     
+    # to continue the training of an exiting model, it can be loaded from wandb
     if config.wandb_model != "New":
-        # load model from wandb and continue training
         print("Continue model training from wandb")
         print("Download model:")
         api = wandb.Api()
         run = api.run(config.wandb_model)
         run.file("model.h5").download(replace=True)
-
         print("Load model:")
         detection_model = keras.models.load_model('model.h5', compile=False) 
     
-    
     print(detection_model.summary())
-    
     
     # start the training
     train(config, detection_model, ds_train, ds_test)

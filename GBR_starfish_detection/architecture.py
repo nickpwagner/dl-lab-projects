@@ -5,6 +5,11 @@ import numpy as np
 
 
 def transfer_model(config): 
+    """
+    load one of the pre-trained transfer models and add additional 
+    conv layers for feature learning and channel reduction
+    return: model with 7x7x5 output
+    """
     # select transfer model type
     if config.architecture == "vgg16":
         base_model = keras.applications.VGG16(
@@ -20,7 +25,8 @@ def transfer_model(config):
         preprocess_input = keras.applications.resnet50.preprocess_input
     else:
         print(f"{config.architecture} model not defined!")
-
+    
+    # select how trainable the transfer model shall be 
     if config.trainable == "full":
         for layer in base_model.layers:
             layer.trainable = True
@@ -31,7 +37,7 @@ def transfer_model(config):
         for layer in base_model.layers:
             layer.trainable = False
             
-    #base_model.summary()
+    # add additional conv layers to transfer model
     inputs = keras.layers.Input(shape=config.cnn_input_shape, dtype=tf.uint8)
     x = tf.cast(inputs, tf.float32)
     x = preprocess_input(x)
@@ -59,19 +65,14 @@ def transfer_model(config):
     x = keras.layers.Dropout(config.dropout)(x)
     outputs = keras.layers.Conv2D(5, (1,1), strides=(1,1), padding="same", activation="linear")(x)
     # 7x7x5 
- 
-    
-
     return keras.Model(inputs=inputs, outputs=outputs, name="yolo")
 
 
 if __name__ == "__main__":
+    # print the model layers of the transfer_model
     import wandb
-    #from tensorflow.python.framework.ops import disable_eager_execution
-    #disable_eager_execution()
 
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
-    
     model = transfer_model(config)
     model.summary()

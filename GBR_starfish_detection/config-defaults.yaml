@@ -1,5 +1,5 @@
   
-# data
+# data set
 data_dir:
   value: "C:/DL_Lab/GBR_dataset/" #"/content/"
 test_split:
@@ -12,7 +12,6 @@ dataset_slice_start:
   value: 20
 dataset_slice_end:
   value: 23500 #00
-
 
 # train
 epochs:
@@ -27,7 +26,6 @@ learning_rate_decay:
   value: 1
 momentum:
   value: 0.9
-
 loss_function:
   value: "custom"  # "yolo", "custom"
 
