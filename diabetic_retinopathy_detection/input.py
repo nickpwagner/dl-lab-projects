@@ -180,8 +180,8 @@ if __name__ == "__main__":
         ys = []
         for images, y in ds:
             for i, image in enumerate(images):
-                if count < 25:
-                    plt.subplot(5,5,count+1)
+                if count < 5:
+                    plt.subplot(1,5,count+1)
                     plt.xticks([])
                     plt.yticks([])
                     plt.grid(False)

@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1644224775 "f:/Code/dl-lab-21w-team08/documents/poster/poster.tex" "poster.pdf" "poster" 1644224781
+["pdflatex"] 1644450331 "f:/Code/dl-lab-21w-team08/documents/poster/poster.tex" "poster.pdf" "poster" 1644450339
   "1_starfishes.png" 1643977864 245685 8d18bf3a98d2986077a26e1b7e706fc9 ""
   "2_architecture.png" 1644064068 118973 aef765c81de6ca8005a2f44e4ad563a8 ""
   "3_channels.png" 1644083452 181982 365d6884c51f0f73ab90c65d6f93179a ""
@@ -8,7 +8,7 @@
   "5_loss_size.png" 1644164349 15788 df45976b380c3af1db8e812344f70946 ""
   "6_img_quality.png" 1644164349 2086084 03cf2b5e2224ad2c2f1ee2904d14d788 ""
   "6_traffic_cones.png" 1644223717 884760 40f4892c4fa38abd185d7e44fb24d80e ""
-  "f:/Code/dl-lab-21w-team08/documents/poster/poster.tex" 1644224773 10120 ca0f01f2f166e4a109ba9767fbbade34 ""
+  "f:/Code/dl-lab-21w-team08/documents/poster/poster.tex" 1644450321 10120 ca0f01f2f166e4a109ba9767fbbade34 ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc" 1644072025 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/map/fontname/texfonts.map" 1644072470 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/tfm/adobe/helvetic/phvb7t.tfm" 1644072827 2240 eb56c13537f4d8a0bd3fafc25572b1bd ""
@@ -174,7 +174,7 @@
   "issposter.cls" 1578911068 29753 c70f4dfd6d2febd98c8badcb22e9ecc5 ""
   "issposter_background_landscape.png" 1365605677 344751 fc4f12ccdccf475efb5026875c14b1ad ""
   "issposter_section_background.png" 1365771458 33602 ce6a5ec7aa44665c2286e6bc97d52104 ""
-  "poster.aux" 1644224781 1390 94da9c5c1d55105b7059180f3bd18835 "pdflatex"
+  "poster.aux" 1644450338 1390 94da9c5c1d55105b7059180f3bd18835 "pdflatex"
   "unilogo_hochkant.pdf" 1365068978 9099 77bef02d95b95203fac95ea37b110484 ""
   (generated)
   "poster.aux"

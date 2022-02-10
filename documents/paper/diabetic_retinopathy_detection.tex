@@ -12,12 +12,14 @@
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
 \usepackage{lipsum}
+\usepackage{graphicx,wrapfig}
+\usepackage{caption}
 
 \title{A template for the \emph{arxiv} style}
 
 
 \author{
-  David S.~Hippocampus\thanks{Use footnote for providing further
+  David Unger\thanks{Use footnote for providing further
     information about author (webpage, alternative
     address)---\emph{not} for acknowledging funding agencies.} \\
   Department of Computer Science\\
@@ -26,11 +28,11 @@
   \texttt{hippo@cs.cranberry-lemon.edu} \\
   %% examples of more authors
    \And
- Elias D.~Striatum \\
-  Department of Electrical Engineering\\
-  Mount-Sheikh University\\
-  Santa Narimana, Levand \\
-  \texttt{stariate@ee.mount-sheikh.edu} \\
+  Nick Wagner\\
+  3524444 \\
+  M.Sc. Autonome Systeme\\
+  University of Stuttgart\\
+  \texttt{st175644@stud.uni-stuttgart.de} \\
   %% \AND
   %% Coauthor \\
   %% Affiliation \\
@@ -61,13 +63,19 @@ doctors and medical personnel, a classification model shall be trained to classi
 
 % 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-Text about why diabetic retinopathy Detection
+Diabetic retinopathy is a complication of diabetes, which can cause damage the retina of the eye. 
+If not detected early, this damage may cause cause vision impairment or even blindness. 
+To treat this condition successfully, it has to be detected at an early stage, which is difficult due to minimal to no early warning signs. 
+Furthermore, the different grades can only be distinguished by a trained professional due to its subtle symptoms.
+Examples are leaking blood vessels, fatty deposits or retinal swelling.
+Since this task is difficult even for trained professionals, an algorithm for automatic detection of the diabetic retinopathy grade is necessary.
+This is the goal of this paper. 
+
 
 Dataset
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
 \subsection{Problem analysis}
-Einordnung als supervised learning problem
 
 To tackle the problem of diabetic retinopathy detection, several methods are possible. Because the dataset consists of 
 ordinally scaled data of 5 classes, regression could be used to estimate the serverity of a case. In addition, a the problem 
@@ -88,8 +96,56 @@ Classifiying a class 1 as class 2 is for example less problematic than classifyi
 \subsection{Architecture}
 VGG, Resnet, Weight freeeze / unfreeze, GAP, Flatten, Dense Layers
 \subsection{Weight initialization}
+Weight initialization refers to the initial values of parameters that are used in specific neural network layers.
+Changing the initialization of the layers changes the starting point for the optimization process and potentially also the performance.
+Keras initializes the weights of dense layers with the Glorot uniform initializer, which draws samples from a truncated uniform distribution.
+Generally the goal is to avoid vanishing and exploding gradients, even better is if the variance of layer outputs is approximately one. [paper KUMAR]
+Specifically for the ReLU activation function, this is achieved with the He initialization, which draws from a normal distribution with the following parameters. [paper HE]\\
+\begin{minipage}{.5\linewidth}
+  \begin{equation}
+    \mu = 0
+  \end{equation}
+\end{minipage}
+\begin{minipage}{.5\linewidth}
+  \begin{equation}
+    \sigma^2 = 2/N
+  \end{equation}
+\end{minipage}
+
+This led to a faster training and performance increase of X percent.
+
 \subsection{Augmentation}
+Within the input pipeline three main types of augmentation are applied.
+The goal is to make feature extraction easier for the network and increase the amount of input images which reduces overfitting.
+\begin{itemize}
+  \item[-] \textbf{Graham preprocessing:} \begin{itemize}
+    \item[1.] rescale the eye radius to 300 pixels 
+    \item[2.] subtract the local average color such that the local average gets mapped to gray
+    \item[3.] clip the image to remove boundary effects
+    \begin{figure}[h]
+      \begin{minipage}[b]{.5\textwidth}
+          \begin{center}
+          \includegraphics[width=.5\linewidth]{IDRiD_060.jpg}
+          \captionsetup{justification=centering}
+          \captionof{figure}{original image}
+          \label{fig:IDRiD}
+          \end{center}
+      \end{minipage}%
+      \begin{minipage}[b]{.5\textwidth}
+          \begin{center}
+          \includegraphics[width=.5\linewidth]{IDRiD_060_graham.jpg}
+          \captionsetup{justification=centering}
+          \captionof{figure}{graham preprocessed image}
+          \label{fig:IDRiD_graham}
+          \end{center}
+      \end{minipage}
+  \end{figure} 
+  \end{itemize}   
+  \item[-] \textbf{Color jittering:} Slight random changes to brightness, hue, saturation or contrast.
+  \item[-] \textbf{Random cropping:} Crop a window that is slightly smaller than the image. Then resize to original size again.
+\end{itemize}
 \subsection{Dataset Balancing}
+Two types of dataset balancing were evaluated. First class-balancing and second oversampling.
 \subsection{Training}
 Adam, SGD, Momentum, Learing rate decay
 \subsection{Metrics}
@@ -214,24 +270,16 @@ See awesome Table~\ref{tab:table}.
 %%% Comment out this section when you \bibliography{references} is enabled.
 \begin{thebibliography}{1}
 
-\bibitem{kour2014real}
-George Kour and Raid Saabne.
-\newblock Real-time segmentation of on-line handwritten arabic script.
+\bibitem{kumar2017weight}
+Siddharth Krishna Kumar.
+\newblock On weight initialization in deep neural networks.
+\newblock {\em arXiv:1704.08863}, 2017.
+
+\bibitem{kumar2017weight}
+name.
+\newblock title.
 \newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
   International Conference on}, pages 417--422. IEEE, 2014.
-
-\bibitem{kour2014fast}
-George Kour and Raid Saabne.
-\newblock Fast classification of handwritten on-line arabic characters.
-\newblock In {\em Soft Computing and Pattern Recognition (SoCPaR), 2014 6th
-  International Conference of}, pages 312--318. IEEE, 2014.
-
-\bibitem{hadash2018estimate}
-Guy Hadash, Einat Kermany, Boaz Carmeli, Ofer Lavi, George Kour, and Alon
-  Jacovi.
-\newblock Estimate and replace: A novel approach to integrating deep neural
-  networks with existing applications.
-\newblock {\em arXiv preprint arXiv:1804.09028}, 2018.
 
 \end{thebibliography}
 
