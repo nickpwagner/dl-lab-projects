@@ -1,8 +1,6 @@
 \documentclass{article}
 
-
 \usepackage{arxiv}
-
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \usepackage{hyperref}       % hyperlinks
@@ -14,40 +12,22 @@
 \usepackage{lipsum}
 \usepackage{graphicx,wrapfig}
 \usepackage{caption}
+\usepackage{booktabs}
 
-\title{A template for the \emph{arxiv} style}
-
+\title{Diabetic Retinopathy Detection}
 
 \author{
-  David Unger\thanks{Use footnote for providing further
-    information about author (webpage, alternative
-    address)---\emph{not} for acknowledging funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
-  %% examples of more authors
-   \And
+  David Unger\\
+  XXXXXXX \\
+  M. Sc. Autonome Systeme\\
+  University of Stuttgart\\
+  \texttt{stXXXXXX@stud.uni-stuttgart.de} \\
+  \And
   Nick Wagner\\
   3524444 \\
-  M.Sc. Autonome Systeme\\
+  MSc. Autonome Systeme\\
   University of Stuttgart\\
   \texttt{st175644@stud.uni-stuttgart.de} \\
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
 }
 
 \begin{document}
@@ -71,8 +51,9 @@ Examples are leaking blood vessels, fatty deposits or retinal swelling.
 Since this task is difficult even for trained professionals, an algorithm for automatic detection of the diabetic retinopathy grade is necessary.
 This is the goal of this paper. 
 
+The used dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which is publicly available. It contains five class labels, which refer to 
+the eye disease grades (0-4).
 
-Dataset
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
 \subsection{Problem analysis}
@@ -118,7 +99,7 @@ This led to a faster training and performance increase of X percent.
 Within the input pipeline three main types of augmentation are applied.
 The goal is to make feature extraction easier for the network and increase the amount of input images which reduces overfitting.
 \begin{itemize}
-  \item[-] \textbf{Graham preprocessing:} \begin{itemize}
+  \item[-] \textbf{Graham preprocessing:  [report kaggle]} \begin{itemize}
     \item[1.] rescale the eye radius to 300 pixels 
     \item[2.] subtract the local average color such that the local average gets mapped to gray
     \item[3.] clip the image to remove boundary effects
@@ -127,7 +108,7 @@ The goal is to make feature extraction easier for the network and increase the a
           \begin{center}
           \includegraphics[width=.5\linewidth]{IDRiD_060.jpg}
           \captionsetup{justification=centering}
-          \captionof{figure}{original image}
+          \captionof{figure}{Original image}
           \label{fig:IDRiD}
           \end{center}
       \end{minipage}%
@@ -135,7 +116,7 @@ The goal is to make feature extraction easier for the network and increase the a
           \begin{center}
           \includegraphics[width=.5\linewidth]{IDRiD_060_graham.jpg}
           \captionsetup{justification=centering}
-          \captionof{figure}{graham preprocessed image}
+          \captionof{figure}{Graham preprocessed image}
           \label{fig:IDRiD_graham}
           \end{center}
       \end{minipage}
@@ -144,10 +125,34 @@ The goal is to make feature extraction easier for the network and increase the a
   \item[-] \textbf{Color jittering:} Slight random changes to brightness, hue, saturation or contrast.
   \item[-] \textbf{Random cropping:} Crop a window that is slightly smaller than the image. Then resize to original size again.
 \end{itemize}
+
+% Dataset Balancing
 \subsection{Dataset Balancing}
-Two types of dataset balancing were evaluated. First class-balancing and second oversampling.
+Taking a closer look at the sample distribution within the dataset \ref{tab:table1}, it is obviously imbalanced. This will inevitably lead to a trained model
+that is fitted better to the overrepresented classes.
+
+\renewcommand{\arraystretch}{1.2}
+\begin{table}[h]
+  \centering
+  \begin{tabular}{|l|l|l|l|l|l|}
+  \hline
+  Label:   & 0   & 1  & 2   & 3  & 4  \\ \hline
+  \# train & 134 & 20 & 136 & 74 & 49 \\ \hline
+  \# test  & 34  & 5  & 32  & 19 & 13 \\ \hline
+  \end{tabular}
+  \caption{Dataset sample distribution}
+  \label{tab:table1}
+  \end{table}
+
+To avoid this, a method called oversampling is applied. Oversampling allows drawing underrepresented classes from the training set more often, 
+such that all classes are equally represented when training the model.
+
 \subsection{Training}
-Adam, SGD, Momentum, Learing rate decay
+\subsubsection{Optimizer}
+\subsubsection{Loss Function}
+\subsubsection{Learning Rate}
+Momentum / Decay
+
 \subsection{Metrics}
 incl. QWC
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,10 +173,29 @@ The following parameters show a big effect on the performance of the neural netw
 why they are selected for the final classifier.
 
 Balancing
-
 ...
+% Deep Visualization
+\subsection{Deep Visualization}
+\subsubsection{Guided Backpropagation}
+Guided Backpropagation belongs to the family of pixel-space gradient visualizations. 
+The goal is to exploit the idea that neurons act like detectors of image features by using backpropagation.
+What makes this backpropagation guided is that negative gradient are set to zero. This way, only pixels that are positively important to 
+the output get highlighted. This method is not class-discriminative.  
+\subsubsection{CAM}
+Class Activation Map (CAM) is class-discriminative and highlights relevant image regions, but in a less fine-grained manner
+To achieve this, global average pooling has to be performed on the last feature maps of the last convolutional layer, followed by a dense layer as output.
+The weights of this dense layer are then projected back to the convolutional feature maps which results in the class activation mappings.
+As a consequence, it is hard to generalize this approach due to the architecture restrictions.
+\subsubsection{GradCAM}
+GradCAM is class-discriminative as well, but can be used by any CNN-based network without architectural adaptions.
+Similar to CAM, it describes the activation as a linear combination of weighted feature maps. But in this case, the weights are calculated
+by deriving the logit per class by the feature maps of the chosen convolutional layer. These gradients then get global average pooled, followed by a ReLU.
+The ReLU leaves only feature with a positive impact behind, similar to how it is applied in Guided Backpropagation.
+\subsubsection{Guided GradCAM}
+Guided GradCAM combines the ideas of Guided Backpropagation with Class Activation Maps.
+This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization.
 
-\subsection{Grad cam}
+
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 best binary + multiclass performance;
@@ -280,6 +304,8 @@ name.
 \newblock title.
 \newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
   International Conference on}, pages 417--422. IEEE, 2014.
+
+Guided Backpropagation: https://arxiv.org/abs/1412.6806
 
 \end{thebibliography}
 
