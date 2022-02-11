@@ -149,7 +149,16 @@ Two types of dataset balancing were evaluated. First class-balancing and second 
 \subsection{Training}
 Adam, SGD, Momentum, Learing rate decay
 \subsection{Metrics}
-incl. QWC
+Traning deep neural networks requires some performance metrics indicating the success or failure of the model fitting. Accuracy
+is easy to understand and to implement, but not suited for imbalanced data, because it doesn't take into account how well each 
+single class is predicted. 
+To overcome this, precision (how accurate was the model with its prediction) and recall (how thorough is a model with its prediction) can be used. 
+Especially a combination of both, the f1-score is a metrics that indicates how well a classifier handles different classes.
+
+For the diabetic retinopathy dataset, the f1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
+a wrong class is not equally bad. As an example is predicting class 4 for the true class 0 much worse that predicting a 1. The
+f1-score would count both missclassifications equally, while the Quadratic Weighted Kappa (QWC) metric takes the distance of 
+the classification error into account.
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
