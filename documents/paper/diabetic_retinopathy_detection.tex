@@ -13,6 +13,8 @@
 \usepackage{graphicx,wrapfig}
 \usepackage{caption}
 \usepackage{booktabs}
+\usepackage{subfig}
+\raggedbottom
 
 \title{Diabetic Retinopathy Detection}
 
@@ -52,7 +54,7 @@ Since this task is difficult even for trained professionals, an algorithm for au
 This is the goal of this paper. 
 
 The used dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which is publicly available. It contains five class labels, which refer to 
-the eye disease grades (0-4).
+the different eye disease grades (0-4).
 
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
@@ -75,6 +77,8 @@ Classifiying a class 1 as class 2 is for example less problematic than classifyi
 
 
 \subsection{Architecture}
+\subsubsection{Custom architecture}
+>> draw 3D architecture in powerpoint
 VGG, Resnet, Weight freeeze / unfreeze, GAP, Flatten, Dense Layers
 \subsection{Weight initialization}
 Weight initialization refers to the initial values of parameters that are used in specific neural network layers.
@@ -104,23 +108,30 @@ The goal is to make feature extraction easier for the network and increase the a
     \item[2.] subtract the local average color such that the local average gets mapped to gray
     \item[3.] clip the image to remove boundary effects
     \begin{figure}[h]
-      \begin{minipage}[b]{.5\textwidth}
-          \begin{center}
-          \includegraphics[width=.5\linewidth]{IDRiD_060.jpg}
-          \captionsetup{justification=centering}
-          \captionof{figure}{Original image}
-          \label{fig:IDRiD}
-          \end{center}
-      \end{minipage}%
-      \begin{minipage}[b]{.5\textwidth}
-          \begin{center}
-          \includegraphics[width=.5\linewidth]{IDRiD_060_graham.jpg}
-          \captionsetup{justification=centering}
-          \captionof{figure}{Graham preprocessed image}
-          \label{fig:IDRiD_graham}
-          \end{center}
-      \end{minipage}
-  \end{figure} 
+      \centering
+      \subfloat[Original image]{\includegraphics[width=0.2\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
+      \hspace{0.5cm}
+      \subfloat[Processed image]{\includegraphics[width=0.2\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
+      \caption{Graham pre-processing}
+    \end{figure}] 
+  %   \begin{figure}[h]
+  %     \begin{minipage}[b]{.5\textwidth}
+  %         \begin{center}
+  %         \includegraphics[width=.5\linewidth]{IDRiD_060.jpg}
+  %         \captionsetup{justification=centering}
+  %         \captionof{figure}{Original image}
+  %         \label{fig:IDRiD}
+  %         \end{center}
+  %     \end{minipage}%
+  %     \begin{minipage}[b]{.5\textwidth}
+  %         \begin{center}
+  %         \includegraphics[width=.5\linewidth]{IDRiD_060_graham.jpg}
+  %         \captionsetup{justification=centering}
+  %         \captionof{figure}{Graham preprocessed image}
+  %         \label{fig:IDRiD_graham}
+  %         \end{center}
+  %     \end{minipage}
+  % \end{figure} 
   \end{itemize}   
   \item[-] \textbf{Color jittering:} Slight random changes to brightness, hue, saturation or contrast.
   \item[-] \textbf{Random cropping:} Crop a window that is slightly smaller than the image. Then resize to original size again.
@@ -181,6 +192,13 @@ Guided Backpropagation belongs to the family of pixel-space gradient visualizati
 The goal is to exploit the idea that neurons act like detectors of image features by using backpropagation.
 What makes this backpropagation guided is that negative gradient are set to zero. This way, only pixels that are positively important to 
 the output get highlighted. This method is not class-discriminative.  
+\begin{figure}[h]
+  \centering
+  \subfloat[Original result]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_orig.png}\label{fig:IDRiD_backprop_orig}}
+  \hspace{0.5cm}
+  \subfloat[Enhanced result]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_enh}}
+  \caption{Guided Backpropagation}
+\end{figure}
 \subsubsection{CAM}
 Class Activation Map (CAM) is class-discriminative and highlights relevant image regions, but in a less fine-grained manner
 To achieve this, global average pooling has to be performed on the last feature maps of the last convolutional layer, followed by a dense layer as output.
@@ -194,7 +212,17 @@ The ReLU leaves only feature with a positive impact behind, similar to how it is
 \subsubsection{Guided GradCAM}
 Guided GradCAM combines the ideas of Guided Backpropagation with Class Activation Maps.
 This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization.
-
+\begin{figure}[h]
+  \centering
+  \subfloat[Guided Backprop.]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
+  \hspace{0.5cm}
+  \subfloat[gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \hspace{0.5cm}
+  \subfloat[Guided gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \caption{Guided Backpropagation}
+  \small \textit{{Note: The chosen model architecture leads to graph issues within the gradCAM algorithm. The workaround affects the result negatively.
+  A working example with another model and image can be found in the code within the "helper" folder.}}
+\end{figure}
 
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
@@ -205,6 +233,7 @@ color coded confusion matrix
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % below is just there for some help with the formatting
+\pagebreak
 \section{Headings: first level}
 \label{sec:headings}
 
