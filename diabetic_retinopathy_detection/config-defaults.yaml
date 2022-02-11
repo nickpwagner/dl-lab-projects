@@ -1,7 +1,7 @@
 # mode
 # note that regression is quite sensitive to the optimizer (e.g. SGD with Batchsize 16 you will get exploding gradients). Adam works fine.
 mode:
-  value: "binary_class" # select from "multi_class", "regression", "binary_class" # regression not supported, yet!!!
+  value: "multi_class" # select from "multi_class", "regression", "binary_class" # regression not supported, yet!!!
 
 # evaluate
 evaluate_run:
@@ -19,7 +19,7 @@ n_classes:
 data_dir:
   value: "C:/DL_Lab/IDRID_dataset/" #"/content/"
 val_split:
-  value: 0.9
+  value: 0.8
 augmentation:
   value: "strong"  # select from "none", "weak", "strong"
 augment_crop:
@@ -31,7 +31,7 @@ balancing:  # oversampling
 
 # train
 epochs:
-  value: 5
+  value: 50
 batch_size:
   value: 2
 optimizer:
@@ -47,7 +47,7 @@ fine_tuning:
 fine_tuning_learning_rate:
   value: 0.0001
 fine_tuning_epochs:
-  value: 5
+  value: 0
 
 # architecture
 cnn_input_shape:
