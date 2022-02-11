@@ -166,6 +166,7 @@ if __name__ == "__main__":
 
     import matplotlib.pyplot as plt    
     import wandb
+    import pandas as pd
 
     wandb.init(project="test", entity="team8", mode="disabled") 
     config = wandb.config
