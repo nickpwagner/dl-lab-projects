@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1644617106 "f:/Code/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644617108
+["pdflatex"] 1644617765 "f:/Code/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644617768
   "IDRiD_060.jpg" 1643103919 100293 5e12f01e115262eb3210cdee895f7a35 ""
   "IDRiD_060_backprop_enh.png" 1644602278 237156 97b8e5a417c37cecd1e55102e14b17d7 ""
   "IDRiD_060_backprop_orig.png" 1644602275 130472 8af51c22e32fe3253dd3aba973e24d24 ""
@@ -7,9 +7,9 @@
   "IDRiD_060_graham.jpg" 1643103408 124473 9ce0e8a66db4377ab426cf1b745d70d5 ""
   "IDRiD_060_guided_gradCAM.png" 1644616401 41013 38f800e8304b30cc20786113bc8b5d8e ""
   "arxiv.sty" 1644310767 7755 ba6d4b5c83422bc8b9d919a98b997c49 ""
-  "diabetic_retinopathy_detection.aux" 1644617108 7919 aa3fbc3871da6d7f272f47fe0a1a8e31 "pdflatex"
-  "diabetic_retinopathy_detection.out" 1644617108 3880 0cedfdf3c1e28a2a9a38818e651c57f7 "pdflatex"
-  "f:/Code/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644617105 15964 a2298e1460368a9471feaa251c109b88 ""
+  "diabetic_retinopathy_detection.aux" 1644617768 7919 bfd3cfc7010cd2641f415a00914f0bda "pdflatex"
+  "diabetic_retinopathy_detection.out" 1644617768 3880 0cedfdf3c1e28a2a9a38818e651c57f7 "pdflatex"
+  "f:/Code/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644617220 16943 98b30b3dbda7c4034d01b401a76783e0 ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/enc/dvips/base/8r.enc" 1644072025 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1644071495 2971 def0b6c1f0b107b3b936def894055589 ""
   "f:/Programme/LaTex/TexLive/2021/texmf-dist/fonts/map/fontname/texfonts.map" 1644072470 3524 cb3e574dea2d1052e39280babc910dc8 ""
