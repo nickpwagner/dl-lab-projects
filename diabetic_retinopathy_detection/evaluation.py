@@ -117,7 +117,8 @@ if __name__ == "__main__":
 
     if config.mode == "multi_class":
         print("--- Validation Scores ---")
-        p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_val)
+        acc, p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_val)
+        print(f"Accuracy: {acc}")
         print(f"Precision: {p}")
         print(f"Recall: {r}")
         print(f"f1-Score: {f1}")
@@ -125,7 +126,8 @@ if __name__ == "__main__":
         print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
 
         print("--- Test Scores ---")
-        p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_test)
+        acc, p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_test)
+        print(f"Accuracy: {acc}")
         print(f"Precision: {p}")
         print(f"Recall: {r}")
         print(f"f1-Score: {f1}")
