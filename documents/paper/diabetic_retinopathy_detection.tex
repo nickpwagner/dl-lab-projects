@@ -14,6 +14,7 @@
 \usepackage{caption}
 \usepackage{booktabs}
 \usepackage{subfig}
+\usepackage{float}
 \raggedbottom
 
 \title{Diabetic Retinopathy Detection}
@@ -77,9 +78,16 @@ Classifiying a class 1 as class 2 is for example less problematic than classifyi
 
 
 \subsection{Architecture}
-\subsubsection{Custom architecture}
->> draw 3D architecture in powerpoint
-VGG, Resnet, Weight freeeze / unfreeze, GAP, Flatten, Dense Layers
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=1\textwidth]{2_2_architecture.png}\label{fig:architecture}
+  \caption{Model architecture}
+\end{figure}
+The center piece of the architecture is a vgg16 transfer model that is trained on imagenet data. 
+It's responsibility is to learn local features before the feature maps get average pooled.
+Then three dense layers including dropout for regularization are used. The final output consists of five values that correspond
+to the five diabetic retinopathy grade predictions.
+The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter \ref{ch_hyperparam}.
 \subsection{Weight initialization}
 Weight initialization refers to the initial values of parameters that are used in specific neural network layers.
 Changing the initialization of the layers changes the starting point for the optimization process and potentially also the performance.
@@ -109,9 +117,9 @@ The goal is to make feature extraction easier for the network and increase the a
     \item[3.] clip the image to remove boundary effects
     \begin{figure}[h]
       \centering
-      \subfloat[Original image]{\includegraphics[width=0.2\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
+      \subfloat[Original image]{\includegraphics[width=0.15\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
       \hspace{0.5cm}
-      \subfloat[Processed image]{\includegraphics[width=0.2\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
+      \subfloat[Processed image]{\includegraphics[width=0.15\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
       \caption{Graham pre-processing}
     \end{figure}] 
   %   \begin{figure}[h]
@@ -188,7 +196,7 @@ training and test data, the original training dataset was split into 80\% traini
 
 To perform many parameter sweeps, we stored out dataset in the cloud and used Google Colab as training server. 
 
-\subsection{Hyperparameter selection}
+\subsection{Hyperparameter selection}\label{ch_hyperparam}
 As metrics for hyperparameter selection, we mainly used correlation with the validation-f1-score and 
 compared the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
 Once most important hyperparameter is determined and selected, one needs to ensure that the second most important
@@ -211,7 +219,7 @@ Number of dense neurons in layer N-1: 0
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.4\textwidth]{3_2_parameter_importance.png}\label{fig:param_importance}}
+  \includegraphics[width=0.4\textwidth]{3_2_parameter_importance.png}\label{fig:param_importance}
   \caption{Most important parameters with a sweep of 80 experiments}
 \end{figure}
 
@@ -229,9 +237,9 @@ What makes this backpropagation guided is that negative gradient are set to zero
 the output get highlighted. This method is not class-discriminative.  
 \begin{figure}[h]
   \centering
-  \subfloat[Original result]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_orig.png}\label{fig:IDRiD_backprop_orig}}
+  \subfloat[Original result]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_orig.png}\label{fig:IDRiD_backprop_orig}}
   \hspace{0.5cm}
-  \subfloat[Enhanced result]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_enh}}
+  \subfloat[Enhanced result]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_enh}}
   \caption{Guided Backpropagation}
 \end{figure}
 \subsubsection{CAM}
@@ -247,13 +255,13 @@ The ReLU leaves only feature with a positive impact behind, similar to how it is
 \subsubsection{Guided GradCAM}
 Guided GradCAM combines the ideas of Guided Backpropagation with Class Activation Maps.
 This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization.
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-  \subfloat[Guided Backprop.]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
+  \subfloat[Guided Backprop.]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
   \hspace{0.5cm}
-  \subfloat[gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \subfloat[gradCAM]{\includegraphics[width=0.15\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
   \hspace{0.5cm}
-  \subfloat[Guided gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \subfloat[Guided gradCAM]{\includegraphics[width=0.15\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
   \caption{Guided Backpropagation}
   \small \textit{{Note: The chosen model architecture leads to graph issues within the gradCAM algorithm. The workaround affects the result negatively.
   A working example with another model and image can be found in the code within the "helper" folder.}}
