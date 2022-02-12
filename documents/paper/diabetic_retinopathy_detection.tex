@@ -186,9 +186,35 @@ Hyperparameter optimization requires besides training and test dataset a third, 
 model after hyperparameter tuning and to avoid overfitting on the hyperparameters. Because the given dataset only contains 
 training and test data, the original training dataset was split into 80\% training data and 20\% validation data.
 
-In total, x sweeps consisting of x runs and x epochs were performed during the project.
+To perform many parameter sweeps, we stored out dataset in the cloud and used Google Colab as training server. 
 
 \subsection{Hyperparameter selection}
+As metrics for hyperparameter selection, we mainly used correlation with the validation-f1-score and 
+compared the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
+Once most important hyperparameter is determined and selected, one needs to ensure that the second most important
+parameter is not selected because of strong correlation with the most important one. Therefore, the independence can be 
+guaranteed by filtering the sweep and selecting just runs with the best parameter one or by performing a new parameter sweep
+with a fixed parameter one.
+
+With this procedure, we selected the most important parameters as in table...:
+
+Put into table:
+Use Graham preprecessing: False
+Model architecture: ResNet50
+Learning rate: 0.001
+Balancing: true
+Flatten or GAP: GAP
+Number of dense neurons in layer N-3: 4096
+Number of dense neurons in layer N-1: 0
+
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.4\textwidth]{3_2_parameter_importance.png}\label{fig:param_importance}}
+  \caption{Most important parameters with a sweep of 80 experiments}
+\end{figure}
+
 The following parameters show a big effect on the performance of the neural network on the validation data, 
 why they are selected for the final classifier.
 
@@ -235,6 +261,12 @@ This makes GradCAM class-discriminative due to the localization of relevant imag
 
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
+We trained and evaluated our algorithm on both, binary and multiclass classification, but we focussed our work on achieving
+good results on for the multiclass problem.
+
+For binary classification we performed a hyperparameter sweep and achieved without further optimization an f1-score of 0.87 on the 
+validation data and of 0.82 on the test data.
+
 best binary + multiclass performance;
 color coded confusion matrix
 
