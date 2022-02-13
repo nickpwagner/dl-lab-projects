@@ -16,6 +16,7 @@
 \usepackage{subfig}
 \usepackage{float}
 \usepackage{wrapfig}
+\usepackage{natbib}
 \raggedbottom
 
 \title{Diabetic Retinopathy Detection}
@@ -23,13 +24,13 @@
 \author{
   David Unger\\
   3522491 \\
-  M. Eng. Autonome Systeme\\
+  Autonome Systeme\\
   University of Stuttgart\\
   \texttt{st172353@stud.uni-stuttgart.de} \\
   \And
   Nick Wagner\\
   3524444 \\
-  B. Eng. Autonome Systeme\\
+  Autonome Systeme\\
   University of Stuttgart\\
   \texttt{st175644@stud.uni-stuttgart.de} \\
 }
@@ -58,97 +59,88 @@
 \maketitle
 
 \begin{abstract}
-Diabetic retinopathy is an eye disease that can affect people suffering diabetes. It causes damage to the blood vessels of 
-the eyes, deteriorates the eyesight and can lead in the worst case to blindness of the patient. It is important to 
-detect the disease in an early stage to mitigate the effects as good as possible with an early treatment. Analyzing images of 
-eyes and classify the severity of diabetic retinopathy is a challenging task that requires expert knowledge. To assist 
-doctors and medical personnel, a classification model shall be trained to classify the severity without human interaction. 
+Diabetic retinopathy is an eye disease that can affect people suffering from diabetes. To assist 
+doctors and medical personnel with their diagnosis, a classification model shall be trained to classify the severity 
+of the disease without human interaction. 
+We train and analyze several convolutional neural networks with different architectures. To find an optimal architecture, 
+intensive hyperparamer sweeps via random search are performed. To analyze the performance of our model, we use gradient 
+visualization.
 \end{abstract}
 
 % 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-Diabetic retinopathy is a complication of diabetes, which can cause damage the retina of the eye. 
+Diabetic retinopathy is a complication of diabetes, which can cause damage to the retina of the eye.
 To treat this condition successfully, it has to be detected at an early stage, which is difficult due to minimal or no early warning signs. 
 Furthermore, the different grades can only be distinguished by a trained professional due to its subtle symptoms.
-Examples are leaking blood vessels, fatty deposits or retinal swelling.
+Examples for those are leaking blood vessels, fatty deposits or retinal swelling.
 Since this task is difficult even for trained professionals, the goal of this paper is to find an algorithm for automatic
-detection of the diabetic retinopathy. The used dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which 
-is publicly available. It contains five class labels, which refer to 
-the different eye disease grades (0-4).
+detection of the diabetic retinopathy grade. The dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which 
+is publicly available[QUELLE]. It contains five class labels, which refer to the each of the eye disease grades (0-4).
 
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
 \subsection{Problem analysis}
 
 To tackle the problem of diabetic retinopathy detection, several methods are possible. Because the dataset consists of 
-ordinally scaled data of 5 classes, regression could be used to estimate the serverity of a case. In addition, a the problem 
+ordinally scaled data of 5 classes, regression could be used to estimate the severity of a case. In addition, the problem 
 can be handled as a binary or multiclass classification problem after one-hot-encoding the labels.
-Further, only binary and multiclass classification are anaylzed.
+Further, only binary and multiclass classification are analyzed.
 
-A binary classification has the advantage of higher accuracy, but lacks details, because the network only outputs no 
-information about the exact serverity of the disease. Metrics are also easy to implement, because precision, 
+A binary classification has the advantage of higher accuracy, but lacks details, because the network doesn't output 
+information about the exact severity of the disease. Metrics are easy to implement because precision, 
 recall and F1-score are standard implementations and nicely interpretable. A multiclass classification has typically a 
 lower accuracy, because the network needs to pick the right class among 
-several classes. It provides the benefit or receiving richer information, i.e. the exact serverity of the disease.
-Evaluating a multiclass classification problem becomes harder, because missclassifications can vary in their error.
-Classifiying a class 1 as class 2 is for example less problematic than classifying class 1 as class 5.
-
+several classes. It provides the benefit of receiving richer information, i.e. the exact severity of the disease.
+Evaluating a multiclass classification problem becomes harder, because misclassifications can vary in their error.
 
 \subsection{Architecture}
-To tackle the classification problem, we trained several neural networks using different architectures.
+To tackle the classification problem, we train several neural networks using different architectures.
 The analyzed model architectures are composed of three parts: the 
-base model, the conversion layer and the head of our model. For the base model we tried both ResNet50 and VGG16 with 
-weights pretrained on ImageNet. We tried out the results with a fully trainable, partly trainable and not trainable
-base model. As conversion layer we tested both, a flatten layer and global average pooling (GAP).
-For the head we tried up to three hidden dense layers with different number of neurons per layer.
+base model, the conversion layer and the head of our model. For the base model we try both ResNet50 and VGG16 with 
+weights pretrained on ImageNet. We try out the results with a fully trainable, partly trainable and not trainable
+base model. As conversion layer we test both, a flatten and global average pooling (GAP) [QUELLE] layer.
+For the head we try up to three dense hidden layers with different number of neurons per layer.
+The final output consists of five values that correspond to the five diabetic retinopathy grade predictions.
+The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter% \ref{ch_hyperparam}.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\textwidth]{2_2_architecture.png}\label{fig:architecture}
   \caption{Model architecture}
 \end{figure}
-The center piece of the architecture is a vgg16 transfer model that is trained on imagenet data. 
-It's responsibility is to learn local features before the feature maps get average pooled.
-Then three dense layers including dropout for regularization are used. The final output consists of five values that correspond
-to the five diabetic retinopathy grade predictions.
-The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter \ref{ch_hyperparam}.
->> draw 3D architecture in powerpoint
-
-
 
 \subsection{Weight initialization}
-Weight initialization refers to the initial values of parameters that are used in specific neural network layers.
+Weight initialization refers to the initial values of parameters that are used in neural network layers.
 Changing the initialization of the layers changes the starting point for the optimization process and potentially also the performance.
 Keras initializes the weights of dense layers with the Glorot uniform initializer, which draws samples from a truncated uniform distribution.
-Generally the goal is to avoid vanishing and exploding gradients, even better is if the variance of layer outputs is approximately one. [paper KUMAR]
-Specifically for the ReLU activation function, this is achieved with the He initialization, which draws from a normal distribution with the following parameters. [paper HE]\\
-\begin{minipage}{.5\linewidth}
+Generally the goal is to avoid vanishing and exploding gradients, even better is if the variance of layer outputs is approximately one. [QUELLE KUMAR]
+Specifically for the ReLU activation function, this is achieved with the He initialization, which draws from a normal distribution with the following parameters. [QUELLE paper HE]\\
+%\begin{minipage}{.5\linewidth}
   \begin{equation}
     \mu = 0
   \end{equation}
-\end{minipage}
-\begin{minipage}{.5\linewidth}
+%\end{minipage}
+%\begin{minipage}{.5\linewidth}
   \begin{equation}
     \sigma^2 = 2/N
   \end{equation}
-\end{minipage}
-
-This led to a faster training and performance increase of X percent.
+%\end{minipage}
 
 \subsection{Augmentation}
+\begin{wrapfigure}{r}{6cm}%[h]
+  \vspace{-10pt}
+  \centering
+  \subfloat[Original image]{\includegraphics[width=0.15\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
+  \hspace{0.5cm}
+  \subfloat[Processed image]{\includegraphics[width=0.15\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
+  \caption{Graham pre-processing}
+\end{wrapfigure}
 Within the input pipeline three main types of augmentation are applied.
 The goal is to make feature extraction easier for the network and increase the amount of input images which reduces overfitting.
 \begin{itemize}
-  \item[-] \textbf{Graham preprocessing:  [report kaggle]} \begin{itemize}
+  \item[-] \textbf{Graham preprocessing:  [QUELLE kaggle]} \begin{itemize}
     \item[1.] rescale the eye radius to 300 pixels 
-    \item[2.] subtract the local average color such that the local average gets mapped to gray
+    \item[2.] subtract the local average color and shift it to gray
     \item[3.] clip the image to remove boundary effects
-    \begin{figure}[h]
-      \centering
-      \subfloat[Original image]{\includegraphics[width=0.15\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
-      \hspace{0.5cm}
-      \subfloat[Processed image]{\includegraphics[width=0.15\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
-      \caption{Graham pre-processing}
-    \end{figure}] 
   %   \begin{figure}[h]
   %     \begin{minipage}[b]{.5\textwidth}
   %         \begin{center}
@@ -168,17 +160,15 @@ The goal is to make feature extraction easier for the network and increase the a
   %     \end{minipage}
   % \end{figure} 
   \end{itemize}   
-  \item[-] \textbf{Color jittering:} Slight random changes to brightness, hue, saturation or contrast.
-  \item[-] \textbf{Random cropping:} Crop a window that is slightly smaller than the image. Then resize to original size again.
+  \item[-] \textbf{Color jittering:} Slight random changes to brightness, hue, saturation and contrast.
+  \item[-] \textbf{Random cropping:} Crop a window that is slightly smaller than the image. Then resize to original image size again.
 \end{itemize}
 
 % Dataset Balancing
 \subsection{Dataset Balancing}
-Taking a closer look at the sample distribution within the dataset \ref{tab:table1}, it is obviously imbalanced. This will inevitably lead to a trained model
-that is fitted better to the overrepresented classes.
-
 \renewcommand{\arraystretch}{1.2}
-\begin{table}[h]
+\begin{wraptable}{r}{6cm}
+  \vspace{-15pt}
   \centering
   \begin{tabular}{|l|l|l|l|l|l|}
   \hline
@@ -187,68 +177,69 @@ that is fitted better to the overrepresented classes.
   \# test  & 34  & 5  & 32  & 19 & 13 \\ \hline
   \end{tabular}
   \caption{Dataset sample distribution} \label{tab:table1}
-  \end{table}
-
+  \end{wraptable}
+Taking a closer look at the sample distribution within the dataset as shown in Table \ref{tab:table1}, it is obviously imbalanced. This will inevitably lead to a trained model
+that is fitted better to the overrepresented classes.
 To avoid this, a method called oversampling is applied. Oversampling allows drawing underrepresented classes from the training set more often, 
 such that all classes are equally represented when training the model.
-
+\pagebreak
 \subsection{Training \& Metrics}
-For training our model, we used categorical cross-entropy as loss function and experimented with the optimizer and 
-learning rate. As optimizer we selected SGD with a momentum of 0.9 and Adam which both showed similar performance. 
-As learning rate, we used 0.1, 0.01 and 0.001 from which the latter performed best and further learning rate decay
-showed no further improvement.
+For training our model, we use categorical cross-entropy as loss function and experiment with the optimizer and 
+learning rate. As optimizer we select SGD with a momentum of 0.9 and Adam which both show similar performance. 
+As learning rate, we use 0.1, 0.01 and 0.001 from which the latter performs best. Further learning rate decay
+shows no improvement.
 
 Training deep neural networks requires some performance metrics indicating the success or failure of the model fitting. Accuracy
 is easy to understand and to implement, but not suited for imbalanced data, because it doesn't take into account how well each 
 single class is predicted. 
-To overcome this, precision (how accurate was the model with its prediction) and recall (how thorough is a model with its prediction) can be used. 
-Especially a combination of both, the F1-score is a metrics that indicates how well a classifier handles different classes.
+To overcome this, precision (how accurate the model is with its prediction) and recall (how thorough the model is with its prediction) can be used. 
+Especially a combination of both, the F1-score is a metric that indicates how well a classifier handles different classes.
 
 For the diabetic retinopathy dataset, the F1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
-a wrong class is not equally bad. As an example is predicting class 4 for the true class 0 much worse that predicting a 1. The
-F1-score would count both missclassifications equally, while the Quadratic Weighted Kappa (QWC) metric takes the distance of 
-the classification error into account.
+a wrong class is not equally bad. As an example, predicting class 0 (no retinopathy) for the true class 4 (proliferative retinopathy) 
+is much worse than predicting class 3 (servere retinopathy). The F1-score counts both missclassifications equally, while the 
+Quadratic Weighted Kappa (QWC) [QUELLE] metric takes the distance of the classification error into account and is therefore more suitable.
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
 The training of the deep neural network classifier requires the selection of suitable hyperparameters that differ from
-problem to problem. A useful strategy to find a good set of hyperparameters are parameter sweeps. Weights\&Biases is a 
-python library that enables the easy implementation of sweeps. 
+problem to problem, which is why their choice is a hard task. A useful strategy to find a good set of hyperparameters are parameter 
+sweeps. Weights\&Biases is a python library that enables the easy implementation of sweeps and is therefore selected for our implementation. 
 
-Hyperparameter optimization requires besides training and test dataset a third, the validation dataset, to evaluate the
+Hyperparameter optimization requires besides the training and test dataset a third, the validation dataset, to evaluate the
 model after hyperparameter tuning and to avoid overfitting on the hyperparameters. Because the given dataset only contains 
-training and test data, the original training dataset was split into 80\% training data and 20\% validation data.
-
-To perform many parameter sweeps, we stored out dataset in the cloud and used Google Colab as training server. 
+training and test data, the original training dataset is split into 80\% training data and 20\% validation data.
+To perform many parameter sweeps, we store our dataset in the cloud and use Google Colab as training server. 
 
 \subsection{Hyperparameter selection}\label{ch_hyperparam}
 
 
 \renewcommand{\arraystretch}{1.2}
 \begin{wraptable}{r}{7.5cm}
+  \vspace{-20pt}
   \begin{tabular}{|l|l|}
   \hline
   Hyperparameter & Selected\\ \hline \hline
-  Use Graham preprecessing & False \\ \hline
   Model architecture & ResNet50 \\ \hline
   Learning rate & 0.001 \\ \hline
   Balancing & true \\ \hline
   Flatten or GAP & GAP \\ \hline
   Number of dense neurons in layer N-3 & 4096 \\ \hline
+  Number of dense neurons in layer N-2 & 512 \\ \hline
   Number of dense neurons in layer N-1 & 0 \\ \hline
   \end{tabular}
   \caption{Excerpt of the most important hyperparameters} \label{tab:hyperparam}
   \end{wraptable}
 
 
-As metrics for hyperparameter selection, we mainly used correlation with the validation-F1-score and 
-compared the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
+As metrics for hyperparameter selection, we mainly use correlation with the validation-QWC-score and 
+compare the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
 Once most important hyperparameter is determined and selected, one needs to ensure that the second most important
 parameter is not selected because of strong correlation with the most important one. This independence can be 
 guaranteed by filtering the sweep and selecting just runs with the best parameter or by performing a new parameter sweep
 with having this first parameter fixed.
 
-With this procedure, we selected the most important parameters as in table \ref{tab:hyperparam}:
+With this procedure, we selected the most important parameters as in Table \ref{tab:hyperparam}.
 
 
 
@@ -262,37 +253,38 @@ With this procedure, we selected the most important parameters as in table \ref{
 % Deep Visualization
 \subsection{Deep Visualization}
 \subsubsection{Guided Backpropagation}
-Guided Backpropagation belongs to the family of pixel-space gradient visualizations. 
-The goal is to exploit the idea that neurons act like detectors of image features by using backpropagation.
-What makes this backpropagation guided is that negative gradient are set to zero. This way, only pixels that are positively important to 
-the output get highlighted. This method is not class-discriminative.  
-\begin{figure}[h]
+\begin{wrapfigure}{r}{7cm}%[h]
+  \vspace{-50pt}
   \centering
   \subfloat[Original result]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_orig.png}\label{fig:IDRiD_backprop_orig}}
   \hspace{0.5cm}
   \subfloat[Enhanced result]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_enh}}
   \caption{Guided Backpropagation}
-\end{figure}
+\end{wrapfigure}
+Guided Backpropagation belongs to the family of pixel-space gradient visualizations. 
+The goal is to exploit the idea that neurons act like detectors of image features by using backpropagation.
+What makes this backpropagation guided is that negative gradients are set to zero. This way, only pixels that are positively impacting 
+the output get highlighted. This method is not class-discriminative. [QUELLE] 
 \subsubsection{CAM}
-Class Activation Map (CAM) is class-discriminative and highlights relevant image regions, but in a less fine-grained manner
-To achieve this, global average pooling has to be performed on the last feature maps of the last convolutional layer, followed by a dense layer as output.
+Class Activation Map (CAM) is class-discriminative and highlights relevant image regions, but in a less fine-grained manner.
+To achieve this, global average pooling has to be performed on the feature maps of the last convolutional layer, followed by a dense layer as output.
 The weights of this dense layer are then projected back to the convolutional feature maps which results in the class activation mappings.
 As a consequence, it is hard to generalize this approach due to the architecture restrictions.
 \subsubsection{GradCAM}
-GradCAM is class-discriminative as well, but can be used by any CNN-based network without architectural adaptions.
+GradCAM is class-discriminative as well, but can be used by any CNN-based network without architectural adaptations.
 Similar to CAM, it describes the activation as a linear combination of weighted feature maps. But in this case, the weights are calculated
-by deriving the logit per class by the feature maps of the chosen convolutional layer. These gradients then get global average pooled, followed by a ReLU.
-The ReLU leaves only feature with a positive impact behind, similar to how it is applied in Guided Backpropagation.
+by deriving the respective logit of the class of interest by the feature maps of the chosen convolutional layer. These gradients then get global average pooled, followed by a ReLU.
+The ReLU leaves only feature with a positive impact behind, similar to how it is applied in Guided Backpropagation.[QUELLE]
 \subsubsection{Guided GradCAM}
 Guided GradCAM combines the ideas of Guided Backpropagation with Class Activation Maps.
-This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization.
+This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization. [QUELLE]
 \begin{figure}[H]
   \centering
-  \subfloat[Guided Backprop.]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
+  \subfloat[Guided Backprop.]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
   \hspace{0.5cm}
-  \subfloat[gradCAM]{\includegraphics[width=0.15\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \subfloat[gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
   \hspace{0.5cm}
-  \subfloat[Guided gradCAM]{\includegraphics[width=0.15\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
+  \subfloat[Guided gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
   \caption{Guided Backpropagation}
   \small \textit{{Note: The chosen model architecture leads to graph issues within the gradCAM algorithm. The workaround affects the result negatively.
   A working example with another model and image can be found in the code within the "helper" folder.}}
@@ -327,40 +319,55 @@ This makes GradCAM class-discriminative due to the localization of relevant imag
   \caption{Confusion matrix on the test dataset}
   \label{tab:confm}
   \end{wraptable} % end confusion matrix
-We trained and evaluated our algorithm on both, binary and multiclass classification.
+We train and evaluate our algorithm on both binary and multiclass classification.
 
-For binary classification we performed a hyperparameter sweep and achieved without further optimization an F1-score of 0.87 on the 
+For binary classification we perform a hyperparameter sweep and achieve without further optimization an F1-score of 0.87 on the 
 validation data and of 0.82 on the test data.
 
-For multiclass classification we optimized our model further and performed several sweep. Our finally selected model achieves 
+For multiclass classification we optimize our model further and perform several sweeps. Our finally selected model achieves 
 an accuracy of 58.8\%, an F1-score of 0.47 and a QWC score of 0.44 which would have achieved rank 106 for the Kaggle challenge. 
-When evaluation the confusion matrix of the prediction as denoted in table \ref{tab:confm}, one can see that our model predicts
-class 0 very frequently and often incorrect. This can be interpreted in a way that our model fails to identify features that
-indicate the disease. Therefore, a method to further optimize the model could be more extensive data augmentation like shearing
-or rotation of the images to further overcome the relatively small dataset.
+When evaluating the confusion matrix of the prediction as denoted in Table \ref{tab:confm}, one can see that our model predicts
+class 0 very frequently and often incorrectly. This can be interpreted in a way that our model fails to identify features that
+indicate the disease and therefore selects class 0. As a result, our model could be further optimized by more extensive data augmentation 
+like shearing or rotating the images to overcome the challenge of a relatively small dataset.
 
 
 \bibliographystyle{unsrt}  
 %\bibliography{references}  %%% Remove comment to use the external .bib file (using bibtex).
 %%% and comment out the ``thebibliography'' section.
 
-
 %%% Comment out this section when you \bibliography{references} is enabled.
 \begin{thebibliography}{1}
 
-\bibitem{kumar2017weight}
-Siddharth Krishna Kumar.
-\newblock On weight initialization in deep neural networks.
-\newblock {\em arXiv:1704.08863}, 2017.
+  \bibitem{kumar2017weight}
+  Siddharth Krishna Kumar.
+  \newblock On weight initialization in deep neural networks.
+  \newblock {\em arXiv:1704.08863}, 2017.
 
-\bibitem{kumar2017weight}
-name.
-\newblock title.
-\newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
-  International Conference on}, pages 417--422. IEEE, 2014.
+  \bibitem{IDRiDdataset}
+  Porwal, Prasanna; Pachade, Samiksha; Kamble, Ravi; Kokare, Manesh; Deshmukh, Girish; Sahasrabuddhe, Vivek; Meriaudeau, Fabrice.
+  \newblock Indian diabetic retinopathy image dataset (IDRiD): a database for diabetic retinopathy screening research.
+  \newblock {\em Data 3}, 2018.
+  
+  % \bibitem{kumar2017weight}
+  % name.
+  % \newblock title.
+  % \newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
+  %   International Conference on}, pages 417--422. IEEE, 2014.
+  
+  % \bibitem{guidBackprop}
+  % Springenberg, J., et. al. Striving for Simplicity: The All Convolutional Net, 2015, arXiv.
 
-Guided Backpropagation: https://arxiv.org/abs/1412.6806
+  % \bibitem{gap}
+  % Lin, M.
+  %Guided Backpropagation: https://arxiv.org/abs/1412.6806
+  
+  %IDRiD Dataset: https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid#files
+  
+  
+  \end{thebibliography}
+  
 
-\end{thebibliography}
+
 
 \end{document}

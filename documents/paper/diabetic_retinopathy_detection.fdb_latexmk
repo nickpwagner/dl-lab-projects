@@ -1,6 +1,6 @@
 # Fdb version 3
-["pdflatex"] 1644741964 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644741966
-  "2_2_architecture.png" 1644737494 231701 9502f1a47bc7f7039f9712e1b2f5d394 ""
+["pdflatex"] 1644756619 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644756622
+  "2_2_architecture.png" 1644756534 142524 8eefd0b605855f315321c956d9b877ac ""
   "C:/Scarlett/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "C:/Scarlett/Programs/MiKTeX/fonts/tfm/adobe/times/ptmb8r.tfm" 1136768654 4524 6bce29db5bc272ba5f332261583fee9c ""
   "C:/Scarlett/Programs/MiKTeX/fonts/tfm/adobe/times/ptmb8t.tfm" 1136768654 6880 f19b8995b61c334d78fc734065f6b4d4 ""
@@ -152,6 +152,7 @@
   "C:/Scarlett/Programs/MiKTeX/tex/latex/microtype/mt-msb.cfg" 1639156522 5593 428f02443ecf7ba7329e84a32c80d72c ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/microtype/mt-ptm.cfg" 1639156522 12426 8c5117e9cfc533783a87ab02a1f9115f ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/multirow/multirow.sty" 1615976118 6149 2398eec4faa1ee24ff761581e580ecf1 ""
+  "C:/Scarlett/Programs/MiKTeX/tex/latex/natbib/natbib.sty" 1292249081 46712 1c8843383c0bd05870c45fa0ebea6cc2 ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/pgf/basiclayer/pgf.sty" 1621069645 1090 bae35ef70b3168089ef166db3e66f5b2 ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/pgf/basiclayer/pgfcore.sty" 1621069645 410 615550c46f918fcbee37641b02a862d9 ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty" 1621069645 21013 f4ff83d25bb56552493b030f27c075ae ""
@@ -168,7 +169,7 @@
   "C:/Scarlett/Programs/MiKTeX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/wrapfig/wrapfig.sty" 1044403200 26220 3701aebf80ccdef248c0c20dd062fea9 ""
   "C:/Scarlett/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty" 1636284872 56029 3f7889dab51d620aa43177c391b7b190 ""
-  "C:/Users/david/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1644737644 82666 6ae954049cbd801ff08c004e318ae5a8 ""
+  "C:/Users/david/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1644752609 82666 6ae954049cbd801ff08c004e318ae5a8 ""
   "C:/Users/david/AppData/Local/MiKTeX/fonts/pk/ljfour/jknappen/ec/dpi600/ectt1000.pk" 1644244733 20028 7c7d15b39d5c6966565e13f4c228d18a ""
   "C:/Users/david/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1643837214 10235495 180aa80be38959ae8f5d7959e9dccbfb ""
   "IDRiD_060.jpg" 1644598649 100293 5e12f01e115262eb3210cdee895f7a35 ""
@@ -178,10 +179,10 @@
   "IDRiD_060_graham.jpg" 1644598649 124473 ecb8367dabd7e2ad5088cb6240224db8 ""
   "IDRiD_060_guided_gradCAM.png" 1644644403 41013 63f2d715b0d241a6e00cb53c47516ea0 ""
   "arxiv.sty" 1578914260 7500 f12f4e37fb88cc7b19e63ecce8ed0185 ""
-  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644741963 19764 9460f2ab517392db467b95ed21905c40 ""
-  "diabetic_retinopathy_detection.aux" 1644741965 6593 0e8c34c6fdef386b9a4dca4452be8808 "pdflatex"
-  "diabetic_retinopathy_detection.out" 1644741965 2214 5331fcefc329cadaec77a68b9081e5d8 "pdflatex"
-  "diabetic_retinopathy_detection.tex" 1644741963 19764 9460f2ab517392db467b95ed21905c40 ""
+  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644756615 20183 71e67f2127d2ec3996361869e5a7624c ""
+  "diabetic_retinopathy_detection.aux" 1644756621 6668 f523c4c2f03bc257ff4a671d0e736013 "pdflatex"
+  "diabetic_retinopathy_detection.out" 1644756621 2214 5331fcefc329cadaec77a68b9081e5d8 "pdflatex"
+  "diabetic_retinopathy_detection.tex" 1644756615 20183 71e67f2127d2ec3996361869e5a7624c ""
   (generated)
   "diabetic_retinopathy_detection.aux"
   "diabetic_retinopathy_detection.log"
