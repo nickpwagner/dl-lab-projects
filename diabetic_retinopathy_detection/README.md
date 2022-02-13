@@ -1,3 +1,5 @@
+## Project 1 - Diabetic Retinopathy Detection
+
 # IMPORTANT
 Our code was developed via Live Share in VS Code, meaning the person that commits is not meaningful.
 Both students contributed equally to the code.
@@ -34,7 +36,7 @@ EITHER use the shell script that can be found here, update the dataset path and 
 # Activate everything you need
 module load cuda/11.2
 # Run your python code
-cd diabetic_retinopathy_detection
+cd dl-lab-21w-team08/diabetic_retinopathy_detection
 python3 main.py --train=True --epochs=20 --log_wandb="offline" -p="/misc/home/RUS_CIP/st175644/IDRID_dataset/"
 ```
-## Enjoy :-)
+## If anything is unclear, check ```/misc/home/RUS_CIP/st175644```. Enjoy :-)
