@@ -73,9 +73,9 @@ Diabetic retinopathy is a complication of diabetes, which can cause damage to th
 To treat this condition successfully, it has to be detected at an early stage, which is difficult due to minimal or no early warning signs. 
 Furthermore, the different grades can only be distinguished by a trained professional due to its subtle symptoms.
 Examples for those are leaking blood vessels, fatty deposits or retinal swelling.
-Since this task is difficult even for trained professionals, the goal of this paper is to find an algorithm for automatic
+Since this task is difficult even for trained professionals \cite{DBRscience}, the goal of this paper is to find an algorithm for automatic
 detection of the diabetic retinopathy grade. The dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which 
-is publicly available[QUELLE]. It contains five class labels, which refer to the each of the eye disease grades (0-4).
+is publicly available \cite{IDRiDdataset}. It contains five class labels, which refer to the each of the eye disease grades (0-4).
 
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
@@ -98,22 +98,23 @@ To tackle the classification problem, we train several neural networks using dif
 The analyzed model architectures are composed of three parts: the 
 base model, the conversion layer and the head of our model. For the base model we try both ResNet50 and VGG16 with 
 weights pretrained on ImageNet. We try out the results with a fully trainable, partly trainable and not trainable
-base model. As conversion layer we test both, a flatten and global average pooling (GAP) [QUELLE] layer.
+base model. As conversion layer we test both, a flatten and global average pooling (GAP) layer.
 For the head we try up to three dense hidden layers with different number of neurons per layer.
-The final output consists of five values that correspond to the five diabetic retinopathy grade predictions.
+The final output consists of five values that correspond to the five diabetic retinopathy grade predictions, see Figure \ref{fig:architecture}.
 The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter% \ref{ch_hyperparam}.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\textwidth]{2_2_architecture.png}\label{fig:architecture}
   \caption{Model architecture}
+  \label{fig:architecture}
 \end{figure}
 
 \subsection{Weight initialization}
 Weight initialization refers to the initial values of parameters that are used in neural network layers.
 Changing the initialization of the layers changes the starting point for the optimization process and potentially also the performance.
 Keras initializes the weights of dense layers with the Glorot uniform initializer, which draws samples from a truncated uniform distribution.
-Generally the goal is to avoid vanishing and exploding gradients, even better is if the variance of layer outputs is approximately one. [QUELLE KUMAR]
-Specifically for the ReLU activation function, this is achieved with the He initialization, which draws from a normal distribution with the following parameters. [QUELLE paper HE]\\
+Generally the goal is to avoid vanishing and exploding gradients, even better is if the variance of layer outputs is approximately one. \cite{kumar2017weight}
+Specifically for the ReLU activation function, this is achieved with the He initialization, which draws from a normal distribution with the following parameters. \cite{he2015delving}\\
 %\begin{minipage}{.5\linewidth}
   \begin{equation}
     \mu = 0
@@ -132,12 +133,13 @@ Specifically for the ReLU activation function, this is achieved with the He init
   \subfloat[Original image]{\includegraphics[width=0.15\textwidth]{IDRiD_060.jpg}\label{fig:IDRiD_backprop_orig}}
   \hspace{0.5cm}
   \subfloat[Processed image]{\includegraphics[width=0.15\textwidth]{IDRiD_060_graham.jpg}\label{fig:IDRiD_backprop_enh}}
-  \caption{Graham pre-processing}
+  \caption{Graham preprocessing}
+  \label{fig:graham}
 \end{wrapfigure}
 Within the input pipeline three main types of augmentation are applied.
 The goal is to make feature extraction easier for the network and increase the amount of input images which reduces overfitting.
 \begin{itemize}
-  \item[-] \textbf{Graham preprocessing:  [QUELLE kaggle]} \begin{itemize}
+  \item[-] \textbf{Graham preprocessing:}\cite{graham2015} see Figure \ref{fig:graham}\begin{itemize}
     \item[1.] rescale the eye radius to 300 pixels 
     \item[2.] subtract the local average color and shift it to gray
     \item[3.] clip the image to remove boundary effects
@@ -260,24 +262,25 @@ With this procedure, we selected the most important parameters as in Table \ref{
   \hspace{0.5cm}
   \subfloat[Enhanced result]{\includegraphics[width=0.15\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_enh}}
   \caption{Guided Backpropagation}
+  \label{guidedBackprop}
 \end{wrapfigure}
-Guided Backpropagation belongs to the family of pixel-space gradient visualizations. 
+Guided Backpropagation\cite{springenberg2015striving} belongs to the family of pixel-space gradient visualizations. 
 The goal is to exploit the idea that neurons act like detectors of image features by using backpropagation.
 What makes this backpropagation guided is that negative gradients are set to zero. This way, only pixels that are positively impacting 
-the output get highlighted. This method is not class-discriminative. [QUELLE] 
+the output get highlighted. This method is not class-discriminative. See Figure \ref{guidedBackprop} and \ref{deepVis}a.
 \subsubsection{CAM}
-Class Activation Map (CAM) is class-discriminative and highlights relevant image regions, but in a less fine-grained manner.
+Class Activation Map (CAM)\cite{ZhouKLOT15} is class-discriminative and highlights relevant image regions, but in a less fine-grained manner.
 To achieve this, global average pooling has to be performed on the feature maps of the last convolutional layer, followed by a dense layer as output.
 The weights of this dense layer are then projected back to the convolutional feature maps which results in the class activation mappings.
 As a consequence, it is hard to generalize this approach due to the architecture restrictions.
 \subsubsection{GradCAM}
-GradCAM is class-discriminative as well, but can be used by any CNN-based network without architectural adaptations.
+GradCAM\cite{SelvarajuDVCPB16} is class-discriminative as well, but can be used by any CNN-based network without architectural adaptations.
 Similar to CAM, it describes the activation as a linear combination of weighted feature maps. But in this case, the weights are calculated
 by deriving the respective logit of the class of interest by the feature maps of the chosen convolutional layer. These gradients then get global average pooled, followed by a ReLU.
-The ReLU leaves only feature with a positive impact behind, similar to how it is applied in Guided Backpropagation.[QUELLE]
+The ReLU leaves only feature with a positive impact behind, similar to how it is applied in Guided Backpropagation. See Figure \ref{deepVis}b.
 \subsubsection{Guided GradCAM}
-Guided GradCAM combines the ideas of Guided Backpropagation with Class Activation Maps.
-This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization. [QUELLE]
+Guided GradCAM\cite{SelvarajuDVCPB16} combines the ideas of Guided Backpropagation with Class Activation Maps.
+This makes GradCAM class-discriminative due to the localization of relevant image regions and high-resolution due pixel-space gradient visualization. See Figure \ref{deepVis}c.
 \begin{figure}[H]
   \centering
   \subfloat[Guided Backprop.]{\includegraphics[width=0.2\textwidth]{IDRiD_060_backprop_enh.png}\label{fig:IDRiD_backprop_orig}}
@@ -285,9 +288,8 @@ This makes GradCAM class-discriminative due to the localization of relevant imag
   \subfloat[gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
   \hspace{0.5cm}
   \subfloat[Guided gradCAM]{\includegraphics[width=0.2\textwidth]{IDRiD_060_guided_gradCAM.png}\label{fig:IDRiD_backprop_enh}}
-  \caption{Guided Backpropagation}
-  \small \textit{{Note: The chosen model architecture leads to graph issues within the gradCAM algorithm. The workaround affects the result negatively.
-  A working example with another model and image can be found in the code within the "helper" folder.}}
+  \caption{Deep Visualization result example}
+  \label{deepVis}
 \end{figure}
 
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -339,35 +341,45 @@ like shearing or rotating the images to overcome the challenge of a relatively s
 %%% Comment out this section when you \bibliography{references} is enabled.
 \begin{thebibliography}{1}
 
-  \bibitem{kumar2017weight}
-  Siddharth Krishna Kumar.
-  \newblock On weight initialization in deep neural networks.
-  \newblock {\em arXiv:1704.08863}, 2017.
+  \bibitem{DBRscience}
+  Goh, James Kang H.; Cheung, Carol Y.; Sim, Shaun S.; Tan, Pok C.; Tan, Gavin Siew W.; Wong, Tien Y.
+  \newblock Retinal imaging techniques for diabetic retinopathy screening.
+  \newblock {\em Journal of diabetes science and technology 10}, 2016.
 
   \bibitem{IDRiDdataset}
   Porwal, Prasanna; Pachade, Samiksha; Kamble, Ravi; Kokare, Manesh; Deshmukh, Girish; Sahasrabuddhe, Vivek; Meriaudeau, Fabrice.
   \newblock Indian diabetic retinopathy image dataset (IDRiD): a database for diabetic retinopathy screening research.
   \newblock {\em Data 3}, 2018.
-  
-  % \bibitem{kumar2017weight}
-  % name.
-  % \newblock title.
-  % \newblock In {\em Frontiers in Handwriting Recognition (ICFHR), 2014 14th
-  %   International Conference on}, pages 417--422. IEEE, 2014.
-  
-  % \bibitem{guidBackprop}
-  % Springenberg, J., et. al. Striving for Simplicity: The All Convolutional Net, 2015, arXiv.
 
-  % \bibitem{gap}
-  % Lin, M.
-  %Guided Backpropagation: https://arxiv.org/abs/1412.6806
-  
-  %IDRiD Dataset: https://ieee-dataport.org/open-access/indian-diabetic-retinopathy-image-dataset-idrid#files
-  
-  
+  \bibitem{kumar2017weight}
+  Siddharth Krishna Kumar.
+  \newblock On weight initialization in deep neural networks.
+  \newblock {\em arXiv:1704.08863}, 2017.
+
+  \bibitem{he2015delving}
+  Kaiming, He; Xiangyu, Zhang; Shaoqing, Ren; Jian, Sun.
+  \newblock Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.
+  \newblock {\em arXiv:1502.01852}, 2015.
+
+  \bibitem{graham2015}
+  Benjamin Graham.
+  \newblock Diabetic retinopathy Kaggle challenge report.
+  \newblock {\em https://www.kaggle.com/c/diabetic-retinopathy-detection/discussion/15801}, 2015.
+
+  \bibitem{springenberg2015striving}
+  Jost Tobias, Springenberg; Alexey, Dosovitskiy; Thomas, Brox; Martin, Riedmiller.
+  \newblock Striving for Simplicity: The All Convolutional Net.
+  \newblock {\em arXiv:1412.6806}, 2015.
+
+  \bibitem{SelvarajuDVCPB16}
+  Ramprasaath R., Selvaraju; Abhishek, Das; Ramakrishna, Vedantam; Michael, Cogswell; Devi, Parikh; Dhruv, Batra.
+  \newblock Grad-CAM: Why did you say that? Visual Explanations from Deep Networks via Gradient-based Localization.
+  \newblock {\em arXiv:1610.02391}, 2016.
+
+  \bibitem{ZhouKLOT15}
+  Bolei, Zhou; Aditya, Khosla; {\`{A}}gata, Lapedriza; Aude Oliva; Antonio, Torralba.
+  \newblock Learning Deep Features for Discriminative Localization.
+  \newblock {\em arXiv:1512.04150}, 2015.
   \end{thebibliography}
-  
-
-
 
 \end{document}
