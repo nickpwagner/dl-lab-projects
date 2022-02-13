@@ -15,6 +15,7 @@
 \usepackage{booktabs}
 \usepackage{subfig}
 \usepackage{float}
+\usepackage{wrapfig}
 \raggedbottom
 
 \title{Diabetic Retinopathy Detection}
@@ -59,22 +60,20 @@
 \begin{abstract}
 Diabetic retinopathy is an eye disease that can affect people suffering diabetes. It causes damage to the blood vessels of 
 the eyes, deteriorates the eyesight and can lead in the worst case to blindness of the patient. It is important to 
-detect the disease in an early stage to mitigate it as good as possible with an early treatment. Analyzing images of 
+detect the disease in an early stage to mitigate the effects as good as possible with an early treatment. Analyzing images of 
 eyes and classify the severity of diabetic retinopathy is a challenging task that requires expert knowledge. To assist 
-doctors and medical personnel, a classification model shall be trained to classify the severity automatically. 
+doctors and medical personnel, a classification model shall be trained to classify the severity without human interaction. 
 \end{abstract}
 
 % 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 Diabetic retinopathy is a complication of diabetes, which can cause damage the retina of the eye. 
-If not detected early, this damage may cause cause vision impairment or even blindness. 
-To treat this condition successfully, it has to be detected at an early stage, which is difficult due to minimal to no early warning signs. 
+To treat this condition successfully, it has to be detected at an early stage, which is difficult due to minimal or no early warning signs. 
 Furthermore, the different grades can only be distinguished by a trained professional due to its subtle symptoms.
 Examples are leaking blood vessels, fatty deposits or retinal swelling.
-Since this task is difficult even for trained professionals, an algorithm for automatic detection of the diabetic retinopathy grade is necessary.
-This is the goal of this paper. 
-
-The used dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which is publicly available. It contains five class labels, which refer to 
+Since this task is difficult even for trained professionals, the goal of this paper is to find an algorithm for automatic
+detection of the diabetic retinopathy. The used dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which 
+is publicly available. It contains five class labels, which refer to 
 the different eye disease grades (0-4).
 
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,21 +82,25 @@ the different eye disease grades (0-4).
 
 To tackle the problem of diabetic retinopathy detection, several methods are possible. Because the dataset consists of 
 ordinally scaled data of 5 classes, regression could be used to estimate the serverity of a case. In addition, a the problem 
-can be handled as a classification problem after one-hot-encoding the labels. As a third option, one can define a threshold 
-to define problematic diabetic retinopathy and non-problematic diabetic retinopathy and can handle the problem as a binary 
-classification. Further, only binary and multiclass classification are anaylzed.
+can be handled as a binary or multiclass classification problem after one-hot-encoding the labels.
+Further, only binary and multiclass classification are anaylzed.
 
-A binary classification has the advantage of higher accuracy, but lacks details, because the network only outputs 0 or 1
-and no information about the exact serverity of the disease. Metrics are also easy to implement, because precision, 
-recall and f1-score are standard implementations and nicely interpretable.
-
-A multiclass classification has typically a lower accuracy, because the network needs to pick the right class among 
+A binary classification has the advantage of higher accuracy, but lacks details, because the network only outputs no 
+information about the exact serverity of the disease. Metrics are also easy to implement, because precision, 
+recall and F1-score are standard implementations and nicely interpretable. A multiclass classification has typically a 
+lower accuracy, because the network needs to pick the right class among 
 several classes. It provides the benefit or receiving richer information, i.e. the exact serverity of the disease.
 Evaluating a multiclass classification problem becomes harder, because missclassifications can vary in their error.
 Classifiying a class 1 as class 2 is for example less problematic than classifying class 1 as class 5.
 
 
 \subsection{Architecture}
+To tackle the classification problem, we trained several neural networks using different architectures.
+The analyzed model architectures are composed of three parts: the 
+base model, the conversion layer and the head of our model. For the base model we tried both ResNet50 and VGG16 with 
+weights pretrained on ImageNet. We tried out the results with a fully trainable, partly trainable and not trainable
+base model. As conversion layer we tested both, a flatten layer and global average pooling (GAP).
+For the head we tried up to three hidden dense layers with different number of neurons per layer.
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\textwidth]{2_2_architecture.png}\label{fig:architecture}
@@ -110,11 +113,7 @@ to the five diabetic retinopathy grade predictions.
 The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter \ref{ch_hyperparam}.
 >> draw 3D architecture in powerpoint
 
-To tackle the classification problem, we analyzed several model architectures that are composed of three parts: the 
-base model, the conversion layer and the head of our model. For the base model we used ResNet50 and VGG16 with 
-weights pretrained on ImageNet. We tried out the results with a fully trainable, partly trainable and not trainable
-base model. As conversion layer we tested both, a flatten layer and global average pooling (GAP).
-For the head we tried up to three hidden dense layers with different number of neurons per layer.
+
 
 \subsection{Weight initialization}
 Weight initialization refers to the initial values of parameters that are used in specific neural network layers.
@@ -187,30 +186,27 @@ that is fitted better to the overrepresented classes.
   \# train & 134 & 20 & 136 & 74 & 49 \\ \hline
   \# test  & 34  & 5  & 32  & 19 & 13 \\ \hline
   \end{tabular}
-  \caption{Dataset sample distribution}
-  \label{tab:table1}
+  \caption{Dataset sample distribution} \label{tab:table1}
   \end{table}
 
 To avoid this, a method called oversampling is applied. Oversampling allows drawing underrepresented classes from the training set more often, 
 such that all classes are equally represented when training the model.
 
-\subsection{Training}
+\subsection{Training \& Metrics}
 For training our model, we used categorical cross-entropy as loss function and experimented with the optimizer and 
-learning rate. As optimizer we selected SGD with a momentum of 0.9 and Adam which both performed quite similar.
-
-As learning rate, we tried 0.1, 0.01 and 0.001 from which latter performed best and further learning rate decay
+learning rate. As optimizer we selected SGD with a momentum of 0.9 and Adam which both showed similar performance. 
+As learning rate, we used 0.1, 0.01 and 0.001 from which the latter performed best and further learning rate decay
 showed no further improvement.
 
-\subsection{Metrics}
 Training deep neural networks requires some performance metrics indicating the success or failure of the model fitting. Accuracy
 is easy to understand and to implement, but not suited for imbalanced data, because it doesn't take into account how well each 
 single class is predicted. 
 To overcome this, precision (how accurate was the model with its prediction) and recall (how thorough is a model with its prediction) can be used. 
-Especially a combination of both, the f1-score is a metrics that indicates how well a classifier handles different classes.
+Especially a combination of both, the F1-score is a metrics that indicates how well a classifier handles different classes.
 
-For the diabetic retinopathy dataset, the f1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
+For the diabetic retinopathy dataset, the F1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
 a wrong class is not equally bad. As an example is predicting class 4 for the true class 0 much worse that predicting a 1. The
-f1-score would count both missclassifications equally, while the Quadratic Weighted Kappa (QWC) metric takes the distance of 
+F1-score would count both missclassifications equally, while the Quadratic Weighted Kappa (QWC) metric takes the distance of 
 the classification error into account.
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
@@ -226,20 +222,10 @@ training and test data, the original training dataset was split into 80\% traini
 To perform many parameter sweeps, we stored out dataset in the cloud and used Google Colab as training server. 
 
 \subsection{Hyperparameter selection}\label{ch_hyperparam}
-As metrics for hyperparameter selection, we mainly used correlation with the validation-f1-score and 
-compared the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
-Once most important hyperparameter is determined and selected, one needs to ensure that the second most important
-parameter is not selected because of strong correlation with the most important one. Therefore, the independence can be 
-guaranteed by filtering the sweep and selecting just runs with the best parameter one or by performing a new parameter sweep
-with a fixed parameter one.
-
-With this procedure, we selected the most important parameters as in table...:
-
 
 
 \renewcommand{\arraystretch}{1.2}
-\begin{table}[h]
-  \centering
+\begin{wraptable}{r}{7.5cm}
   \begin{tabular}{|l|l|}
   \hline
   Hyperparameter & Selected\\ \hline \hline
@@ -251,22 +237,28 @@ With this procedure, we selected the most important parameters as in table...:
   Number of dense neurons in layer N-3 & 4096 \\ \hline
   Number of dense neurons in layer N-1 & 0 \\ \hline
   \end{tabular}
-  \caption{Dataset sample distribution}
-  \label{tab:table2}
-  \end{table}
+  \caption{Excerpt of the most important hyperparameters} \label{tab:hyperparam}
+  \end{wraptable}
 
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\textwidth]{3_2_parameter_importance.png}\label{fig:param_importance}
-  \caption{Most important parameters with a sweep of 80 experiments}
-\end{figure}
+As metrics for hyperparameter selection, we mainly used correlation with the validation-F1-score and 
+compared the minimum, median and maximum run of each sweeped hyperparameter value with each other. 
+Once most important hyperparameter is determined and selected, one needs to ensure that the second most important
+parameter is not selected because of strong correlation with the most important one. This independence can be 
+guaranteed by filtering the sweep and selecting just runs with the best parameter or by performing a new parameter sweep
+with having this first parameter fixed.
 
-The following parameters show a big effect on the performance of the neural network on the validation data, 
-why they are selected for the final classifier.
+With this procedure, we selected the most important parameters as in table \ref{tab:hyperparam}:
 
-Balancing
-...
+
+
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.8\textwidth]{3_2_parameter_importance.png}\label{fig:param_importance}
+%  \caption{Most important parameters with a sweep of 80 experiments}
+%\end{figure}
+
+
 % Deep Visualization
 \subsection{Deep Visualization}
 \subsubsection{Guided Backpropagation}
@@ -308,36 +300,44 @@ This makes GradCAM class-discriminative due to the localization of relevant imag
 
 % 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
+
+
+
+\begin{wraptable}{r}{6.5cm} % start confusion matrix
+  \centering
+  \newcommand\items{5}   %Number of classes
+  \arrayrulecolor{white} %Table line colors
+  \noindent\begin{tabular}{cc*{\items}{|E}|}
+    \multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{\items}{c}{Predicted} \\ \hhline{~*\items{|-}|}
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{} & 
+    \multicolumn{1}{c}{\rot{Class 0}} & 
+    \multicolumn{1}{c}{\rot{Class 1}} & 
+    \multicolumn{1}{c}{\rot{Class 2}} & 
+    \multicolumn{1}{c}{\rot{Class 3}} & 
+    \multicolumn{1}{c}{\rot{Class 4}} \\ \hhline{~*\items{|-}|}
+    \multirow{\items}{*}{\rotatebox{90}{True}} 
+    &Class 0  & 29 &  2 &  2 &  0 &  1   \\ \hhline{~*\items{|-}|}
+    &Class 1  &  0 &  3 &  2 &  0 &  0   \\ \hhline{~*\items{|-}|}
+    &Class 2  &  7 &  1 & 15 &  3 &  6   \\ \hhline{~*\items{|-}|}
+    &Class 3  &  2 &  0 &  3 &  9 &  4   \\ \hhline{~*\items{|-}|}
+    &Class 4  &  4 &  0 &  1 &  1 &  7   \\ \hhline{~*\items{|-}|}
+  \end{tabular}
+  \vspace{0.2cm}
+  \caption{Confusion matrix on the test dataset}
+  \label{tab:confm}
+  \end{wraptable} % end confusion matrix
 We trained and evaluated our algorithm on both, binary and multiclass classification.
 
-For binary classification we performed a hyperparameter sweep and achieved without further optimization an f1-score of 0.87 on the 
+For binary classification we performed a hyperparameter sweep and achieved without further optimization an F1-score of 0.87 on the 
 validation data and of 0.82 on the test data.
 
-% start confusion matrix
-\newcommand\items{5}   %Number of classes
-\arrayrulecolor{white} %Table line colors
-\noindent\begin{tabular}{cc*{\items}{|E}|}
-\multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{\items}{c}{Predicted} \\ \hhline{~*\items{|-}|}
-\multicolumn{1}{c}{} & 
-\multicolumn{1}{c}{} & 
-\multicolumn{1}{c}{\rot{Class 0}} & 
-\multicolumn{1}{c}{\rot{Class 1}} & 
-\multicolumn{1}{c}{\rot{Class 2}} & 
-\multicolumn{1}{c}{\rot{Class 3}} & 
-\multicolumn{1}{c}{\rot{Class 4}} \\ \hhline{~*\items{|-}|}
-\multirow{\items}{*}{\rotatebox{90}{Actual}} 
-&Class 0  & 29 &  2 &  2 &  0 &  1   \\ \hhline{~*\items{|-}|}
-&Class 1  &  0 &  3 &  2 &  0 &  0   \\ \hhline{~*\items{|-}|}
-&Class 2  &  7 &  1 & 15 &  3 &  6   \\ \hhline{~*\items{|-}|}
-&Class 3  &  2 &  0 &  3 &  9 &  4   \\ \hhline{~*\items{|-}|}
-&Class 4  &  4 &  0 &  1 &  1 &  7   \\ \hhline{~*\items{|-}|}
-\end{tabular}
-% end confusion matrix
-
 For multiclass classification we optimized our model further and performed several sweep. Our finally selected model achieves 
-a QWC score of 0.44 which would be rank 106 for the Kaggle challenge.
-best binary + multiclass performance;
-color coded confusion matrix
+an accuracy of 58.8\%, an F1-score of 0.47 and a QWC score of 0.44 which would have achieved rank 106 for the Kaggle challenge. 
+When evaluation the confusion matrix of the prediction as denoted in table \ref{tab:confm}, one can see that our model predicts
+class 0 very frequently and often incorrect. This can be interpreted in a way that our model fails to identify features that
+indicate the disease. Therefore, a method to further optimize the model could be more extensive data augmentation like shearing
+or rotation of the images to further overcome the relatively small dataset.
 
 
 \bibliographystyle{unsrt}  
