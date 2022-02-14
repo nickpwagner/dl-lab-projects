@@ -3,9 +3,9 @@
 data_dir:
   value: "c:/GoogleDriveNot/Datasets/cones_multi_class/"  # "c:/DL_Lab/cones_multi_class_partial/"  #
 data_partial:
-  value: False
+  value: False  # only activate this if you want a faster training for test purposes
 ds_train_shuffle_buffer:
-  value: 1000
+  value: 1000  # a bigger buffer requires more VRAM
 
 
 # train
@@ -16,15 +16,15 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.1
+  value: 0.1  # 0.1 is a good choice. I the network doesn´t train, it can help to reduce the LR at the start
 learning_rate_decay:
   value: 1
 momentum:
-  value: 0.9
+  value: 0.9  # only relevant for SGD
 detection_threshold:
   value: 0.5  # above this objectness value, the grid cell is counted as positive
 loss_function:
-  value: "custom"  # "yolo", "custom"
+  value: "custom"  # select between "yolo", "custom"
 
 # settings for custom loss
 objectness_loss:
@@ -50,7 +50,7 @@ yolo_weight_noobj:
 cnn_input_shape:
   value: [448, 448, 3]
 grid_size:
-  value: 14
+  value: 14  # recommended for Cone YOLO
 trainable:
   value: "full"  # "full" : all resnet layers trainable, "last": last 4 layers of resnet trainable, "none": resnet not trainable
 dropout:
@@ -61,8 +61,8 @@ dropout:
 wandb_run:
   value: "stuttgartteam8/protect_gbr/1bpnlpim" # "stuttgartteam8/protect_gbr/1rmzs2cj"  "stuttgartteam8/protect_gbr/136q0aks"
 eval_dataset:
-  value: "test"
+  value: "test" # which dataset shall be used for video creation
 eval_samples:
-  value: 900
+  value: 900  # how many samples shall be included in the video
 bbox_confidence_threshold:
-  value: 0.5
+  value: 0.5  # only bounding boxes with a confidence >= the threshold are marked

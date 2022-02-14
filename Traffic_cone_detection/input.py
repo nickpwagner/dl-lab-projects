@@ -6,7 +6,11 @@ import ast
 import os
 
 class DataLoader:
+    """
+    This class generates a dataloader that goes through all txt files in the specified directory loads the corresponding sample.
 
+    For each jpg image, there is one txt file that lists the labels that belong to the image.
+    """
     def __init__(self, config):
         self.config = config
         # this long list is required, because the dataset contains corrupted data that needs to be excluded from training!
@@ -137,6 +141,9 @@ class DataLoader:
     
 
     def convert_label_to_y(self, label, file):
+        """"
+        takes as input a label and outputs the corresponding y
+        """
         object_class, x_center, y_center, width_bbox, height_bbox = list(map(float, label))
 
         # find relevant grid cell for predicting the object

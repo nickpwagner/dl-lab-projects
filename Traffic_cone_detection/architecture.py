@@ -5,6 +5,10 @@ import numpy as np
 
 
 def transfer_model(config): 
+    """
+    returns a model that uses Resnet50 as transfer learning model.
+    The head can be configured/parametrized in the config.
+    """
     # use Resnet50 as transfer learning model
     base_model = keras.applications.ResNet50(weights='imagenet',
                                         include_top=False,
