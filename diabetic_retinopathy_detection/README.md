@@ -54,4 +54,4 @@ python3 evaluation.py --mode="multi_class" "davidu/diabetic_retinopathy/u5ltosw6
 python3 evaluation.py --mode="binary_class" "davidu/diabetic_retinopathy/i7144mrm" -p= Path to graham dataset
 ```
 
-Enjoy :-)
+# If anything is unclear, feel free to contact us on Slack. Enjoy :-)
