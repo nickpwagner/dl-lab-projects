@@ -44,22 +44,12 @@ def main(args):
         print(model.summary())
         if config.mode == "binary_class":
             acc, p, r, f1 = evaluate_binary(config, model, ds_test)
-            print(f"Accuracy: {acc}")
-            print(f"Precision: {p}")
-            print(f"Recall: {r}")
-            print(f"f1-Score: {f1}")
+            print("acc, p, r, f1", acc, p, r, f1)
         if config.mode == "multi_class":
             acc, p, r, f1, confm, quadratic_weighted_kappa = evaluate_multiclass(config, model, ds_test)
-            print(f"Accuracy: {acc}")
-            print(f"Precision: {p}")
-            print(f"Recall: {r}")
-            print(f"f1-Score: {f1}")
-            print(f"Confusion-Matrix: \n{confm}")
-            print(f"Quadratic WeightedKappa: {quadratic_weighted_kappa}")
+            print("acc, p, r, f1, confm, quadratic_weighted_kappa", acc, p, r, f1, confm, quadratic_weighted_kappa)
 
 if __name__ == "__main__":
-
-    # pass arguments via command line to the program. If default=SUPPRESS and no arg is passed, the value of the default yaml is used
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', '--train', type=bool, help='True=Train, False=Evaluate', default=True)
     parser.add_argument('-l', '--log_wandb', type=str, help='mode of wandb', default="online")  # "online" / "disabled"

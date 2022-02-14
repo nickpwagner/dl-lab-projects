@@ -16,14 +16,6 @@ def load(config):
     - augmentation
     - augment_crop
     
-    Procedure:
-        - Load CSV
-        - create_ds
-            - create_text_dataset
-            - img_name_to_image
-            - crop_and_resize_test_val
-            - augment
-                - augment_stateless
     """
 
     # helper functions ####################################################
