@@ -1,5 +1,7 @@
 ## Project 1 - Diabetic Retinopathy Detection
 
+<img src="IDRiD_001.jpg" alt="MarineGEO circle logo" style="height: 300px; width:300px;"/>
+
 # IMPORTANT
 Our code was developed via Live Share in VS Code, meaning the person that commits is not meaningful.
 Both students contributed equally to the code.

@@ -1,5 +1,7 @@
 ## Project 2 - Protect the Great Barrier Reef
 
+<img src="1_starfishes.png" alt="MarineGEO circle logo" style="height: 200px; width:300px;"/>
+
 # IMPORTANT
 Our code was developed via Live Share in VS Code, meaning the person that commits is not meaningful.
 Both students contributed equally to the code.
