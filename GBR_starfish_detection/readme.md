@@ -19,7 +19,7 @@ Both students contributed equally to the code.
 ```sh
 git clone https://github.tik.uni-stuttgart.de/iss/dl-lab-21w-team08.git
 ```
-## Download the following dataset with downscaled images. (3GB) 
+### Download the following dataset with downscaled images. (3GB) 
    https://drive.google.com/uc?id=1pJM8yoVMKrptXCZcLT26J5R7MFLHIzo9
 
 ### Two alternatives for the shell script:<br />
