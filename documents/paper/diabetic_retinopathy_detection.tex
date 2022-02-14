@@ -142,8 +142,9 @@ The goal is to make feature extraction easier for the network and increase the a
 \begin{itemize}
   \item[-] \textbf{Graham preprocessing:}\cite{graham2015} see Figure \ref{fig:graham}\begin{itemize}
     \item[1.] rescale the eye radius to 300 pixels 
-    \item[2.] subtract the local average color and shift it to gray
-    \item[3.] clip the image to remove boundary effects
+    \item[2.] subtract the local average color (Gaussian blur) 
+    \item[3.] shift the value of the difference image by 128
+    \item[4.] clip the image to remove boundary effects
   %   \begin{figure}[h]
   %     \begin{minipage}[b]{.5\textwidth}
   %         \begin{center}
@@ -198,16 +199,16 @@ single class is predicted.
 To overcome this, precision (how accurate the model is with its prediction) and recall (how thorough the model is with its prediction) can be used. 
 Especially a combination of both, the F1-score is a metric that indicates how well a classifier handles different classes.
 
-For the diabetic retinopathy dataset, the F1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
+For the diabetic retinopathy dataset, the F1-score comes with a drawback. The dataset has ordinal labels, which means predicting 
 a wrong class is not equally bad. As an example, predicting class 0 (no retinopathy) for the true class 4 (proliferative retinopathy) 
 is much worse than predicting class 3 (severe retinopathy). The F1-score counts both misclassifications equally, while the 
-Quadratic Weighted Kappa (QWC) \cite{QWC} metric takes the distance of the classification error into account and is therefore more suitable.
+Quadratic Weighted Kappa (QWC) metric takes the distance of the classification error into account and is therefore more suitable \cite{QWC}.
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
 The training of the deep neural network classifier requires the selection of suitable hyperparameters that differ from
 problem to problem, which is why their choice is a hard task. A useful strategy to find a good set of hyperparameters are parameter 
-sweeps. Weights\&Biases is a python library that enables the easy implementation of sweeps and is therefore selected for our implementation. 
+sweeps. Weights\&Biases is a Python library that enables the easy implementation of sweeps and is therefore selected for our implementation. 
 
 Hyperparameter optimization requires besides the training and test dataset a third, the validation dataset, to evaluate the
 model after hyperparameter tuning and to avoid overfitting on the hyperparameters. Because the given dataset only contains 
@@ -242,7 +243,7 @@ parameter is not selected because of strong correlation with the most important 
 guaranteed by filtering the sweep and selecting just runs with the best parameter or by performing a new parameter sweep
 with having this first parameter fixed.
 
-With this procedure, we selected the most important parameters as in Table \ref{tab:hyperparam}.
+Following this procedure, we select the most important hyperparameters as in Table \ref{tab:hyperparam}.
 
 
 
@@ -353,42 +354,39 @@ like shearing or rotating the images to overcome the challenge of a relatively s
   \newblock {\em Data 3}, 2018.
 
   \bibitem{kumar2017weight}
-  Siddharth Krishna Kumar.
+  Kumar, Siddharth Krishna.
   \newblock On weight initialization in deep neural networks.
   \newblock {\em arXiv:1704.08863}, 2017.
+
+  \bibitem{he2015delving}
+  He, Kaiming; Zhang, Xiangyu; Ren, Shaoqing; Sun, Jian.
+  \newblock Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.
+  \newblock {\em arXiv:1502.01852}, 2015.
+
+  \bibitem{graham2015}
+  Graham, Benjamin.
+  \newblock Diabetic retinopathy Kaggle challenge report.
+  \newblock {\em https://www.kaggle.com/c/diabetic-retinopathy-detection/discussion/15801}, 2015.
 
   \bibitem{QWC}
   Cohen, Jacob. 
   \newblock Weighted kappa: Nominal scale agreement provision for scaled disagreement or partial credit. 
   \newblock Psychological Bulletin, 70(4), 213–220, 1968. 
-
-  \bibitem{he2015delving}
-  Kaiming, He; Xiangyu, Zhang; Shaoqing, Ren; Jian, Sun.
-  \newblock Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.
-  \newblock {\em arXiv:1502.01852}, 2015.
-
-  \bibitem{graham2015}
-  Benjamin Graham.
-  \newblock Diabetic retinopathy Kaggle challenge report.
-  \newblock {\em https://www.kaggle.com/c/diabetic-retinopathy-detection/discussion/15801}, 2015.
-
+  
   \bibitem{springenberg2015striving}
-  Jost Tobias, Springenberg; Alexey, Dosovitskiy; Thomas, Brox; Martin, Riedmiller.
+  Springenberg, Jost Tobias; Dosovitskiy, Alexey; Brox, Thomas; Riedmiller, Martin.
   \newblock Striving for Simplicity: The All Convolutional Net.
   \newblock {\em arXiv:1412.6806}, 2015.
+
+  \bibitem{ZhouKLOT15}
+  Zhou, Bolei; Khosla, Aditya; {\`{A}}gata, Lapedriza; Aude Oliva; Antonio, Torralba.
+  \newblock Learning Deep Features for Discriminative Localization.
+  \newblock {\em arXiv:1512.04150}, 2015.
 
   \bibitem{SelvarajuDVCPB16}
   Ramprasaath R., Selvaraju; Abhishek, Das; Ramakrishna, Vedantam; Michael, Cogswell; Devi, Parikh; Dhruv, Batra.
   \newblock Grad-CAM: Why did you say that? Visual Explanations from Deep Networks via Gradient-based Localization.
   \newblock {\em arXiv:1610.02391}, 2016.
-
-  \bibitem{ZhouKLOT15}
-  Bolei, Zhou; Aditya, Khosla; {\`{A}}gata, Lapedriza; Aude Oliva; Antonio, Torralba.
-  \newblock Learning Deep Features for Discriminative Localization.
-  \newblock {\em arXiv:1512.04150}, 2015.
-
-
-
 
   \end{thebibliography}
 

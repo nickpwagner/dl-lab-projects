@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1644836421 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644836423
+["pdflatex"] 1644842917 "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" "diabetic_retinopathy_detection.pdf" "diabetic_retinopathy_detection" 1644842919
   "2_2_architecture.png" 1644756534 142524 8eefd0b605855f315321c956d9b877ac ""
   "C:/Scarlett/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "C:/Scarlett/Programs/MiKTeX/fonts/tfm/adobe/times/ptmb8r.tfm" 1136768654 4524 6bce29db5bc272ba5f332261583fee9c ""
@@ -179,10 +179,10 @@
   "IDRiD_060_graham.jpg" 1644598649 124473 ecb8367dabd7e2ad5088cb6240224db8 ""
   "IDRiD_060_guided_gradCAM.png" 1644644403 41013 63f2d715b0d241a6e00cb53c47516ea0 ""
   "arxiv.sty" 1578914260 7500 f12f4e37fb88cc7b19e63ecce8ed0185 ""
-  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644836420 21461 d58750108376812ce114a48deadc952e ""
-  "diabetic_retinopathy_detection.aux" 1644836423 7543 c5fd94496113b3c6f717d6ae0eecd934 "pdflatex"
-  "diabetic_retinopathy_detection.out" 1644836423 2214 5331fcefc329cadaec77a68b9081e5d8 "pdflatex"
-  "diabetic_retinopathy_detection.tex" 1644836420 21461 d58750108376812ce114a48deadc952e ""
+  "c:/DL_Lab/dl-lab-21w-team08/documents/paper/diabetic_retinopathy_detection.tex" 1644842803 21524 9c771c2f36ab6b1f5ad1a502a01cfede ""
+  "diabetic_retinopathy_detection.aux" 1644842918 7543 c8c06dd049221f32be9e4799b38e7643 "pdflatex"
+  "diabetic_retinopathy_detection.out" 1644842918 2214 5331fcefc329cadaec77a68b9081e5d8 "pdflatex"
+  "diabetic_retinopathy_detection.tex" 1644842803 21524 9c771c2f36ab6b1f5ad1a502a01cfede ""
   (generated)
   "diabetic_retinopathy_detection.aux"
   "diabetic_retinopathy_detection.log"
