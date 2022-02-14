@@ -21,7 +21,7 @@ batch_size:
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.1
+  value: 0.0001
 learning_rate_decay:
   value: 1
 momentum:
