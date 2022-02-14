@@ -10,7 +10,7 @@ Both students contributed equally to the code.
 
 
 # How to run the code
-## Option 1: Simply go to the following folder and run the DRD.sh script with sbatch.
+## Option 1: Simply go to the following folder and run the GBR.sh script with sbatch.
 ```/misc/home/RUS_CIP/st175644```
 
 ## Option 2: Set the environment up yourself.
