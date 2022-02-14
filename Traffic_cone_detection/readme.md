@@ -1,4 +1,7 @@
 ## Project 2b - Traffic cone detection
+
+<img src="6_traffic_cones.png" alt="MarineGEO circle logo" style="height: 300px; width:300px;"/>
+
 # IMPORTANT
 Our code was developed via Live Share in VS Code, meaning the person that commits is not meaningful.
 Both students contributed equally to the code.
@@ -11,14 +14,22 @@ Both students contributed equally to the code.
 
 ## Training
 Download the traffic cone dataset:<br />
-!gdown https://drive.google.com/uc?id=1kSQfEg4kkch6npr9cZmHJx6CiZsoZjFZ
 
+```
+gdown https://drive.google.com/uc?id=1kSQfEg4kkch6npr9cZmHJx6CiZsoZjFZ
+```
 Unpack the dataset (select the correct path)<br />
-!unzip -u "/content/cones_multi_class.zip" -d "/content/";
-
+```
+unzip -u "/content/cones_multi_class.zip" -d "/content/";
+````
 Clone the repository and navigate to the main.py file.<br />
 Run the main file by passing the path the the dataset:<br />
-!python main.py -p="/content/cones_multi_class/"
+````
+python main.py -p="/content/cones_multi_class/"
+````
+
+
+
 <br /><br />
 ## Training Parameters
 The parameters can be adapted in the config-defaults.yaml file.<br />
