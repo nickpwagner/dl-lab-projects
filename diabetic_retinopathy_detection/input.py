@@ -54,26 +54,26 @@ def load(config):
         return text_ds
 
     def img_name_to_image(img_names, y, weights=[]):
-            # converts the text dataset into the actual images and does label conversioning if required
-            X = tf.io.read_file(img_names)
-            X = tf.image.decode_jpeg(X, channels=3)
+        """
+        converts the text dataset into the actual images and does label conversioning if required
+        """
+            
+        X = tf.io.read_file(img_names)
+        X = tf.image.decode_jpeg(X, channels=3)
 
-            # label conversioning 
-            if config.mode == "multi_class":
-                y = tf.one_hot(y, depth=config.n_classes)
-                print("Running in multiclass classification mode!")
-            elif config.mode == "binary_class":
-                # y = 0,1: negative
-                # y = 2,3,4: positive
-                if y < 2:
-                    y = 0
-                else:
-                    y = 1
-                print("Running in binary classification mode")
-            elif config.mode == "regression":
-                pass
-                print("Running in regression mode")
-            return X, y
+        # label conversioning 
+        if config.mode == "multi_class":
+            y = tf.one_hot(y, depth=config.n_classes)
+            print("Running in multiclass classification mode!")
+        elif config.mode == "binary_class":
+            # y = 0,1: negative
+            # y = 2,3,4: positive
+            if y < 2:
+                y = 0
+            else:
+                y = 1
+            print("Running in binary classification mode")
+        return X, y
 
 
     def crop_and_resize_test_val(image, y):
@@ -153,7 +153,7 @@ def load(config):
     y_test = df_test["Retinopathy grade"]
     img_names_test = [config.data_dir + "images/test/" + str(img) + ".jpg" for img in df_test["Image name"]]
 
-    
+    # create the 3 datasets by calling the create_ds function and passing the information from CSV file
     ds_train = create_ds(img_names_train, y_train, training=True)
     ds_val = create_ds(img_names_val, y_val)
     ds_test = create_ds(img_names_test, y_test)
@@ -162,7 +162,9 @@ def load(config):
 
 
 if __name__ == "__main__":
-    
+    """
+    load the 3 datasets and show examples of them
+    """
 
     import matplotlib.pyplot as plt    
     import wandb
@@ -181,8 +183,8 @@ if __name__ == "__main__":
         ys = []
         for images, y in ds:
             for i, image in enumerate(images):
-                if count < 5:
-                    plt.subplot(1,5,count+1)
+                if count < 25:
+                    plt.subplot(5,5,count+1)
                     plt.xticks([])
                     plt.yticks([])
                     plt.grid(False)
@@ -204,5 +206,3 @@ if __name__ == "__main__":
     show_ds(ds_train, "train_ds")
     show_ds(ds_val, "val_ds")
     show_ds(ds_test, "test_ds")
-
-    # print a dataset analyis (how many samples of each class are part of the datasets)
