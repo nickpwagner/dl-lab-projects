@@ -165,6 +165,9 @@ class DataLoader:
 
 
     def read_data(self, path, black_list_files=None):
+        """
+        loops through the directory and stores for each image-csv pair the image path and the correct y label
+        """
         if black_list_files is None:
             black_list_files = []
         jpg_paths = []
@@ -207,11 +210,17 @@ class DataLoader:
 
 
     def read_image(self, image_file, y):
+        """
+        open the image and decode it
+        """
         image = tf.io.read_file(image_file)
         image = tf.image.decode_jpeg(image, channels=3)#, dtype=tf.float32)
         return image, y
 
     def resize(self, image, y):
+        """
+        resize the image to the specified size
+        """
         image = tf.image.resize(image, self.config.cnn_input_shape[:2], method=tf.image.ResizeMethod.BILINEAR,preserve_aspect_ratio=False)
         # skip rescaling, because resnet expects int8
         #image = image / 255. # rescale
@@ -219,6 +228,9 @@ class DataLoader:
 
 
     def load(self):
+        """
+        return the datasets
+        """
         ds_train = self.ds_train.map(self.read_image)\
                                 .map(self.resize)\
                                 .map(self.augment_seed, num_parallel_calls=tf.data.AUTOTUNE)\
@@ -234,6 +246,9 @@ class DataLoader:
 
 
     def augment(self, image, y, seed):
+        """
+        Apply color jittering and flip as data augmentation
+        """
         image = tf.image.stateless_random_contrast(image, 0.7, 1.5, seed=seed)
         image = tf.image.stateless_random_brightness(image, 0.3, seed=seed+1)
         image = tf.image.stateless_random_hue(image, 0.1, seed+2)
@@ -247,6 +262,9 @@ class DataLoader:
 
     
     def augment_seed(self, image, y):
+        """
+        Required to pass the generated seed to the augment function
+        """
         # random number generator specifically for stateless_random augmentation functions
         seeds = self.rng.make_seeds(2)[0]
         #seeds = [random.randint(0, 2**16), 42]
@@ -325,14 +343,12 @@ if __name__ == "__main__":
     ds_train, ds_test = dataLoader.load()
     
 
-    
-
     plt.figure("GBR", figsize=(10,10))
     print("show dataset")
     for images, y in ds_train:
         
         i = np.random.randint(0, config.batch_size)
-        print(y[i][:,:,0])
+        # print(y[i][:,:,0])
         img = annotate_image(config, images[i], y[i], y[i])
  
         plt.imshow(img)

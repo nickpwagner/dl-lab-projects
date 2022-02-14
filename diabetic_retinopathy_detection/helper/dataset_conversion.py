@@ -13,6 +13,12 @@ import matplotlib.pyplot as plt
 # Graham Preprocessing: https://www.kaggle.com/c/diabetic-retinopathy-detection/discussion/15801
 # step by step explanation can be found at helper/open_cv_preprocessing
 def crop_resize_store(input_path, output_path, graham=True):
+    """
+    function reduces the huge images into a size that eases the training and optimizes speed.
+
+    Optional: applies Graham preprocessing on the images
+    """
+
     for file in os.listdir(input_path):
         image = tf.io.read_file(input_path + file)
         image = tf.image.decode_jpeg(image, channels=3)
@@ -59,7 +65,7 @@ if __name__ == "__main__":
 
     input_path = "c:/DL_Lab/IDRID_dataset_orig/images/train/"
     output_path = "c:/DL_Lab/IDRID_dataset/images/train/"
-    crop_resize_store(input_path, output_path, graham=True)
+    crop_resize_store(input_path, output_path, graham=False)
 
     input_path = "c:/DL_Lab/IDRID_dataset_orig/images/test/"
     output_path = "c:/DL_Lab/IDRID_dataset/images/test/"

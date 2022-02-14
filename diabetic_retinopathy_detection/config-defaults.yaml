@@ -11,13 +11,13 @@ evaluate_run:
 n_classes:
   value: 5
 data_dir:
-  value: "C:/DL_Lab/IDRID_dataset/" #"/content/"
+  value: "C:/DL_Lab/IDRID_dataset/" # specify the location of the dataset here or pass the path via command line
 val_split:
   value: 0.8
 augmentation:
-  value: "strong"  # select from "none", "weak", "strong"
+  value: "weak"  # select from "none", "weak", "strong"
 augment_crop:
-  value: 550
+  value: 550  # crops randomly this pixel size from the image
 img_width:
   value: 600
 balancing:  # oversampling
@@ -27,19 +27,19 @@ balancing:  # oversampling
 epochs:
   value: 50
 batch_size:
-  value: 8
+  value: 8  
 optimizer:
   value: "sgd"
 learning_rate:
-  value: 0.01
+  value: 0.001
 learning_rate_decay:
-  value: 10
+  value: 1
 momentum:
-  value: 0.0
+  value: 0.9
 fine_tuning:
   value: False
 fine_tuning_learning_rate:
-  value: 0.0001
+  value: 0.001
 fine_tuning_epochs:
   value: 0
 
@@ -47,17 +47,17 @@ fine_tuning_epochs:
 cnn_input_shape:
   value: [224, 224, 3]
 architecture:
-  value: "vgg16" # "resnet50"
+  value: "resnet50"  # select from "vgg16" and "resnet50"
 base_model_trainable:
   value: False
 dense0:
-  value: 2048
+  value: 4096
 dense1:
-  value: 1024
+  value: 512
 dense2:
   value: 0
 c_d_interface:
-  value: "gap" # "flatten"
+  value: "gap" # select from "flatten" and "gap"
 dropout:
   value: 0.1
 reg_lambda:
