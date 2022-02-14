@@ -18,7 +18,7 @@ Both students contributed equally to the code.
 ```sh
 git clone https://github.tik.uni-stuttgart.de/iss/dl-lab-21w-team08.git
 ```
-## Download the following dataset with downscaled images. (3GB) 
+### Download the following dataset with downscaled images. (3GB) 
    https://drive.google.com/uc?id=1pJM8yoVMKrptXCZcLT26J5R7MFLHIzo9
 
 ### Two alternatives for the shell script:<br />
@@ -55,5 +55,5 @@ python3 evaluation.py --mode="multi_class" "davidu/diabetic_retinopathy/u5ltosw6
 python3 evaluation.py --mode="binary_class" "davidu/diabetic_retinopathy/i7144mrm" -p= Path to graham dataset
 ```
 
-## If anything is unclear, feel free to contact us on Slack. Enjoy :-)
+# If anything is unclear, feel free to contact us on Slack. Enjoy :-)
 
