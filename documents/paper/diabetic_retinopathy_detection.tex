@@ -63,8 +63,8 @@ Diabetic retinopathy is an eye disease that can affect people suffering from dia
 doctors and medical personnel with their diagnosis, a classification model shall be trained to classify the severity 
 of the disease without human interaction. 
 We train and analyze several convolutional neural networks with different architectures. To find an optimal architecture, 
-intensive hyperparamer sweeps via random search are performed. To analyze the performance of our model, we use gradient 
-visualization.
+intensive hyperparameter sweeps via random search are performed. We apply different gradient visualization techniques for the performance
+analysis of our model.
 \end{abstract}
 
 % 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,7 +75,7 @@ Furthermore, the different grades can only be distinguished by a trained profess
 Examples for those are leaking blood vessels, fatty deposits or retinal swelling.
 Since this task is difficult even for trained professionals \cite{DBRscience}, the goal of this paper is to find an algorithm for automatic
 detection of the diabetic retinopathy grade. The dataset is the Indian Diabetic Retinopathy Image Dataset (IDRID), which 
-is publicly available \cite{IDRiDdataset}. It contains five class labels, which refer to the each of the eye disease grades (0-4).
+is publicly available \cite{IDRiDdataset}. It contains five class labels, which refer to each of the eye disease grades (0-4).
 
 % 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Object Classification}
@@ -97,15 +97,16 @@ Evaluating a multiclass classification problem becomes harder, because misclassi
 To tackle the classification problem, we train several neural networks using different architectures.
 The analyzed model architectures are composed of three parts: the 
 base model, the conversion layer and the head of our model. For the base model we try both ResNet50 and VGG16 with 
-weights pretrained on ImageNet. We try out the results with a fully trainable, partly trainable and not trainable
+weights pretrained on ImageNet. We evaluate the results with a fully trainable, partly trainable and not trainable
 base model. As conversion layer we test both, a flatten and global average pooling (GAP) layer.
-For the head we try up to three dense hidden layers with different number of neurons per layer.
+For the head we try up to three hidden dense layers with different numbers of neurons per layer.
 The final output consists of five values that correspond to the five diabetic retinopathy grade predictions, see Figure \ref{fig:architecture}.
-The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter% \ref{ch_hyperparam}.
+The decision for this architecture is based on parameter optimization of many factors which get discussed in chapter \ref{ch_hyperparam}.
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=1\textwidth]{2_2_architecture.png}\label{fig:architecture}
-  \caption{Model architecture}
+  \caption{Final model architecture}
   \label{fig:architecture}
 \end{figure}
 
@@ -199,8 +200,8 @@ Especially a combination of both, the F1-score is a metric that indicates how we
 
 For the diabetic retinopathy dataset, the F1-score comes with a drawback. The dataset is ordinally scaled, which means predicting 
 a wrong class is not equally bad. As an example, predicting class 0 (no retinopathy) for the true class 4 (proliferative retinopathy) 
-is much worse than predicting class 3 (servere retinopathy). The F1-score counts both missclassifications equally, while the 
-Quadratic Weighted Kappa (QWC) [QUELLE] metric takes the distance of the classification error into account and is therefore more suitable.
+is much worse than predicting class 3 (severe retinopathy). The F1-score counts both misclassifications equally, while the 
+Quadratic Weighted Kappa (QWC) \cite{QWC} metric takes the distance of the classification error into account and is therefore more suitable.
 % 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Experiments}
 \subsection{Procedure}
@@ -356,6 +357,11 @@ like shearing or rotating the images to overcome the challenge of a relatively s
   \newblock On weight initialization in deep neural networks.
   \newblock {\em arXiv:1704.08863}, 2017.
 
+  \bibitem{QWC}
+  Cohen, Jacob. 
+  \newblock Weighted kappa: Nominal scale agreement provision for scaled disagreement or partial credit. 
+  \newblock Psychological Bulletin, 70(4), 213–220, 1968. 
+
   \bibitem{he2015delving}
   Kaiming, He; Xiangyu, Zhang; Shaoqing, Ren; Jian, Sun.
   \newblock Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification.
@@ -380,6 +386,12 @@ like shearing or rotating the images to overcome the challenge of a relatively s
   Bolei, Zhou; Aditya, Khosla; {\`{A}}gata, Lapedriza; Aude Oliva; Antonio, Torralba.
   \newblock Learning Deep Features for Discriminative Localization.
   \newblock {\em arXiv:1512.04150}, 2015.
+
+
+
+
   \end{thebibliography}
+
+
 
 \end{document}
