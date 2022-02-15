@@ -12,7 +12,8 @@ Both students contributed equally to the code.
 
 # How to run the code
 ## Option 1: Simply go to the following folder and run the DRD.sh script with sbatch.
-```/misc/home/RUS_CIP/st175644```
+```/misc/home/RUS_CIP/st175644```<br />
+<img width="135" alt="GPU_server" src="https://media.github.tik.uni-stuttgart.de/user/3602/files/ebb26c00-8e41-11ec-849e-190cef3da412">
 
 ## Option 2: Set the environment up yourself.
 ### Clone the repository "dl-lab-team08" to the GPU server wherever you want.
