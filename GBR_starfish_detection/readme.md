@@ -12,7 +12,8 @@ Both students contributed equally to the code.
 
 # How to run the code
 ## Option 1: Simply go to the following folder and run the GBR.sh script with sbatch.
-```/misc/home/RUS_CIP/st175644```
+```/misc/home/RUS_CIP/st175644```<br />
+<img width="135" alt="GPU_server" src="https://media.github.tik.uni-stuttgart.de/user/3602/files/22888200-8e42-11ec-87f9-53f9abc07093">
 
 ## Option 2: Set the environment up yourself.
 ### Clone the repository "dl-lab-team08" to the GPU server wherever you want.
