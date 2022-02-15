@@ -1,7 +1,5 @@
 ## Project 2 - Protect the Great Barrier Reef
-
-<img src="1_starfishes.png" alt="MarineGEO circle logo" style="height: 200px; width:300px;"/>
-![](https://github.tik.uni-stuttgart.de/iss/dl-lab-21w-team08/blob/master/GBR_starfish_detection/220208_GBR_Train_Video.gif)
+<img src="https://github.tik.uni-stuttgart.de/iss/dl-lab-21w-team08/blob/master/GBR_starfish_detection/220208_GBR_Train_Video.gif?raw=true">
 
 ## IMPORTANT
 Our code was developed via Live Share in VS Code, meaning the person that commits is not meaningful.
